@@ -8,8 +8,8 @@ branches:
 
 build_script:
   - cmd: dotnet restore src\Vortice.Mathematics.sln
-  - cmd: msbuild /t:Pack /p:Configuration=Release src\Vortice.Mathematics\Vortice.Mathematics.csproj /m
-  - cmd: msbuild /t:Pack /p:Configuration=Release src\Vortice.Mathematics.PackedVector\Vortice.Mathematics.PackedVector.csproj /m
+  - cmd: dotnet pack -c Release src\Vortice.Mathematics\Vortice.Mathematics.csproj
+  - cmd: dotnet pack -c Release src\Vortice.Mathematics.PackedVector\Vortice.Mathematics.PackedVector.csproj
 
 artifacts:
 - path: bin\Release\Packages\*.nupkg
