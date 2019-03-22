@@ -6,6 +6,5 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>7.3</LangVersion>
     <Description>High performance cross platform .NET math library</Description>
-    <Version>1.0.0-alpha01</Version>
   </PropertyGroup>
 </Project>
