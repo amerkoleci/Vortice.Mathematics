@@ -2,9 +2,11 @@
 // Distributed under the MIT license. See the LICENSE file in the project root for more information.
 
 using System;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using Vortice.Mathematics.PackedVector;
 
 namespace Vortice.Mathematics
 {
@@ -13,33 +15,49 @@ namespace Vortice.Mathematics
     /// </summary>
     [Serializable]
     [DataContract]
-    [StructLayout(LayoutKind.Sequential)]
-    public struct Color : IEquatable<Color>
+    [StructLayout(LayoutKind.Explicit)]
+    public struct Color : IPackedVector<uint>, IEquatable<Color>
     {
         /// <summary>
 		/// The total size, in bytes, of an <see cref="Color"/> value.
 		/// </summary>
 		public static readonly int SizeInBytes = 4;
 
+        [FieldOffset(0)]
+        private uint _packedValue;
+
         /// <summary>
         /// The red component of the color.
         /// </summary>
+        [FieldOffset(0)]
         public byte R;
 
         /// <summary>
         /// The green component of the color.
         /// </summary>
+        [FieldOffset(1)]
         public byte G;
 
         /// <summary>
         /// The blue component of the color.
         /// </summary>
+        [FieldOffset(2)]
         public byte B;
 
         /// <summary>
         /// The alpha component of the color.
         /// </summary>
+        [FieldOffset(2)]
         public byte A;
+
+        /// <summary>
+        /// Gets or Sets the current color as a packed value.
+        /// </summary>
+        public uint PackedValue
+        {
+            get => _packedValue;
+            set => _packedValue = value;
+        }
 
         /// <summary>
 		/// Initializes a new instance of the <see cref="Color"/> struct.
@@ -50,6 +68,7 @@ namespace Vortice.Mathematics
         /// <param name="a">The alpha component of the color.</param>
 		public Color(byte r, byte g, byte b, byte a)
         {
+            _packedValue = 0;
             R = r;
             G = g;
             B = b;
@@ -82,6 +101,18 @@ namespace Vortice.Mathematics
         public static implicit operator Color(System.Drawing.Color value)
         {
             return new Color(value.R, value.G, value.B, value.A);
+        }
+
+        void IPackedVector.PackFromVector4(Vector4 vector)
+        {
+            _packedValue = PackHelpers.PackRGBA(vector.X, vector.Y, vector.Z, vector.W);
+        }
+
+        /// <summary>Gets a four-component vector representation for this object.</summary>
+        public Vector4 ToVector4()
+        {
+            PackHelpers.UnpackRGBA(_packedValue, out var x, out var y, out var z, out var w);
+            return new Vector4(x, y, z, w);
         }
 
         /// <inheritdoc/>
