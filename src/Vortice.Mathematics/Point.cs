@@ -15,7 +15,7 @@ namespace Vortice.Mathematics
     [Serializable]
     [DataContract]
     [StructLayout(LayoutKind.Sequential)]
-    public partial struct Point : IEquatable<Point>
+    public struct Point : IEquatable<Point>
     {
         /// <summary>
 		/// The total size, in bytes, of an <see cref="Point"/> value.
@@ -57,6 +57,26 @@ namespace Vortice.Mathematics
         {
             x = X;
             y = Y;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Point"/> to <see cref="System.Drawing.Point"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator System.Drawing.Point(Point value)
+        {
+            return new System.Drawing.Point(value.X, value.Y);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="System.Drawing.Point"/> to <see cref="Point"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator Point(System.Drawing.Point value)
+        {
+            return new Point(value.X, value.Y);
         }
 
         /// <inheritdoc/>

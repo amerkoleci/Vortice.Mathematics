@@ -14,7 +14,7 @@ namespace Vortice.Mathematics
     [Serializable]
     [DataContract]
     [StructLayout(LayoutKind.Sequential)]
-    public partial struct Color : IEquatable<Color>
+    public struct Color : IEquatable<Color>
     {
         /// <summary>
 		/// The total size, in bytes, of an <see cref="Color"/> value.
@@ -62,6 +62,26 @@ namespace Vortice.Mathematics
             green = G;
             blue = B;
             alpha = A;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Color"/> to <see cref="System.Drawing.Color"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator System.Drawing.Color(Color value)
+        {
+            return System.Drawing.Color.FromArgb(value.A, value.R, value.G, value.B);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="System.Drawing.Color"/> to <see cref="Color"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator Color(System.Drawing.Color value)
+        {
+            return new Color(value.R, value.G, value.B, value.A);
         }
 
         /// <inheritdoc/>
