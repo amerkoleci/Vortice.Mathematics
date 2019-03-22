@@ -8,19 +8,4 @@
     <Description>High performance cross platform .NET math library</Description>
     <Version>1.0.0-alpha01</Version>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Platforms\**\*.cs" />
-    <None Include="Platforms\**\*.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-    <Compile Include="Platforms\NetStandard\**\*.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('uap10.0')) ">
-    <Compile Include="Platforms\NetStandard\**\*.cs" />
-    <Compile Include="Platforms\UWP\**\*.cs" />
-  </ItemGroup>
-
 </Project>
