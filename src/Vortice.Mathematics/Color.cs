@@ -11,7 +11,7 @@ using Vortice.Mathematics.PackedVector;
 namespace Vortice.Mathematics
 {
     /// <summary>
-    /// Represents a 32-bit color (4 bytes) in the form of RGBA (in byte order: R, G, B, A).
+    /// Represents a 32-bit RGBA color (4 bytes).
     /// </summary>
     [Serializable]
     [DataContract]
@@ -19,9 +19,9 @@ namespace Vortice.Mathematics
     public struct Color : IPackedVector<uint>, IEquatable<Color>
     {
         /// <summary>
-		/// The total size, in bytes, of an <see cref="Color"/> value.
-		/// </summary>
-		public static readonly int SizeInBytes = 4;
+        /// The size in bytes of the <see cref="Color"/> type.
+        /// </summary>
+        public static readonly int SizeInBytes = Unsafe.SizeOf<Color>();
 
         [FieldOffset(0)]
         private uint _packedValue;

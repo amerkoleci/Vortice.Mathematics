@@ -18,9 +18,9 @@ namespace Vortice.Mathematics
     public struct Point : IEquatable<Point>
     {
         /// <summary>
-		/// The total size, in bytes, of an <see cref="Point"/> value.
-		/// </summary>
-		public static readonly int SizeInBytes = 8;
+        /// The size in bytes of the <see cref="Point"/> type.
+        /// </summary>
+        public static readonly int SizeInBytes = Unsafe.SizeOf<Point>();
 
         /// <summary>
         /// Represents a <see cref="Point"/> that has X and Y values set to zero.

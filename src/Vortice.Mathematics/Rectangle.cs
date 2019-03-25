@@ -17,9 +17,9 @@ namespace Vortice.Mathematics
     public struct Rectangle : IEquatable<Rectangle>
     {
         /// <summary>
-		/// The total size, in bytes, of an <see cref="Rectangle"/> value.
-		/// </summary>
-		public static readonly int SizeInBytes = 16;
+        /// The size in bytes of the <see cref="Rectangle"/> type.
+        /// </summary>
+        public static readonly int SizeInBytes = Unsafe.SizeOf<Rectangle>();
 
         /// <summary>
         /// Returns a <see cref="Rectangle"/> with all of its values set to zero.

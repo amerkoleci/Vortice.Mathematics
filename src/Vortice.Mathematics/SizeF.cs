@@ -18,9 +18,9 @@ namespace Vortice.Mathematics
     public struct SizeF : IEquatable<SizeF>
     {
         /// <summary>
-		/// The total size, in bytes, of an <see cref="SizeF"/> value.
-		/// </summary>
-		public static readonly int SizeInBytes = 8;
+        /// The size in bytes of the <see cref="SizeF"/> type.
+        /// </summary>
+        public static readonly int SizeInBytes = Unsafe.SizeOf<SizeF>();
 
         /// <summary>
         /// Represents a <see cref="SizeF"/> that has Width and Height values set to zero.
