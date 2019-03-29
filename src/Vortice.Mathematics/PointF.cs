@@ -4,7 +4,6 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Numerics.Hashing;
 using System.Runtime.Serialization;
 
 namespace Vortice.Mathematics
@@ -103,7 +102,15 @@ namespace Vortice.Mathematics
         public static bool operator !=(PointF left, PointF right) => !left.Equals(ref right);
 
         /// <inheritdoc/>
-		public override int GetHashCode() => HashHelpers.Combine(X.GetHashCode(), Y.GetHashCode());
+		public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = X.GetHashCode();
+                hashCode = (hashCode * 397) ^ Y.GetHashCode();
+                return hashCode;
+            }
+        }
 
         /// <inheritdoc/>
         public override string ToString()
