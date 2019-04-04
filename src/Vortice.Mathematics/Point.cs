@@ -4,7 +4,6 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 
 namespace Vortice.Mathematics
 {
@@ -12,15 +11,9 @@ namespace Vortice.Mathematics
     /// Defines a 2D integer point.
     /// </summary>
     [Serializable]
-    [DataContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct Point : IEquatable<Point>
     {
-        /// <summary>
-        /// The size in bytes of the <see cref="Point"/> type.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<Point>();
-
         /// <summary>
         /// Represents a <see cref="Point"/> that has X and Y values set to zero.
         /// </summary>

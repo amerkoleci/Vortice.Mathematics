@@ -12,15 +12,9 @@ namespace Vortice.Mathematics
     /// Defines a 2D integer rectangle.
     /// </summary>
     [Serializable]
-    [DataContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct Rectangle : IEquatable<Rectangle>
     {
-        /// <summary>
-        /// The size in bytes of the <see cref="Rectangle"/> type.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<Rectangle>();
-
         /// <summary>
         /// Returns a <see cref="Rectangle"/> with all of its values set to zero.
         /// </summary>

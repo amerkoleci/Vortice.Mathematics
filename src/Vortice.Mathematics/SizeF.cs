@@ -12,15 +12,9 @@ namespace Vortice.Mathematics
     /// Defines a 2D floating-point size.
     /// </summary>
     [Serializable]
-    [DataContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct SizeF : IEquatable<SizeF>
     {
-        /// <summary>
-        /// The size in bytes of the <see cref="SizeF"/> type.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<SizeF>();
-
         /// <summary>
         /// Represents a <see cref="SizeF"/> that has Width and Height values set to zero.
         /// </summary>

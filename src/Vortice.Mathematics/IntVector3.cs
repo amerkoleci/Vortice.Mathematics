@@ -13,15 +13,9 @@ namespace Vortice.Mathematics
     /// Represents a three dimensional mathematical int vector.
     /// </summary>
     [Serializable]
-    [DataContract]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct IntVector3 : IEquatable<IntVector3>
     {
-        /// <summary>
-        /// The size in bytes of the <see cref="IntVector3"/> type.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<IntVector3>();
-
         /// <summary>
         /// A <see cref="IntVector3"/> with all of its components set to zero.
         /// </summary>

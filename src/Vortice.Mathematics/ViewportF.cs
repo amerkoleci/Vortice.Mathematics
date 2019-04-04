@@ -13,15 +13,9 @@ namespace Vortice.Mathematics
     /// Represents a floating-point viewport struct.
     /// </summary>
     [Serializable]
-    [DataContract]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct ViewportF : IEquatable<ViewportF>
     {
-        /// <summary>
-        /// The size in bytes of the <see cref="ViewportF"/> type.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<ViewportF>();
-
         /// <summary>
         /// Position of the pixel coordinate of the upper-left corner of the viewport.
         /// </summary>

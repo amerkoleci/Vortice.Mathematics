@@ -13,15 +13,9 @@ namespace Vortice.Mathematics
     /// Represents a floating-point RGBA color.
     /// </summary>
     [Serializable]
-    [DataContract]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Color4 : IEquatable<Color4>
     {
-        /// <summary>
-        /// The size in bytes of the <see cref="Color4"/> type.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<Color4>();
-
         /// <summary>
         /// Red component of the color.
         /// </summary>

@@ -4,7 +4,6 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 
 namespace Vortice.Mathematics
 {
@@ -12,15 +11,9 @@ namespace Vortice.Mathematics
     /// Defines a 2D integer size.
     /// </summary>
     [Serializable]
-    [DataContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct Size : IEquatable<Size>
     {
-        /// <summary>
-        /// The size in bytes of the <see cref="Size"/> type.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<Size>();
-
         /// <summary>
         /// Represents a <see cref="Size"/> that has Width and Height values set to zero.
         /// </summary>

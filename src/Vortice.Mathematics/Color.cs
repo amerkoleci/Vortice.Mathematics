@@ -14,15 +14,9 @@ namespace Vortice.Mathematics
     /// Represents a 32-bit RGBA color (4 bytes).
     /// </summary>
     [Serializable]
-    [DataContract]
     [StructLayout(LayoutKind.Explicit)]
     public struct Color : IPackedVector<uint>, IEquatable<Color>
     {
-        /// <summary>
-        /// The size in bytes of the <see cref="Color"/> type.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<Color>();
-
         [FieldOffset(0)]
         private uint _packedValue;
 

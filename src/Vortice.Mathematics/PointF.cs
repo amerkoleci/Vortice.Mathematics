@@ -12,15 +12,9 @@ namespace Vortice.Mathematics
     /// Defines a 2D floating point.
     /// </summary>
     [Serializable]
-    [DataContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct PointF : IEquatable<PointF>
     {
-        /// <summary>
-        /// The size in bytes of the <see cref="PointF"/> type.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<PointF>();
-
         /// <summary>
         /// Represents a <see cref="PointF"/> that has X and Y values set to zero.
         /// </summary>

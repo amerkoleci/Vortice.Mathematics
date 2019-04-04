@@ -12,15 +12,9 @@ namespace Vortice.Mathematics
     /// Defines a 2D floating-point rectangle.
     /// </summary>
     [Serializable]
-    [DataContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct RectangleF : IEquatable<RectangleF>
     {
-        /// <summary>
-        /// The size in bytes of the <see cref="RectangleF"/> type.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<RectangleF>();
-
         /// <summary>
         /// Returns a <see cref="RectangleF"/> with all of its values set to zero.
         /// </summary>
