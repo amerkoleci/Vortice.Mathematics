@@ -15,7 +15,7 @@ namespace Vortice.Mathematics
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Explicit)]
-    public struct Color : IPackedVector<uint>, IEquatable<Color>
+    public partial struct Color : IPackedVector<uint>, IEquatable<Color>
     {
         [FieldOffset(0)]
         private uint _packedValue;
@@ -54,6 +54,25 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Color"/> struct.
+        /// </summary>
+        /// <param name="value">The value that will be assigned to all components.</param>
+        public Color(byte value)
+        {
+            _packedValue = 0;
+            A = R = G = B = value;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Color"/> struct.
+        /// </summary>
+        /// <param name="value">The value that will be assigned to all components.</param>
+        public Color(float value) : this()
+        {
+            _packedValue = PackHelpers.PackRGBA(value, value, value, value);
+        }
+
+        /// <summary>
 		/// Initializes a new instance of the <see cref="Color"/> struct.
 		/// </summary>
 		/// <param name="r">The red component of the color.</param>
@@ -69,32 +88,110 @@ namespace Vortice.Mathematics
             A = a;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Color"/> struct.  Alpha is set to 255.
+        /// </summary>
+        /// <param name="red">The red component of the color.</param>
+        /// <param name="green">The green component of the color.</param>
+        /// <param name="blue">The blue component of the color.</param>
+        public Color(byte red, byte green, byte blue)
+        {
+            _packedValue = 0;
+            R = red;
+            G = green;
+            B = blue;
+            A = 255;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Color"/> struct.  Passed values are clamped within byte range.
+        /// </summary>
+        /// <param name="red">The red component of the color.</param>
+        /// <param name="green">The green component of the color.</param>
+        /// <param name="blue">The blue component of the color.</param>
+        /// <param name="alpha">The alpha component of the color</param>
+        public Color(int red, int green, int blue, int alpha)
+        {
+            _packedValue = 0;
+            R = PackHelpers.ToByte(red);
+            G = PackHelpers.ToByte(green);
+            B = PackHelpers.ToByte(blue);
+            A = PackHelpers.ToByte(alpha);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Color"/> struct.  Alpha is set to 255.  Passed values are clamped within byte range.
+        /// </summary>
+        /// <param name="red">The red component of the color.</param>
+        /// <param name="green">The green component of the color.</param>
+        /// <param name="blue">The blue component of the color.</param>
+        public Color(int red, int green, int blue)
+        {
+            _packedValue = 0;
+            R = PackHelpers.ToByte(red);
+            G = PackHelpers.ToByte(green);
+            B = PackHelpers.ToByte(blue);
+            A = 255;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Color"/> struct.
+        /// </summary>
+        /// <param name="r">Red component.</param>
+        /// <param name="g">Green component.</param>
+        /// <param name="b">Blue component.</param>
+        public Color(float r, float g, float b) : this()
+        {
+            _packedValue = PackHelpers.PackRGBA(r, g, b, 1.0f);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Color"/> struct.
+        /// </summary>
+        /// <param name="r">Red component.</param>
+        /// <param name="g">Green component.</param>
+        /// <param name="b">Blue component.</param>
+        /// <param name="a">Alpha component.</param>
+        public Color(float r, float g, float b, float a) : this()
+        {
+            _packedValue = PackHelpers.PackRGBA(r, g, b, a);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Color"/> struct.
+        /// </summary>
+        /// <param name="vector">The red, green, and blue components of the color.</param>
+        /// <param name="alpha">The alpha component of the color.</param>
+        public Color(Vector3 vector, float alpha) : this()
+        {
+            _packedValue = PackHelpers.PackRGBA(vector.X, vector.Y, vector.Z, alpha);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Color"/> struct.
+        /// </summary>
+        /// <param name="vector">A three-component color.</param>
+        public Color(Vector3 vector) : this()
+        {
+            _packedValue = PackHelpers.PackRGBA(vector.X, vector.Y, vector.Z, 1.0f);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Color"/> struct.
+        /// </summary>
+        /// <param name="vector">A four-component color.</param>
+        public Color(Vector4 vector) : this()
+        {
+            _packedValue = PackHelpers.PackRGBA(vector.X, vector.Y, vector.Z, vector.W);
+        }
+
+
         public void Deconstruct(out byte red, out byte green, out byte blue, out byte alpha)
         {
             red = R;
             green = G;
             blue = B;
             alpha = A;
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="Color"/> to <see cref="System.Drawing.Color"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator System.Drawing.Color(Color value)
-        {
-            return System.Drawing.Color.FromArgb(value.A, value.R, value.G, value.B);
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Drawing.Color"/> to <see cref="Color"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator Color(System.Drawing.Color value)
-        {
-            return new Color(value.R, value.G, value.B, value.A);
         }
 
         void IPackedVector.PackFromVector4(Vector4 vector)
@@ -126,9 +223,9 @@ namespace Vortice.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Color other)
         {
-            return R == other.R 
-                && G == other.G 
-                && B == other.B 
+            return R == other.R
+                && G == other.G
+                && B == other.B
                 && A == other.A;
         }
 

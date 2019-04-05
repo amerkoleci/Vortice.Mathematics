@@ -59,5 +59,10 @@ namespace Vortice.Mathematics
             z = UnpackUNorm(255, packedValue >> 16);
             w = UnpackUNorm(255, packedValue >> 24);
         }
+
+        public static byte ToByte(int value)
+        {
+            return (byte)(value < 0 ? 0 : value > 255 ? 255 : value);
+        }
     }
 }

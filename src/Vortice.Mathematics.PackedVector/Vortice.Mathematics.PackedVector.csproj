@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks></TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">netstandard2.0;xamarinmac20;xamarinios10;MonoAndroid80;MonoAndroid90;net461;uap10.0.16299</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">netstandard2.0;xamarinmac20;xamarinios10;MonoAndroid80;MonoAndroid90;net461</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">netstandard2.0;net461;uap10.0.16299;MonoAndroid60;MonoAndroid70;MonoAndroid71;xamarinmac20;xamarinios10</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">netstandard2.0;net461;MonoAndroid60;MonoAndroid70;MonoAndroid71;xamarinios10</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>7.3</LangVersion>
     <Description>High performance cross platform .NET math library</Description>
@@ -11,6 +11,29 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Vortice.Mathematics\Vortice.Mathematics.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('uap10.0')) ">
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.ToLower().StartsWith('monoandroid')) ">
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)'=='xamarinmac20' ">
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.ToLower().StartsWith('xamarinios')) ">
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   
 </Project>

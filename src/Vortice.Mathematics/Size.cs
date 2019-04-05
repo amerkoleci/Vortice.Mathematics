@@ -4,11 +4,12 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace Vortice.Mathematics
 {
     /// <summary>
-    /// Defines a 2D integer size.
+    /// Defines a 2D floating-point size.
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
@@ -17,17 +18,17 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Represents a <see cref="Size"/> that has Width and Height values set to zero.
         /// </summary>
-        public static readonly Size Empty = new Size();
+        public static readonly Size Empty;
 
         /// <summary>
         /// Gets or sets the width of this <see cref="Size"/>.
         /// </summary>
-        public int Width;
+        public float Width;
 
         /// <summary>
         /// Gets or sets the height of this <see cref="Size"/>.
         /// </summary>
-        public int Height;
+        public float Height;
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Size"/> is empty.
@@ -37,27 +38,27 @@ namespace Vortice.Mathematics
         /// <summary>
 		/// Gets the aspect ratio of the size.
 		/// </summary>
-		public float AspectRatio => (float)Width / Height;
+		public float AspectRatio => Width / Height;
 
         /// <summary>
 		/// Initializes a new instance of the <see cref="Size"/> struct.
 		/// </summary>
 		/// <param name="width">Width value.</param>
 		/// <param name="height">Height value.</param>
-		public Size(int width, int height)
+		public Size(float width, float height)
         {
             Width = width;
             Height = height;
         }
 
-        public void Deconstruct(out int width, out int height)
+        public void Deconstruct(out float width, out float height)
         {
             width = Width;
             height = Height;
         }
 
         /// <inheritdoc/>
-		public override bool Equals(object obj) => obj is Size size && Equals(ref size);
+		public override bool Equals(object obj) => obj is Size value && Equals(ref value);
 
         /// <summary>
         /// Determines whether the specified <see cref="Size"/> is equal to this instance.
@@ -73,8 +74,8 @@ namespace Vortice.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Size other)
         {
-            return Width == other.Width
-                && Height == other.Height;
+            return MathHelper.NearEqual(Width, other.Width)
+                && MathHelper.NearEqual(Height, other.Height);
         }
 
         /// <summary>
@@ -113,7 +114,7 @@ namespace Vortice.Mathematics
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"Size [ Width={Width}, Height={Height} ]";
+            return $"{nameof(Width)}: {Width}, {nameof(Height)}: {Height}";
         }
     }
 }

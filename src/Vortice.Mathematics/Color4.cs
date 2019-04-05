@@ -14,7 +14,7 @@ namespace Vortice.Mathematics
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Color4 : IEquatable<Color4>
+    public partial struct Color4 : IEquatable<Color4>
     {
         /// <summary>
         /// Red component of the color.
@@ -86,7 +86,6 @@ namespace Vortice.Mathematics
             A = value.W;
         }
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Color4"/> struct.
         /// </summary>
@@ -118,6 +117,36 @@ namespace Vortice.Mathematics
             g = G;
             b = B;
             a = A;
+        }
+
+        /// <summary>
+        /// Converts the color into a packed integer.
+        /// </summary>
+        /// <returns>A packed integer containing all four color components.</returns>
+        public void ToBgra(out byte r, out byte g, out byte b, out byte a)
+        {
+            r = (byte)(R * 255.0f);
+            g = (byte)(G * 255.0f);
+            b = (byte)(B * 255.0f);
+            a = (byte)(A * 255.0f);
+        }
+
+        /// <summary>
+        /// Converts the color to <see cref="Vector3"/>.
+        /// </summary>
+        /// <returns>An instance of <see cref="Vector3"/> with R, G, B component.</returns>
+        public Vector3 ToVector3()
+        {
+            return new Vector3(R, G, B);
+        }
+
+        /// <summary>
+        /// Converts the color to <see cref="Vector4"/>
+        /// </summary>
+        /// <returns>An instance of <see cref="Vector4"/> with R, G, B, A component.</returns>
+        public Vector4 ToVector4()
+        {
+            return new Vector4(R, G, B, A);
         }
 
         /// <inheritdoc/>

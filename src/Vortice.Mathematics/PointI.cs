@@ -4,31 +4,30 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 
 namespace Vortice.Mathematics
 {
     /// <summary>
-    /// Defines an ordered pair of floating-point x- and y-coordinates that defines a point in a two-dimensional plane.
+    /// Defines an ordered pair of integer x- and y-coordinates that defines a point in a two-dimensional plane.
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
-    public partial struct Point : IEquatable<Point>
+    public partial struct PointI : IEquatable<PointI>
     {
         /// <summary>
-        /// Represents a <see cref="Point"/> that has X and Y values set to zero.
+        /// Represents a <see cref="PointI"/> that has X and Y values set to zero.
         /// </summary>
-        public static readonly Point Empty;
+        public static readonly PointI Empty;
 
         /// <summary>
-        /// Gets or sets the x-coordinate of this <see cref="Point"/>.
+        /// Gets or sets the x-coordinate of this <see cref="PointI"/>.
         /// </summary>
-        public float X;
+        public int X;
 
         /// <summary>
-        /// Gets or sets the y-coordinate of this <see cref="Point"/>.
+        /// Gets or sets the y-coordinate of this <see cref="PointI"/>.
         /// </summary>
-        public float Y;
+        public int Y;
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Point"/> is empty.
@@ -40,23 +39,23 @@ namespace Vortice.Mathematics
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
-		public Point(float x, float y)
+		public PointI(int x, int y)
         {
             X = x;
             Y = y;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Point"/> struct.
+        /// Initializes a new instance of the <see cref="PointI"/> struct.
         /// </summary>
-        /// <param name="size">The <see cref="Size"/> to initialize from.</param>
-        public Point(Size size)
+        /// <param name="size">The <see cref="SizeI"/> to initialize from.</param>
+        public PointI(SizeI size)
         {
             X = size.Width;
             Y = size.Height;
         }
 
-        public void Deconstruct(out float x, out float y)
+        public void Deconstruct(out int x, out int y)
         {
             x = X;
             y = Y;
@@ -66,7 +65,7 @@ namespace Vortice.Mathematics
         /// Translates a given point by a specified offset.
         /// </summary>
         /// <param name="offset">The offset value.</param>
-        public void Offset(Point offset)
+        public void Offset(PointI offset)
         {
             X += offset.X;
             Y += offset.Y;
@@ -77,78 +76,64 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="dx">The offset in the x-direction.</param>
         /// <param name="dy">The offset in the y-direction.</param>
-        public void Offset(float dx, float dy)
+        public void Offset(int dx, int dy)
         {
             X += dx;
             Y += dy;
         }
 
-        public static Point Add(Point point, SizeI size) => point + size;
-        public static Point Add(Point point, Size size) => point + size;
-        public static Point Add(Point left, PointI right) => left + right;
-        public static Point Add(Point left, Point right) => left + right;
+        public static PointI Add(PointI left, SizeI right) => left + right;
+        public static PointI Add(PointI left, PointI right) => left + right;
 
-        public static Point Subtract(Point point, SizeI size) => point - size;
-        public static Point Subtract(Point point, Size size) => point - size;
-        public static Point Subtract(Point left, PointI right) => left - right;
-        public static Point Subtract(Point left, Point right) => left - right;
+        public static PointI Subtract(PointI left, SizeI right) => left - right;
+        public static PointI Subtract(PointI left, PointI right) => left - right;
 
-        public static Point operator +(Point point, SizeI size)
+        public static PointI operator +(PointI left, SizeI right) =>
+            new PointI(left.X + right.Width, left.Y + right.Height);
+        public static PointI operator +(PointI left, PointI right) =>
+            new PointI(left.X + right.X, left.Y + right.Y);
+
+        public static PointI operator -(PointI left, SizeI right) =>
+            new PointI(left.X - right.Width, left.Y - right.Height);
+        public static PointI operator -(PointI left, PointI right) =>
+            new PointI(left.X - right.X, left.Y - right.Y);
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="PointI"/> to <see cref="SizeI"/>.
+        /// </summary>
+        /// <param name="point">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator SizeI(PointI point)
         {
-            return new Point(point.X + size.Width, point.Y + size.Height);
+            return new SizeI(point.X, point.Y);
         }
 
-        public static Point operator +(Point point, Size size)
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="PointI"/> to <see cref="Point"/>.
+        /// </summary>
+        /// <param name="point">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator Point(PointI point)
         {
-            return new Point(point.X + size.Width, point.Y + size.Height);
-        }
-
-        public static Point operator +(Point left, PointI right)
-        {
-            return new Point(left.X + right.X, left.Y + right.Y);
-        }
-
-        public static Point operator +(Point left, Point right)
-        {
-            return new Point(left.X + right.X, left.Y + right.Y);
-        }
-
-        public static Point operator -(Point point, SizeI size)
-        {
-            return new Point(point.X - size.Width, point.Y - size.Height);
-        }
-
-        public static Point operator -(Point point, Size size)
-        {
-            return new Point(point.X - size.Width, point.Y - size.Height);
-        }
-
-        public static Point operator -(Point left, PointI right)
-        {
-            return new Point(left.X - right.X, left.Y - right.Y);
-        }
-
-        public static Point operator -(Point left, Point right)
-        {
-            return new Point(left.X - right.X, left.Y - right.Y);
+            return new Point(point.X, point.Y);
         }
 
         /// <inheritdoc/>
-		public override bool Equals(object obj) => obj is Point value && Equals(ref value);
+		public override bool Equals(object obj) => obj is PointI point && Equals(ref point);
 
         /// <summary>
-        /// Determines whether the specified <see cref="Point"/> is equal to this instance.
+        /// Determines whether the specified <see cref="PointI"/> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="Point"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="PointI"/> to compare with this instance.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Point other) => Equals(ref other);
+        public bool Equals(PointI other) => Equals(ref other);
 
         /// <summary>
 		/// Determines whether the specified <see cref="Point"/> is equal to this instance.
 		/// </summary>
 		/// <param name="other">The <see cref="Point"/> to compare with this instance.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref Point other)
+        public bool Equals(ref PointI other)
         {
             return X == other.X
                 && Y == other.Y;
@@ -163,7 +148,7 @@ namespace Vortice.Mathematics
         /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Point left, Point right) => left.Equals(ref right);
+        public static bool operator ==(PointI left, PointI right) => left.Equals(ref right);
 
         /// <summary>
         /// Compares two <see cref="Point"/> objects for inequality.
@@ -174,7 +159,7 @@ namespace Vortice.Mathematics
         /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Point left, Point right) => !left.Equals(ref right);
+        public static bool operator !=(PointI left, PointI right) => !left.Equals(ref right);
 
         /// <inheritdoc/>
 		public override int GetHashCode()
