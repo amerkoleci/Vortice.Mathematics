@@ -10,21 +10,21 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Performs an implicit conversion from <see cref="Color"/> to <see cref="WindowsColor"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="color">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator WindowsColor(Color value)
+        public static implicit operator WindowsColor(Color color)
         {
-            return WindowsColor.FromArgb(value.A, value.R, value.G, value.B);
+            return WindowsColor.FromArgb(color.A, color.R, color.G, color.B);
         }
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="WindowsColor"/> to <see cref="Color"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="color">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Color(WindowsColor value)
+        public static implicit operator Color(WindowsColor color)
         {
-            return new Color(value.R, value.G, value.B, value.A);
+            return new Color(color.R, color.G, color.B, color.A);
         }
     }
 }

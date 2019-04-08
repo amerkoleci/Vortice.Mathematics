@@ -12,7 +12,7 @@ namespace Vortice.Mathematics
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
-    public struct SizeI : IEquatable<SizeI>
+    public partial struct SizeI : IEquatable<SizeI>
     {
         /// <summary>
         /// Represents a <see cref="SizeI"/> that has Width and Height values set to zero.

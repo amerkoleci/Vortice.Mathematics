@@ -13,7 +13,7 @@ namespace Vortice.Mathematics
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
-    public struct Rect : IEquatable<Rect>
+    public partial struct Rect : IEquatable<Rect>
     {
         /// <summary>
         /// Returns a <see cref="Rect"/> with all of its values set to zero.
