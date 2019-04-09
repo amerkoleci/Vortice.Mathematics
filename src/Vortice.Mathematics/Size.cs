@@ -4,12 +4,11 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 
 namespace Vortice.Mathematics
 {
     /// <summary>
-    /// Defines a 2D floating-point size.
+    /// Defines an ordered pair of integers describing the width and height of a rectangle.
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
@@ -21,14 +20,14 @@ namespace Vortice.Mathematics
         public static readonly Size Empty;
 
         /// <summary>
-        /// Gets or sets the width of this <see cref="Size"/>.
+        /// Gets or sets the width of this <see cref="Size"/> structure.
         /// </summary>
-        public float Width;
+        public int Width;
 
         /// <summary>
-        /// Gets or sets the height of this <see cref="Size"/>.
+        /// Gets or sets the height of this <see cref="Size"/> structure.
         /// </summary>
-        public float Height;
+        public int Height;
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Size"/> is empty.
@@ -38,20 +37,30 @@ namespace Vortice.Mathematics
         /// <summary>
 		/// Gets the aspect ratio of the size.
 		/// </summary>
-		public float AspectRatio => Width / Height;
+		public float AspectRatio => (float)Width / Height;
 
         /// <summary>
 		/// Initializes a new instance of the <see cref="Size"/> struct.
 		/// </summary>
 		/// <param name="width">Width value.</param>
 		/// <param name="height">Height value.</param>
-		public Size(float width, float height)
+		public Size(int width, int height)
         {
             Width = width;
             Height = height;
         }
 
-        public void Deconstruct(out float width, out float height)
+        /// <summary>
+		/// Initializes a new instance of the <see cref="Size"/> struct.
+		/// </summary>
+		/// <param name="point">The <see cref="Point"/> value.</param>
+		public Size(Point point)
+        {
+            Width = point.X;
+            Height = point.Y;
+        }
+
+        public void Deconstruct(out int width, out int height)
         {
             width = Width;
             height = Height;
@@ -74,8 +83,8 @@ namespace Vortice.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Size other)
         {
-            return MathHelper.NearEqual(Width, other.Width)
-                && MathHelper.NearEqual(Height, other.Height);
+            return Width == other.Width
+                && Height == other.Height;
         }
 
         /// <summary>

@@ -100,8 +100,8 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Initializes a new instance of the <see cref="Viewport"/> struct.
         /// </summary>
-        /// <param name="bounds">A <see cref="Rect"/> that defines the location and size of the viewport in a render target.</param>
-        public Viewport(Rect bounds)
+        /// <param name="bounds">A <see cref="RectF"/> that defines the location and size of the viewport in a render target.</param>
+        public Viewport(RectF bounds)
         {
             X = bounds.Left;
             Y = bounds.Top;
@@ -129,13 +129,13 @@ namespace Vortice.Mathematics
         /// Gets or sets the bounds of the viewport.
         /// </summary>
         /// <value>The bounds.</value>
-        public Rect Bounds
+        public RectF Bounds
         {
-            get => Rect.Create(X, Y, Width, Height);
+            get => new RectF(X, Y, Width, Height);
             set
             {
-                X = value.Left;
-                Y = value.Top;
+                X = value.X;
+                Y = value.Y;
                 Width = value.Width;
                 Height = value.Height;
             }

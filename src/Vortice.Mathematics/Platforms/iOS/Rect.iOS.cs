@@ -12,10 +12,8 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="rect">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator CoreGraphics.CGRect(Rect rect)
-        {
-            return new CoreGraphics.CGRect((nfloat)rect.Left, (nfloat)rect.Top, (nfloat)rect.Width, (nfloat)rect.Height);
-        }
+        public static implicit operator CoreGraphics.CGRect(Rect rect) =>
+            new CoreGraphics.CGRect((nfloat)rect.X, (nfloat)rect.Y, (nfloat)rect.Width, (nfloat)rect.Height);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="CoreGraphics.CGRect"/> to <see cref="Rect"/>.
@@ -24,7 +22,19 @@ namespace Vortice.Mathematics
         /// <returns>The result of the conversion.</returns>
         public static implicit operator Rect(CoreGraphics.CGRect rect)
         {
-            return new Rect((float)rect.Left, (float)rect.Top, (float)rect.Right, (float)rect.Bottom);
+            if (rect.Left > int.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(rect.Left));
+
+            if (rect.Top > int.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(rect.Top));
+
+            if (rect.Width > int.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(rect.Width));
+
+            if (rect.Height > int.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(rect.Height));
+
+            return new Rect((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
         }
     }
 }

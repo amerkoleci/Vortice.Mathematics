@@ -4,12 +4,11 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 
 namespace Vortice.Mathematics
 {
     /// <summary>
-    /// Defines an ordered pair of floating-point x- and y-coordinates that defines a point in a two-dimensional plane.
+    /// Defines an ordered pair of integer x- and y-coordinates that defines a point in a two-dimensional plane.
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
@@ -23,12 +22,12 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Gets or sets the x-coordinate of this <see cref="Point"/>.
         /// </summary>
-        public float X;
+        public int X;
 
         /// <summary>
         /// Gets or sets the y-coordinate of this <see cref="Point"/>.
         /// </summary>
-        public float Y;
+        public int Y;
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Point"/> is empty.
@@ -40,7 +39,7 @@ namespace Vortice.Mathematics
 		/// </summary>
 		/// <param name="x">The x-coordinate.</param>
 		/// <param name="y">The y-coordinate.</param>
-		public Point(float x, float y)
+		public Point(int x, int y)
         {
             X = x;
             Y = y;
@@ -56,7 +55,7 @@ namespace Vortice.Mathematics
             Y = size.Height;
         }
 
-        public void Deconstruct(out float x, out float y)
+        public void Deconstruct(out int x, out int y)
         {
             x = X;
             y = Y;
@@ -77,61 +76,43 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="dx">The offset in the x-direction.</param>
         /// <param name="dy">The offset in the y-direction.</param>
-        public void Offset(float dx, float dy)
+        public void Offset(int dx, int dy)
         {
             X += dx;
             Y += dy;
         }
 
-        public static Point Add(Point point, SizeI size) => point + size;
-        public static Point Add(Point point, Size size) => point + size;
-        public static Point Add(Point left, PointI right) => left + right;
+        public static Point Add(Point left, Size right) => left + right;
         public static Point Add(Point left, Point right) => left + right;
 
-        public static Point Subtract(Point point, SizeI size) => point - size;
-        public static Point Subtract(Point point, Size size) => point - size;
-        public static Point Subtract(Point left, PointI right) => left - right;
+        public static Point Subtract(Point left, Size right) => left - right;
         public static Point Subtract(Point left, Point right) => left - right;
 
-        public static Point operator +(Point point, SizeI size)
-        {
-            return new Point(point.X + size.Width, point.Y + size.Height);
-        }
+        public static Point operator +(Point left, Size right) =>
+            new Point(left.X + right.Width, left.Y + right.Height);
+        public static Point operator +(Point left, Point right) =>
+            new Point(left.X + right.X, left.Y + right.Y);
 
-        public static Point operator +(Point point, Size size)
-        {
-            return new Point(point.X + size.Width, point.Y + size.Height);
-        }
+        public static Point operator -(Point left, Size right) =>
+            new Point(left.X - right.Width, left.Y - right.Height);
+        public static Point operator -(Point left, Point right) =>
+            new Point(left.X - right.X, left.Y - right.Y);
 
-        public static Point operator +(Point left, PointI right)
-        {
-            return new Point(left.X + right.X, left.Y + right.Y);
-        }
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Point"/> to <see cref="Size"/>.
+        /// </summary>
+        /// <param name="point">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Size(Point point) =>
+            new Size(point.X, point.Y);
 
-        public static Point operator +(Point left, Point right)
-        {
-            return new Point(left.X + right.X, left.Y + right.Y);
-        }
-
-        public static Point operator -(Point point, SizeI size)
-        {
-            return new Point(point.X - size.Width, point.Y - size.Height);
-        }
-
-        public static Point operator -(Point point, Size size)
-        {
-            return new Point(point.X - size.Width, point.Y - size.Height);
-        }
-
-        public static Point operator -(Point left, PointI right)
-        {
-            return new Point(left.X - right.X, left.Y - right.Y);
-        }
-
-        public static Point operator -(Point left, Point right)
-        {
-            return new Point(left.X - right.X, left.Y - right.Y);
-        }
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Point"/> to <see cref="PointF"/>.
+        /// </summary>
+        /// <param name="point">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator PointF(Point point) =>
+            new PointF(point.X, point.Y);
 
         /// <inheritdoc/>
 		public override bool Equals(object obj) => obj is Point value && Equals(ref value);

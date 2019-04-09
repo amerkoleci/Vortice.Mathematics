@@ -3,26 +3,26 @@
 
 namespace Vortice.Mathematics
 {
-    public partial struct PointI
+    public partial struct PointF
     {
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Point"/> to <see cref="Android.Graphics.Point"/>.
+        /// Performs an implicit conversion from <see cref="PointF"/> to <see cref="System.Drawing.PointF"/>.
         /// </summary>
         /// <param name="point">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Android.Graphics.Point(PointI point)
+        public static implicit operator System.Drawing.PointF(PointF point)
         {
-            return new Android.Graphics.Point(point.X, point.Y);
+            return new System.Drawing.PointF(point.X, point.Y);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Android.Graphics.Point"/> to <see cref="Point"/>.
+        /// Performs an implicit conversion from <see cref="System.Drawing.PointF"/> to <see cref="PointF"/>.
         /// </summary>
         /// <param name="point">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator PointI(Android.Graphics.Point point)
+        public static implicit operator PointF(System.Drawing.PointF point)
         {
-            return new PointI(point.X, point.Y);
+            return new PointF(point.X, point.Y);
         }
     }
 }

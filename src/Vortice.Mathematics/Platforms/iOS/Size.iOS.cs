@@ -12,10 +12,9 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="size">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator CoreGraphics.CGSize(Size size)
-        {
-            return new CoreGraphics.CGSize((nfloat)size.Width, (nfloat)size.Height);
-        }
+        public static implicit operator CoreGraphics.CGSize(Size size) =>
+            new CoreGraphics.CGSize((nfloat)size.Width, (nfloat)size.Height);
+
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="CoreGraphics.CGSize"/> to <see cref="Size"/>.
@@ -24,7 +23,13 @@ namespace Vortice.Mathematics
         /// <returns>The result of the conversion.</returns>
         public static implicit operator Size(CoreGraphics.CGSize size)
         {
-            return new Size((float)size.Width, (float)size.Height);
+            if (size.Width > int.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(size.Width));
+
+            if (size.Height > int.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(size.Height));
+
+            return new Size((int)size.Width, (int)size.Height);
         }
     }
 }

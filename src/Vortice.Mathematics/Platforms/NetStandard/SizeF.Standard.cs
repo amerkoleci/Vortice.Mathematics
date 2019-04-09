@@ -3,23 +3,23 @@
 
 namespace Vortice.Mathematics
 {
-    public partial struct Size
+    public partial struct SizeF
     {
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Size"/> to <see cref="System.Drawing.Size"/>.
+        /// Performs an implicit conversion from <see cref="SizeF"/> to <see cref="System.Drawing.SizeF"/>.
         /// </summary>
         /// <param name="size">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator System.Drawing.Size(Size size) =>
-            new System.Drawing.Size(size.Width, size.Height);
+        public static implicit operator System.Drawing.SizeF(SizeF size) =>
+            new System.Drawing.SizeF(size.Width, size.Height);
 
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Drawing.Size"/> to <see cref="Size"/>.
+        /// Performs an implicit conversion from <see cref="System.Drawing.SizeF"/> to <see cref="SizeF"/>.
         /// </summary>
         /// <param name="size">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Size(System.Drawing.Size size) =>
-            new Size(size.Width, size.Height);
+        public static implicit operator SizeF(System.Drawing.SizeF size) =>
+            new SizeF(size.Width, size.Height);
     }
 }

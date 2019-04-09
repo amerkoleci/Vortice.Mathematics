@@ -24,7 +24,13 @@ namespace Vortice.Mathematics
         /// <returns>The result of the conversion.</returns>
         public static implicit operator Point(CoreGraphics.CGPoint point)
         {
-            return new Point((float)point.X, (float)point.Y);
+            if (point.X > int.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(point.X));
+
+            if (point.Y > int.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(point.Y));
+
+            return new Point((int)point.X, (int)point.Y);
         }
     }
 }

@@ -6,23 +6,20 @@ namespace Vortice.Mathematics
     public partial struct Rect
     {
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Rect"/> to <see cref="Android.Graphics.RectF"/>.
+        /// Performs an implicit conversion from <see cref="Rect"/> to <see cref="Android.Graphics.Rect"/>.
         /// </summary>
         /// <param name="rect">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Android.Graphics.RectF(Rect rect)
-        {
-            return new Android.Graphics.RectF(rect.Left, rect.Top, rect.Right, rect.Bottom);
-        }
+        public static implicit operator Android.Graphics.Rect(Rect rect) =>
+            new Android.Graphics.Rect(rect.X, rect.X, rect.Right, rect.Bottom);
+
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Android.Graphics.RectF"/> to <see cref="Rect"/>.
+        /// Performs an implicit conversion from <see cref="Android.Graphics.Rect"/> to <see cref="Rect"/>.
         /// </summary>
         /// <param name="rect">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Rect(Android.Graphics.RectF rect)
-        {
-            return new Rect(rect.Left, rect.Top, rect.Right, rect.Bottom);
-        }
+        public static implicit operator Rect(Android.Graphics.Rect rect) =>
+            new Rect(rect.Left, rect.Top, rect.Width(), rect.Height());
     }
 }

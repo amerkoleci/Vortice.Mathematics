@@ -3,23 +3,22 @@
 
 namespace Vortice.Mathematics
 {
-    public partial struct Size
+    public partial struct SizeF
     {
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Size"/> to <see cref="System.Drawing.Size"/>.
+        /// Performs an implicit conversion from <see cref="SizeF"/> to <see cref="Android.Util.SizeF"/>.
         /// </summary>
         /// <param name="size">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator System.Drawing.Size(Size size) =>
-            new System.Drawing.Size(size.Width, size.Height);
-
+        public static implicit operator Android.Util.SizeF(SizeF size) =>
+            new Android.Util.SizeF(size.Width, size.Height);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Drawing.Size"/> to <see cref="Size"/>.
+        /// Performs an implicit conversion from <see cref="Android.Util.SizeF"/> to <see cref="SizeF"/>.
         /// </summary>
         /// <param name="size">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Size(System.Drawing.Size size) =>
-            new Size(size.Width, size.Height);
+        public static implicit operator SizeF(Android.Util.SizeF size) =>
+            new SizeF(size.Width, size.Height);
     }
 }

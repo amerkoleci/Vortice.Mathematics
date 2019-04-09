@@ -9,79 +9,79 @@ using System.Runtime.Serialization;
 namespace Vortice.Mathematics
 {
     /// <summary>
-    /// Defines a 2D integer rectangle.
+    /// Defines a four floating-point numbers that represent the upper-left corner and lower-right corner of a rectangle.
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
-    public partial struct Rect : IEquatable<Rect>
+    public partial struct RectF : IEquatable<RectF>
     {
         /// <summary>
-        /// Returns a <see cref="Rect"/> with all of its values set to zero.
+        /// Returns a <see cref="RectF"/> with all of its values set to zero.
         /// </summary>
-        public static readonly Rect Empty;
+        public static readonly RectF Empty;
 
         /// <summary>
         /// The x-coordinate of the upper-left corner of the rectangle.
         /// </summary>
-        public int X;
+        public float X;
 
         /// <summary>
         /// The y-coordinate of the upper-left corner of the rectangle.
         /// </summary>
-        public int Y;
+        public float Y;
 
         /// <summary>
         /// The width of the rectangle, in pixels.
         /// </summary>
-        public int Width;
+        public float Width;
 
         /// <summary>
         /// The height of the rectangle, in pixels.
         /// </summary>
-        public int Height;
+        public float Height;
 
         /// <summary>
         /// The x-coordinate of the upper-left corner of the rectangle.
         /// </summary>
-        public int Left => X;
+        public float Left => X;
 
         /// <summary>
         /// The y-coordinate of the upper-left corner of the rectangle.
         /// </summary>
-        public int Top => Y;
+        public float Top => Y;
 
         /// <summary>
         /// Gets the x-coordinate of the lower-right corner of the rectangle.
         /// </summary>
-        public int Right
+        public float Right
         {
-            get => unchecked(X + Width);
+            get => X + Width;
         }
 
         /// <summary>
         /// Gets the y-coordinate of the lower-right corner of the rectangle.
         /// </summary>
-        public int Bottom
+        public float Bottom
         {
-            get => unchecked(Y + Height);
+            get => Y + Height;
         }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="Rect"/> is empty.
+        /// Gets a value indicating whether this <see cref="RectF"/> is empty.
         /// </summary>
         public bool IsEmpty => Equals(Empty);
 
         /// <summary>
 		/// Gets the aspect ratio of the rectangle.
 		/// </summary>
-		public float AspectRatio => (float)Width / Height;
+		public float AspectRatio => Width / Height;
 
         /// <summary>
-        /// Gets or sets the upper-left value of the <see cref="Rect"/>.
+        /// Gets or sets the upper-left value of the <see cref="RectF"/>.
         /// </summary>
-        public Point Location
+        public PointF Location
         {
-            get => new Point(Left, Top);
+            get => new PointF(Left, Top);
             set
             {
                 X = value.X;
@@ -90,11 +90,11 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
-		/// Gets or sets the size of this <see cref="Rect"/>.
+		/// Gets or sets the size of this <see cref="RectF"/>.
 		/// </summary>
-		public Size Size
+		public SizeF Size
         {
-            get => new Size(Width, Height);
+            get => new SizeF(Width, Height);
             set
             {
                 Width = value.Width;
@@ -102,20 +102,20 @@ namespace Vortice.Mathematics
             }
         }
 
-        public int CenterX => Left + (Width / 2);
+        public float CenterX => X + (Width / 2.0f);
 
-        public int CenterY => Top + (Height / 2);
+        public float CenterY => Y + (Height / 2.0f);
 
-        public Point Center => new Point(CenterX, CenterY);
+        public PointF Center => new PointF(CenterX, CenterY);
 
         /// <summary>
-		/// Initializes a new instance of the <see cref="Rect"/> struct.
+		/// Initializes a new instance of the <see cref="RectF"/> struct.
 		/// </summary>
 		/// <param name="x">The x-coordinate of the rectangle.</param>
 		/// <param name="y">The y-coordinate of the rectangle.</param>
 		/// <param name="width">The width of the rectangle.</param>
 		/// <param name="height">The height of the rectangle.</param>
-		public Rect(int x, int y, int width, int height)
+		public RectF(float x, float y, float width, float height)
         {
             X = x;
             Y = y;
@@ -124,24 +124,24 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
-		/// Initializes a new instance of the <see cref="Rect"/> struct.
+		/// Initializes a new instance of the <see cref="RectF"/> struct.
 		/// </summary>
 		/// <param name="width">The width of the rectangle.</param>
 		/// <param name="height">The height of the rectangle.</param>
-		public Rect(int width, int height)
+		public RectF(float width, float height)
         {
-            X = 0;
-            Y = 0;
+            X = 0.0f;
+            Y = 0.0f;
             Width = width;
             Height = height;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Rect"/> struct.
+        /// Initializes a new instance of the <see cref="RectF"/> struct.
         /// </summary>
         /// <param name="location">The x and y location.</param>
         /// <param name="size">The rectangle size.</param>
-        public Rect(Point location, Size size)
+        public RectF(PointF location, SizeF size)
         {
             X = location.X;
             Y = location.Y;
@@ -150,18 +150,18 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Rect"/> struct.
+        /// Initializes a new instance of the <see cref="RectF"/> struct.
         /// </summary>
         /// <param name="size">The rectangle size.</param>
-        public Rect(Size size)
+        public RectF(SizeF size)
         {
-            X = 0;
-            Y = 0;
+            X = 0.0f;
+            Y = 0.0f;
             Width = size.Width;
             Height = size.Height;
         }
 
-        public void Deconstruct(out int x, out int y, out int width, out int height)
+        public void Deconstruct(out float x, out float y, out float width, out float height)
         {
             x = X;
             y = Y;
@@ -177,52 +177,49 @@ namespace Vortice.Mathematics
         /// <param name="right"></param>
         /// <param name="bottom"></param>
         /// <returns></returns>
-        public static Rect FromLTRB(int left, int top, int right, int bottom) =>
-           new Rect(left, top, unchecked(right - left), unchecked(bottom - top));
+        public static RectF FromLTRB(float left, float top, float right, float bottom) =>
+           new RectF(left, top, right - left, bottom - top);
 
         /// <summary>
-        /// Inflates this <see cref="Rect"/> by the specified amount.
+        /// Inflates this <see cref="RectF"/> by the specified amount.
         /// </summary>
         /// <param name="x">X inflate amount.</param>
         /// <param name="y">Y inflate amount.</param>
-        public void Inflate(int x, int y)
+        public void Inflate(float x, float y)
         {
-            unchecked
-            {
-                X -= x;
-                Y -= y;
-                Width += 2 * x;
-                Height += 2 * y;
-            }
+            X -= x;
+            Y -= y;
+            Width += 2 * x;
+            Height += 2 * y;
         }
 
         /// <summary>
-        /// Inflates this <see cref="Rect"/> by the specified amount.
+        /// Inflates this <see cref="RectF"/> by the specified amount.
         /// </summary>
         /// <param name="size">The size amount.</param>
-        public void Inflate(Size size) => Inflate(size.Width, size.Height);
+        public void Inflate(SizeF size) => Inflate(size.Width, size.Height);
 
         /// <summary>
-        /// Creates a <see cref="Rect"/> that is inflated by the specified amount.
+        /// Creates a <see cref="RectF"/> that is inflated by the specified amount.
         /// </summary>
         /// <param name="rect"></param>
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public static Rect Inflate(Rect rect, int x, int y)
+        public static RectF Inflate(RectF rect, float x, float y)
         {
-            Rect r = rect;
+            RectF r = rect;
             r.Inflate(x, y);
             return r;
         }
 
         /// <summary>
-        /// Creates a Rectangle that represents the intersection between this <see cref="Rect"/> and rect.
+        /// Creates a Rectangle that represents the intersection between this <see cref="RectF"/> and rect.
         /// </summary>
         /// <param name="rect">The rect to intersects with.</param>
-        public void Intersect(Rect rect)
+        public void Intersect(RectF rect)
         {
-            Rect result = Intersect(rect, this);
+            RectF result = Intersect(rect, this);
 
             X = result.X;
             Y = result.Y;
@@ -237,16 +234,16 @@ namespace Vortice.Mathematics
         /// <param name="value1">The first rectangle.</param>
         /// <param name="value2">The second rectangle.</param>
         /// <returns>The intersection rectangle or empty.</returns>
-        public static Rect Intersect(Rect value1, Rect value2)
+        public static RectF Intersect(RectF value1, RectF value2)
         {
-            int x1 = Math.Max(value1.X, value2.X);
-            int x2 = Math.Min(value1.X + value1.Width, value2.X + value2.Width);
-            int y1 = Math.Max(value1.Y, value2.Y);
-            int y2 = Math.Min(value1.Y + value1.Height, value2.Y + value2.Height);
+            float x1 = Math.Max(value1.X, value2.X);
+            float x2 = Math.Min(value1.X + value1.Width, value2.X + value2.Width);
+            float y1 = Math.Max(value1.Y, value2.Y);
+            float y2 = Math.Min(value1.Y + value1.Height, value2.Y + value2.Height);
 
             if (x2 >= x1 && y2 >= y1)
             {
-                return new Rect(x1, y1, x2 - x1, y2 - y1);
+                return new RectF(x1, y1, x2 - x1, y2 - y1);
             }
 
             return Empty;
@@ -257,7 +254,7 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="rect"></param>
         /// <returns></returns>
-        public bool IntersectsWith(Rect rect) =>
+        public bool IntersectsWith(RectF rect) =>
             (rect.X < X + Width) && (X < rect.X + rect.Width) && (rect.Y < Y + Height) && (Y < rect.Y + rect.Height);
 
         /// <summary>
@@ -266,27 +263,24 @@ namespace Vortice.Mathematics
         /// <param name="value1">The first rectangle.</param>
         /// <param name="value2">The second rectangle.</param>
         /// <returns>The union rectangle.</returns>
-        public static Rect Union(Rect value1, Rect value2)
+        public static RectF Union(RectF value1, RectF value2)
         {
-            int x1 = Math.Min(value1.X, value2.X);
-            int x2 = Math.Max(value1.X + value1.Width, value2.X + value2.Width);
-            int y1 = Math.Min(value1.Y, value2.Y);
-            int y2 = Math.Max(value1.Y + value1.Height, value2.Y + value2.Height);
+            float x1 = Math.Min(value1.X, value2.X);
+            float x2 = Math.Max(value1.X + value1.Width, value2.X + value2.Width);
+            float y1 = Math.Min(value1.Y, value2.Y);
+            float y2 = Math.Max(value1.Y + value1.Height, value2.Y + value2.Height);
 
-            return new Rect(x1, y1, x2 - x1, y2 - y1);
+            return new RectF(x1, y1, x2 - x1, y2 - y1);
         }
 
         /// <summary>
         /// Translates this rectangle by a specified offset.
         /// </summary>
         /// <param name="offset">The offset value.</param>
-        public void Offset(Point offset)
+        public void Offset(PointF offset)
         {
-            unchecked
-            {
-                X += offset.X;
-                Y += offset.Y;
-            }
+            X += offset.X;
+            Y += offset.Y;
         }
 
         /// <summary>
@@ -294,77 +288,81 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="x">The offset in the x-direction.</param>
         /// <param name="y">The offset in the y-direction.</param>
-        public void Offset(int x, int y)
+        public void Offset(float x, float y)
         {
-            unchecked
-            {
-                X += x;
-                Y += y;
-            }
+            X += x;
+            Y += y;
         }
 
-        public bool Contains(int x, int y) => X <= x && x < X + Width && Y <= y && y < Y + Height;
+        public bool Contains(float x, float y) => X <= x && x < X + Width && Y <= y && y < Y + Height;
 
-        public bool Contains(Point point) => Contains(point.X, point.Y);
+        public bool Contains(PointF point) => Contains(point.X, point.Y);
 
-        public bool Contains(Rect rect) =>
-           (X <= rect.X) && (rect.X + rect.Width <= X + Width) &&
-            (Y <= rect.Y) && (rect.Y + rect.Height <= Y + Height);
+        public bool Contains(RectF rect) =>
+            (X <= rect.X) && (rect.X + rect.Width <= X + Width) && (Y <= rect.Y) && (rect.Y + rect.Height <= Y + Height);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Rect"/> to <see cref="RectF"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator RectF(Rect value) =>
+            new RectF(value.X, value.Y, value.Width, value.Height);
 
         /// <inheritdoc/>
-		public override bool Equals(object obj) => obj is Rect value && Equals(ref value);
+		public override bool Equals(object obj) => obj is RectF value && Equals(ref value);
 
         /// <summary>
-        /// Determines whether the specified <see cref="Rect"/> is equal to this instance.
+        /// Determines whether the specified <see cref="RectF"/> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="Rect"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="RectF"/> to compare with this instance.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Rect other) => Equals(ref other);
+        public bool Equals(RectF other) => Equals(ref other);
 
         /// <summary>
-		/// Determines whether the specified <see cref="Rect"/> is equal to this instance.
+		/// Determines whether the specified <see cref="RectF"/> is equal to this instance.
 		/// </summary>
-		/// <param name="other">The <see cref="Rect"/> to compare with this instance.</param>
+		/// <param name="other">The <see cref="RectF"/> to compare with this instance.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref Rect other)
+        public bool Equals(ref RectF other)
         {
-            return X == other.X
-                && Y == other.Y
-                && Width == other.Width
-                && Height == other.Height;
+            return MathHelper.NearEqual(X, other.X)
+                && MathHelper.NearEqual(Y, other.Y)
+                && MathHelper.NearEqual(Width, other.Width)
+                && MathHelper.NearEqual(Height, other.Height);
         }
 
         /// <summary>
-        /// Compares two <see cref="Rect"/> objects for equality.
+        /// Compares two <see cref="RectF"/> objects for equality.
         /// </summary>
-        /// <param name="left">The <see cref="Rect"/> on the left hand of the operand.</param>
-        /// <param name="right">The <see cref="Rect"/> on the right hand of the operand.</param>
+        /// <param name="left">The <see cref="RectF"/> on the left hand of the operand.</param>
+        /// <param name="right">The <see cref="RectF"/> on the right hand of the operand.</param>
         /// <returns>
         /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Rect left, Rect right) => left.Equals(ref right);
+        public static bool operator ==(RectF left, RectF right) => left.Equals(ref right);
 
         /// <summary>
-        /// Compares two <see cref="Rect"/> objects for inequality.
+        /// Compares two <see cref="RectF"/> objects for inequality.
         /// </summary>
-        /// <param name="left">The <see cref="Rect"/> on the left hand of the operand.</param>
-        /// <param name="right">The <see cref="Rect"/> on the right hand of the operand.</param>
+        /// <param name="left">The <see cref="RectF"/> on the left hand of the operand.</param>
+        /// <param name="right">The <see cref="RectF"/> on the right hand of the operand.</param>
         /// <returns>
         /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Rect left, Rect right) => !left.Equals(ref right);
+        public static bool operator !=(RectF left, RectF right) => !left.Equals(ref right);
 
         /// <inheritdoc/>
 		public override int GetHashCode()
         {
             unchecked
             {
-                var hashCode = X;
-                hashCode = (hashCode * 397) ^ Y;
-                hashCode = (hashCode * 397) ^ Width;
-                hashCode = (hashCode * 397) ^ Height;
+                var hashCode = X.GetHashCode();
+                hashCode = (hashCode * 397) ^ Y.GetHashCode();
+                hashCode = (hashCode * 397) ^ Width.GetHashCode();
+                hashCode = (hashCode * 397) ^ Height.GetHashCode();
                 return hashCode;
             }
         }
