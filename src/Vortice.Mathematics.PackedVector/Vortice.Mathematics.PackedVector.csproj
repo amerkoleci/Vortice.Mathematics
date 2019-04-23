@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>7.2</LangVersion>
     <Description>High performance cross platform .NET math library</Description>
@@ -9,29 +9,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Vortice.Mathematics\Vortice.Mathematics.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('uap10.0')) ">
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.ToLower().StartsWith('monoandroid')) ">
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)'=='xamarinmac20' ">
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.ToLower().StartsWith('xamarinios')) ">
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   
 </Project>
