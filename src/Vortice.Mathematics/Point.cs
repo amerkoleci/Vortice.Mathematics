@@ -12,8 +12,13 @@ namespace Vortice.Mathematics
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
-    public partial struct Point : IEquatable<Point>
+    public struct Point : IEquatable<Point>
     {
+        /// <summary>
+        /// The size of the <see cref="Point"/> type, in bytes.
+        /// </summary>
+        public static readonly int SizeInBytes = Unsafe.SizeOf<Point>();
+
         /// <summary>
         /// Represents a <see cref="Point"/> that has X and Y values set to zero.
         /// </summary>

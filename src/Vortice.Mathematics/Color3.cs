@@ -5,7 +5,6 @@ using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 
 namespace Vortice.Mathematics
 {
@@ -16,6 +15,11 @@ namespace Vortice.Mathematics
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Color3 : IEquatable<Color3>
     {
+        /// <summary>
+        /// The size of the <see cref="Color3"/> type, in bytes.
+        /// </summary>
+        public static readonly int SizeInBytes = Unsafe.SizeOf<Color3>();
+
         /// <summary>
         /// Red component of the color.
         /// </summary>

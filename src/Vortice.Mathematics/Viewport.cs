@@ -5,7 +5,6 @@ using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 
 namespace Vortice.Mathematics
 {
@@ -16,6 +15,11 @@ namespace Vortice.Mathematics
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Viewport : IEquatable<Viewport>
     {
+        /// <summary>
+        /// The size of the <see cref="Viewport"/> type, in bytes.
+        /// </summary>
+        public static readonly int SizeInBytes = Unsafe.SizeOf<Viewport>();
+
         /// <summary>
         /// Position of the pixel coordinate of the upper-left corner of the viewport.
         /// </summary>

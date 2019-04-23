@@ -5,7 +5,6 @@ using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 using Vortice.Mathematics.PackedVector;
 
 namespace Vortice.Mathematics
@@ -15,7 +14,7 @@ namespace Vortice.Mathematics
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Explicit)]
-    public partial struct Color : IPackedVector<uint>, IEquatable<Color>
+    public struct Color : IPackedVector<uint>, IEquatable<Color>
     {
         [FieldOffset(0)]
         private uint _packedValue;
@@ -194,16 +193,18 @@ namespace Vortice.Mathematics
             alpha = A;
         }
 
-        void IPackedVector.PackFromVector4(Vector4 vector)
-        {
-            _packedValue = PackHelpers.PackRGBA(vector.X, vector.Y, vector.Z, vector.W);
-        }
-
-        /// <summary>Gets a four-component vector representation for this object.</summary>
+        /// <summary>
+        /// Gets a four-component vector representation for this object.
+        /// </summary>
         public Vector4 ToVector4()
         {
             PackHelpers.UnpackRGBA(_packedValue, out var x, out var y, out var z, out var w);
             return new Vector4(x, y, z, w);
+        }
+
+        void IPackedVector.PackFromVector4(Vector4 vector)
+        {
+            _packedValue = PackHelpers.PackRGBA(vector.X, vector.Y, vector.Z, vector.W);
         }
 
         /// <inheritdoc/>

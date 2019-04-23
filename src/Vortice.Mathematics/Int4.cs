@@ -5,7 +5,6 @@ using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 
 namespace Vortice.Mathematics
 {
@@ -14,37 +13,42 @@ namespace Vortice.Mathematics
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct IntVector4 : IEquatable<IntVector4>
+    public struct Int4 : IEquatable<Int4>, IFormattable
     {
         /// <summary>
-        /// A <see cref="IntVector4"/> with all of its components set to zero.
+        /// The size of the <see cref="Int4"/> type, in bytes.
         /// </summary>
-        public static readonly IntVector4 Zero = new IntVector4();
+        public static readonly int SizeInBytes = Unsafe.SizeOf<Int4>();
 
         /// <summary>
-        /// The X unit <see cref="IntVector4"/> (1, 0, 0, 0).
+        /// A <see cref="Int4"/> with all of its components set to zero.
         /// </summary>
-        public static readonly IntVector4 UnitX = new IntVector4(1, 0, 0, 0);
+        public static readonly Int4 Zero = new Int4();
 
         /// <summary>
-        /// The Y unit <see cref="IntVector4"/> (0, 1, 0, 0).
+        /// The X unit <see cref="Int4"/> (1, 0, 0, 0).
         /// </summary>
-        public static readonly IntVector4 UnitY = new IntVector4(0, 1, 0, 0);
+        public static readonly Int4 UnitX = new Int4(1, 0, 0, 0);
 
         /// <summary>
-        /// The Y unit <see cref="IntVector4"/> (0, 0, 1, 0).
+        /// The Y unit <see cref="Int4"/> (0, 1, 0, 0).
         /// </summary>
-        public static readonly IntVector4 UnitZ = new IntVector4(0, 0, 1, 0);
+        public static readonly Int4 UnitY = new Int4(0, 1, 0, 0);
 
         /// <summary>
-        /// The W unit <see cref="IntVector4"/> (0, 0, 0, 1).
+        /// The Y unit <see cref="Int4"/> (0, 0, 1, 0).
         /// </summary>
-        public static readonly IntVector4 UnitW = new IntVector4(0, 0, 0, 1);
+        public static readonly Int4 UnitZ = new Int4(0, 0, 1, 0);
 
         /// <summary>
-        /// A <see cref="IntVector4"/> with all of its components set to one.
+        /// The W unit <see cref="Int4"/> (0, 0, 0, 1).
         /// </summary>
-        public static readonly IntVector4 One = new IntVector4(1, 1, 1, 1);
+        public static readonly Int4 UnitW = new Int4(0, 0, 0, 1);
+
+        /// <summary>
+        /// A <see cref="Int4"/> with all of its components set to one.
+        /// </summary>
+        public static readonly Int4 One = new Int4(1, 1, 1, 1);
 
         /// <summary>
         /// The X component of the vector.
@@ -67,22 +71,22 @@ namespace Vortice.Mathematics
         public int W;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IntVector4"/> struct.
+        /// Initializes a new instance of the <see cref="Int4"/> struct.
         /// </summary>
         /// <param name="value">The value that will be assigned to all components.</param>
-        public IntVector4(int value)
+        public Int4(int value)
         {
             X = Y = Z = W = value;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IntVector3" /> struct.
+        /// Initializes a new instance of the <see cref="Int3" /> struct.
         /// </summary>
         /// <param name="x">Initial value for the X component of the vector.</param>
         /// <param name="y">Initial value for the Y component of the vector.</param>
         /// <param name="z">Initial value for the Z component of the vector.</param>
         /// <param name="w">Initial value for the Z component of the vector.</param>
-        public IntVector4(int x, int y, int z, int w)
+        public Int4(int x, int y, int z, int w)
         {
             X = x;
             Y = y;
@@ -91,11 +95,11 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IntVector4" /> struct.
+        /// Initializes a new instance of the <see cref="Int4" /> struct.
         /// </summary>
-        /// <param name="value">A <see cref="IntVector3"/> containing the values with which to initialize the X, Y, and Z components.</param>
+        /// <param name="value">A <see cref="Int3"/> containing the values with which to initialize the X, Y, and Z components.</param>
         /// <param name="w">Initial value for the W component of the vector.</param>
-        public IntVector4(IntVector3 value, int w)
+        public Int4(Int3 value, int w)
         {
             X = value.X;
             Y = value.Y;
@@ -104,12 +108,12 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IntVector4" /> struct.
+        /// Initializes a new instance of the <see cref="Int4" /> struct.
         /// </summary>
-        /// <param name="value">A <see cref="IntVector2"/> containing the values with which to initialize the X and Y components.</param>
+        /// <param name="value">A <see cref="Int2"/> containing the values with which to initialize the X and Y components.</param>
         /// <param name="z">Initial value for the Z component of the vector.</param>
         /// <param name="w">Initial value for the W component of the vector.</param>
-        public IntVector4(IntVector2 value, int z, int w)
+        public Int4(Int2 value, int z, int w)
         {
             X = value.X;
             Y = value.Y;
@@ -118,7 +122,7 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IntVector4" /> struct.
+        /// Initializes a new instance of the <see cref="Int4" /> struct.
         /// </summary>
         /// <param name="values">
         /// The values to assign to the X, Y, Z, and W components of the vector. This must be an array with four elements.
@@ -127,7 +131,7 @@ namespace Vortice.Mathematics
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when <paramref name="values" /> contains more or less than four elements.
         /// </exception>
-        public IntVector4(int[] values)
+        public Int4(int[] values)
         {
             if (values == null)
             {
@@ -145,41 +149,6 @@ namespace Vortice.Mathematics
             W = values.Length >= 4 ? values[3] : 1;
         }
 
-        /// <summary>
-        /// Performs an explicit conversion from <see cref="IntVector4" /> to <see cref="IntVector2" />.
-        /// </summary>
-        /// <param name="value">The value to convert.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static explicit operator IntVector2(IntVector4 value) => new IntVector2(value.X, value.Y);
-
-        /// <summary>
-        /// Performs an explicit conversion from <see cref="IntVector4" /> to <see cref="IntVector3" />.
-        /// </summary>
-        /// <param name="value">The value to convert.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static explicit operator IntVector3(IntVector4 value) => new IntVector3(value.X, value.Y, value.Z);
-
-        /// <summary>
-        /// Performs an explicit conversion from <see cref="IntVector4" /> to <see cref="Vector2"/>.
-        /// </summary>
-        /// <param name = "value">The value to convert.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector2(IntVector4 value) => new Vector2(value.X, value.Y);
-
-        /// <summary>
-        /// Performs an explicit conversion from <see cref="IntVector4" /> to <see cref="Vector3"/>.
-        /// </summary>
-        /// <param name = "value">The value to convert.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector3(IntVector4 value) => new Vector3(value.X, value.Y, value.Z);
-
-        /// <summary>
-        /// Performs an explicit conversion from <see cref="IntVector4" /> to <see cref="Vector4"/>.
-        /// </summary>
-        /// <param name = "value">The value to convert.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector4(IntVector4 value) => new Vector4(value.X, value.Y, value.Z, value.W);
-
         public void Deconstruct(out int x, out int y, out int z, out int w)
         {
             x = X;
@@ -192,27 +161,59 @@ namespace Vortice.Mathematics
         /// Creates an array containing the elements of the vector.
         /// </summary>
         /// <returns>A four-element array containing the components of the vector.</returns>
-        public int[] ToArray()
-        {
-            return new[] { X, Y, Z, W };
-        }
+        public int[] ToArray() => new[] { X, Y, Z, W };
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Int4" /> to <see cref="Int2" />.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Int2(Int4 value) => new Int2(value.X, value.Y);
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Int4" /> to <see cref="Int3" />.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Int3(Int4 value) => new Int3(value.X, value.Y, value.Z);
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Int4" /> to <see cref="Vector2"/>.
+        /// </summary>
+        /// <param name = "value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Vector2(Int4 value) => new Vector2(value.X, value.Y);
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Int4" /> to <see cref="Vector3"/>.
+        /// </summary>
+        /// <param name = "value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Vector3(Int4 value) => new Vector3(value.X, value.Y, value.Z);
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Int4" /> to <see cref="Vector4"/>.
+        /// </summary>
+        /// <param name = "value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Vector4(Int4 value) => new Vector4(value.X, value.Y, value.Z, value.W);
 
         /// <inheritdoc/>
-		public override bool Equals(object obj) => obj is IntVector4 value && Equals(ref value);
+		public override bool Equals(object obj) => obj is Int4 value && Equals(ref value);
 
         /// <summary>
-        /// Determines whether the specified <see cref="IntVector4"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Int4"/> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="IntVector4"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="Int4"/> to compare with this instance.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(IntVector4 other) => Equals(ref other);
+        public bool Equals(Int4 other) => Equals(ref other);
 
         /// <summary>
-		/// Determines whether the specified <see cref="IntVector4"/> is equal to this instance.
+		/// Determines whether the specified <see cref="Int4"/> is equal to this instance.
 		/// </summary>
-		/// <param name="other">The <see cref="IntVector4"/> to compare with this instance.</param>
+		/// <param name="other">The <see cref="Int4"/> to compare with this instance.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref IntVector4 other)
+        public bool Equals(ref Int4 other)
         {
             return X == other.X
                 && Y == other.Y
@@ -221,26 +222,26 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
-        /// Compares two <see cref="IntVector4"/> objects for equality.
+        /// Compares two <see cref="Int4"/> objects for equality.
         /// </summary>
-        /// <param name="left">The <see cref="IntVector4"/> on the left hand of the operand.</param>
-        /// <param name="right">The <see cref="IntVector4"/> on the right hand of the operand.</param>
+        /// <param name="left">The <see cref="Int4"/> on the left hand of the operand.</param>
+        /// <param name="right">The <see cref="Int4"/> on the right hand of the operand.</param>
         /// <returns>
         /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(IntVector4 left, IntVector4 right) => left.Equals(ref right);
+        public static bool operator ==(Int4 left, Int4 right) => left.Equals(ref right);
 
         /// <summary>
-        /// Compares two <see cref="IntVector4"/> objects for inequality.
+        /// Compares two <see cref="Int4"/> objects for inequality.
         /// </summary>
-        /// <param name="left">The <see cref="IntVector4"/> on the left hand of the operand.</param>
-        /// <param name="right">The <see cref="IntVector4"/> on the right hand of the operand.</param>
+        /// <param name="left">The <see cref="Int4"/> on the left hand of the operand.</param>
+        /// <param name="right">The <see cref="Int4"/> on the right hand of the operand.</param>
         /// <returns>
         /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(IntVector4 left, IntVector4 right) => !left.Equals(ref right);
+        public static bool operator !=(Int4 left, Int4 right) => !left.Equals(ref right);
 
         /// <inheritdoc/>
 		public override int GetHashCode()
@@ -258,7 +259,12 @@ namespace Vortice.Mathematics
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{nameof(X)}: {X}, {nameof(Y)}: {Y}, {nameof(Z)}: {Z}, {nameof(W)}: {W}";
+            return $"{nameof(Int4)}({X}, {Y}, {Z}, {W})";
+        }
+
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            return $"{nameof(Int4)}({X.ToString(format, formatProvider)}, {Y.ToString(format, formatProvider)}, {Z.ToString(format, formatProvider)}, {W.ToString(format, formatProvider)})";
         }
     }
 }
