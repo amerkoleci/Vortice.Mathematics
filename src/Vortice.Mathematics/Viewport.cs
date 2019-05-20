@@ -2,6 +2,7 @@
 // Distributed under the MIT license. See the LICENSE file in the project root for more information.
 
 using System;
+using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -104,8 +105,8 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Initializes a new instance of the <see cref="Viewport"/> struct.
         /// </summary>
-        /// <param name="bounds">A <see cref="RectF"/> that defines the location and size of the viewport in a render target.</param>
-        public Viewport(RectF bounds)
+        /// <param name="bounds">A <see cref="RectangleF"/> that defines the location and size of the viewport in a render target.</param>
+        public Viewport(RectangleF bounds)
         {
             X = bounds.Left;
             Y = bounds.Top;
@@ -133,9 +134,9 @@ namespace Vortice.Mathematics
         /// Gets or sets the bounds of the viewport.
         /// </summary>
         /// <value>The bounds.</value>
-        public RectF Bounds
+        public RectangleF Bounds
         {
-            get => new RectF(X, Y, Width, Height);
+            get => new RectangleF(X, Y, Width, Height);
             set
             {
                 X = value.X;

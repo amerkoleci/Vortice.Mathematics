@@ -95,7 +95,7 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Performs an explicit conversion from <see cre ="Int2"/> to <see cref="Vector2" />.
         /// </summary>
-        /// <param name = "value">The value to convert.</param>
+        /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>
         public static explicit operator Vector2(Int2 value) => new Vector2(value.X, value.Y);
 
