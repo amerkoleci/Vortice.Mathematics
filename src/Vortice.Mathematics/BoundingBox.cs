@@ -22,11 +22,6 @@ namespace Vortice.Mathematics
         public const int CornerCount = 8;
 
         /// <summary>
-        /// The size of the <see cref="BoundingBox"/> type, in bytes.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<BoundingBox>();
-
-        /// <summary>
         /// A <see cref="BoundingBox"/> which represents an empty space.
         /// </summary>
         public static readonly BoundingBox Empty = new BoundingBox(new Vector3(float.MaxValue), new Vector3(float.MinValue));

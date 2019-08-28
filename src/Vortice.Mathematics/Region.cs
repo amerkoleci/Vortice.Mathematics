@@ -16,11 +16,6 @@ namespace Vortice.Mathematics
     public struct Region : IEquatable<Region>, IFormattable
     {
         /// <summary>
-        /// The size of the <see cref="Region"/> type, in bytes.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<Region>();
-
-        /// <summary>
         /// A <see cref="Region"/> with all of its components set to zero.
         /// </summary>
         public static readonly Region Zero = new Region();

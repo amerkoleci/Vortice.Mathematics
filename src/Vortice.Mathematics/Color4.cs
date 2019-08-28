@@ -16,11 +16,6 @@ namespace Vortice.Mathematics
     public struct Color4 : IEquatable<Color4>
     {
         /// <summary>
-        /// The size of the <see cref="Color4"/> type, in bytes.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<Color4>();
-
-        /// <summary>
         /// Red component of the color.
         /// </summary>
         public float R;

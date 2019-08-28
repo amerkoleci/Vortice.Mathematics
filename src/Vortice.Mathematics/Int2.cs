@@ -16,11 +16,6 @@ namespace Vortice.Mathematics
     public struct Int2 : IEquatable<Int2>, IFormattable
     {
         /// <summary>
-        /// The size of the <see cref="Int2"/> type, in bytes.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<Int2>();
-
-        /// <summary>
         /// A <see cref="Int2"/> with all of its components set to zero.
         /// </summary>
         public static readonly Int2 Zero = new Int2();

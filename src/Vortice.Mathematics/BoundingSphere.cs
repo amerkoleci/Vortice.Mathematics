@@ -17,11 +17,6 @@ namespace Vortice.Mathematics
     public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     {
         /// <summary>
-        /// The size of the <see cref="BoundingSphere"/> type, in bytes.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<BoundingSphere>();
-
-        /// <summary>
         /// An empty bounding sphere (Center = 0 and Radius = 0).
         /// </summary>
         public static readonly BoundingSphere Empty = new BoundingSphere();

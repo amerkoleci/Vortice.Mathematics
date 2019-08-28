@@ -16,11 +16,6 @@ namespace Vortice.Mathematics
     public struct Extent3D : IEquatable<Extent3D>, IFormattable
     {
         /// <summary>
-        /// The size of the <see cref="Extent3D"/> type, in bytes.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<Extent3D>();
-
-        /// <summary>
         /// A <see cref="Extent3D"/> with all of its components set to zero.
         /// </summary>
         public static readonly Extent3D Zero = new Extent3D();

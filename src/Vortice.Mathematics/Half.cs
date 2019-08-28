@@ -34,11 +34,6 @@ namespace Vortice.Mathematics
     public struct Half : IPackedVector<ushort>, IEquatable<Half>, IFormattable
     {
         /// <summary>
-        /// The size of the <see cref="Half"/> type, in bytes.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<Half>();
-
-        /// <summary>
         /// Number of decimal digits of precision.
         /// </summary>
         public const int PrecisionDigits = 3;

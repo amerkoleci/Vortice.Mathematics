@@ -17,11 +17,6 @@ namespace Vortice.Mathematics
     public struct Viewport : IEquatable<Viewport>
     {
         /// <summary>
-        /// The size of the <see cref="Viewport"/> type, in bytes.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<Viewport>();
-
-        /// <summary>
         /// Position of the pixel coordinate of the upper-left corner of the viewport.
         /// </summary>
         public float X;

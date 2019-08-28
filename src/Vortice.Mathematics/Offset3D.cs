@@ -16,11 +16,6 @@ namespace Vortice.Mathematics
     public struct Offset3D : IEquatable<Offset3D>, IFormattable
     {
         /// <summary>
-        /// The size of the <see cref="Offset3D"/> type, in bytes.
-        /// </summary>
-        public static readonly int SizeInBytes = Unsafe.SizeOf<Offset3D>();
-
-        /// <summary>
         /// A <see cref="Offset3D"/> with all of its components set to zero.
         /// </summary>
         public static readonly Offset3D Zero = new Offset3D();
