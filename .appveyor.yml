@@ -33,8 +33,8 @@ build:
   project: src/Vortice.Mathematics.sln
   verbosity: minimal
 before_package:
-- cmd: msbuild /t:pack /p:VersionSuffix="%BUILD_VERSION_SUFFIX%" /p:Configuration=Release Vortice.Mathematics/Vortice.Mathematics.csproj
-- cmd: msbuild /t:pack /p:VersionSuffix="%BUILD_VERSION_SUFFIX%" /p:Configuration=Release Vortice.Mathematics.PackedVector/Vortice.Mathematics.PackedVector.csproj
+- cmd: dotnet pack -c Release --version-suffix "%BUILD_VERSION_SUFFIX%" Vortice.Mathematics/Vortice.Mathematics.csproj
+- cmd: dotnet pack -c Release --version-suffix "%BUILD_VERSION_SUFFIX%" Vortice.Mathematics.PackedVector/Vortice.Mathematics.PackedVector.csproj
 
 artifacts:
 - path: bin\Release\Packages\*.nupkg
