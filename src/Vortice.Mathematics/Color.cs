@@ -40,7 +40,7 @@ namespace Vortice.Mathematics
         /// <summary>
         /// The alpha component of the color.
         /// </summary>
-        [FieldOffset(2)]
+        [FieldOffset(3)]
         public byte A;
 
         /// <summary>
