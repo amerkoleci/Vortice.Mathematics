@@ -24,7 +24,7 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
     <!-- Packages versions -->
-    <NerdbankGitVersioningVersion>2.3.186</NerdbankGitVersioningVersion>
+    <NerdbankGitVersioningVersion>3.1.51-beta</NerdbankGitVersioningVersion>
   </PropertyGroup>
 
   <ItemGroup>
