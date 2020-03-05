@@ -110,6 +110,18 @@ namespace Vortice.Mathematics
             A = color.A / 255.0f;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Color4"/> struct.
+        /// </summary>
+        /// <param name="color"><see cref="System.Drawing.Color"/> used to initialize the color.</param>
+        public Color4(System.Drawing.Color color)
+        {
+            R = color.R / 255.0f;
+            G = color.G / 255.0f;
+            B = color.B / 255.0f;
+            A = color.A / 255.0f;
+        }
+
         public void Deconstruct(out float r, out float g, out float b, out float a)
         {
             r = R;
@@ -147,6 +159,53 @@ namespace Vortice.Mathematics
         {
             return new Vector4(R, G, B, A);
         }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Color4"/> to <see cref="Vector3"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Vector3(Color4 value) => new Vector3(value.R, value.G, value.B);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Color4"/> to <see cref="Vector4"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator Vector4(Color4 value) => new Vector4(value.R, value.G, value.B, value.A);
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Vector3"/> to <see cref="Color4"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Color4(Vector3 value) => new Color4(value.X, value.Y, value.Z, 1.0f);
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Vector4"/> to <see cref="Color4"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Color4(Vector4 value) => new Color4(value.X, value.Y, value.Z, value.W);
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="System.Drawing.Color"/> to <see cref="Color4"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Color4(System.Drawing.Color value) => new Color4(value);
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Vector4"/> to <see cref="Color4"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator System.Drawing.Color(Color4 value)
+        {
+            value.ToBgra(out var red, out var green, out var blue, out var alpha);
+            return System.Drawing.Color.FromArgb(alpha, red, green, blue);
+        }
+
 
         /// <inheritdoc/>
 		public override bool Equals(object obj) => obj is Color4 value && Equals(ref value);

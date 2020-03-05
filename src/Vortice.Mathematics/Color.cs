@@ -202,9 +202,66 @@ namespace Vortice.Mathematics
             return new Vector4(x, y, z, w);
         }
 
+        /// <summary>
+        /// Convert this instance to a <see cref="Color4"/>
+        /// </summary>
+        public Color4 ToColor4()
+        {
+            PackHelpers.UnpackRGBA(_packedValue, out var x, out var y, out var z, out var w);
+            return new Color4(x, y, z, w);
+        }
+
         void IPackedVector.PackFromVector4(Vector4 vector)
         {
             _packedValue = PackHelpers.PackRGBA(vector.X, vector.Y, vector.Z, vector.W);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Color"/> to <see cref="Color4"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator Color4(Color value) => value.ToColor4();
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Vector3"/> to <see cref="Color"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Color(Vector3 value) => new Color(value.X, value.Y, value.Z, 1.0f);
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Vector4"/> to <see cref="Color"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Color(Vector4 value) => new Color(value.X, value.Y, value.Z, value.W);
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Color4"/> to <see cref="Color"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Color(Color4 value) => new Color(value.R, value.G, value.B, value.A);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="System.Drawing.Color"/> to <see cref="Color"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator Color(System.Drawing.Color value)
+        {
+            return new Color(value.R, value.G, value.B, value.A);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Color"/> to <see cref="System.Drawing.Color"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator System.Drawing.Color(Color value)
+        {
+            return System.Drawing.Color.FromArgb(value.A, value.R, value.G, value.B);
         }
 
         /// <inheritdoc/>
