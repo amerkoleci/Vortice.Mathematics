@@ -1,17 +1,20 @@
-﻿#if TODO
-// Copyright (c) Amer Koleci and contributors.
+﻿// Copyright (c) Amer Koleci and contributors.
 // Distributed under the MIT license. See the LICENSE file in the project root for more information.
+
+// Implementation is based on, see below
+// ImageSharp: https://github.com/SixLabors/ImageSharp/blob/master/LICENSE
+// SkiaSharp: https://github.com/mono/SkiaSharp/blob/master/LICENSE.md
 
 using System;
 using System.ComponentModel;
-using System.Drawing;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Vortice.Mathematics
 {
     /// <summary>
-    /// An integer rectangle structure defining X, Y, Width, Height.
+    /// Defines an integer rectangle structure defining X, Y, Width, Height.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Rectangle : IEquatable<Rectangle>
@@ -197,6 +200,40 @@ namespace Vortice.Mathematics
         public bool IsEmpty => (Width == 0) && (Height == 0) && (X == 0) && (Y == 0);
 
         /// <summary>
+        /// Performs an implicit conversion from <see cre ="Rectangle"/> to <see cref="RectangleF" />.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator RectangleF(Rectangle value) => new RectangleF(value.X, value.Y, value.Width, value.Height);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cre ="Rectangle"/> to <see cref="System.Drawing.Rectangle" />.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator System.Drawing.Rectangle(Rectangle value) => new System.Drawing.Rectangle(value.X, value.Y, value.Width, value.Height);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cre ="Rectangle"/> to <see cref="System.Drawing.RectangleF" />.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator System.Drawing.RectangleF(Rectangle value) => new System.Drawing.RectangleF(value.X, value.Y, value.Width, value.Height);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cre ="Rectangle"/> to <see cref="Vector4" />.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator Vector4(Rectangle value) => new Vector4(value.X, value.Y, value.Width, value.Height);
+
+        /// <summary>
+        /// Creates a new <see cref='Rectangle'/> with the specified left, top, right and bottom coordinate.
+        /// </summary>
+        public static Rectangle FromLTRB(int left, int top, int right, int bottom) =>
+            new Rectangle(left, top, unchecked(right - left), unchecked(bottom - top));
+
+        /// <summary>
         /// Inflates this <see cref="Rectangle"/> by the specified amount.
         /// </summary>
         /// <param name="width">The width.</param>
@@ -228,111 +265,84 @@ namespace Vortice.Mathematics
         /// <returns>A new <see cref="Rectangle"/>.</returns>
         public static Rectangle Inflate(Rectangle rectangle, int x, int y)
         {
-            Rectangle r = rectangle;
+            var r = rectangle;
             r.Inflate(x, y);
             return r;
         }
 
         /// <summary>
-        /// Replaces this <see cref="Rectangle" /> structure with the intersection of itself and the specified <see cref="Rect" /> structure.
+        /// Creates a rectangle that represents the intersection between <paramref name="a"/> and
+        /// <paramref name="b"/>. If there is no intersection, an empty rectangle is returned.
         /// </summary>
-        /// <param name="rectangle">The rect to intersects with.</param>
-        public void Intersect(Rectangle rectangle)
+        /// <param name="a">The first rectangle.</param>
+        /// <param name="b">The second rectangle.</param>
+        /// <returns>The <see cref="Rectangle"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Rectangle Intersect(Rectangle a, Rectangle b)
         {
-            Rectangle result = Intersect(rectangle, this);
+            int x1 = Math.Max(a.X, b.X);
+            int x2 = Math.Min(a.Right, b.Right);
+            int y1 = Math.Max(a.Y, b.Y);
+            int y2 = Math.Min(a.Bottom, b.Bottom);
 
-            X = result.X;
-            Y = result.Y;
-            Width = result.Width;
-            Height = result.Height;
-        }
-
-        /// <summary>
-        /// Creates a rectangle that represents the intersection between two rectangles. 
-        /// If there is no intersection, <see cref="Empty"/> is returned.
-        /// </summary>
-        /// <param name="value1">The first rectangle.</param>
-        /// <param name="value2">The second rectangle.</param>
-        /// <returns>The intersection rectangle or empty.</returns>
-        public static Rect Intersect(Rect value1, Rect value2)
-        {
-            if (!value1.IntersectsWithInclusive(value2))
+            if (x2 >= x1 && y2 >= y1)
             {
-                return Empty;
+                return new Rectangle(x1, y1, x2 - x1, y2 - y1);
             }
 
-            return new Rect(
-                Math.Max(value1.Left, value2.Left),
-                Math.Max(value1.Top, value2.Top),
-                Math.Min(value1.Right, value2.Right),
-                Math.Min(value1.Bottom, value2.Bottom));
+            return Empty;
         }
 
         /// <summary>
-        /// Determines if this rectangle intersects with rect.
+        /// Creates a rectangle that represents the union between <paramref name="a"/> and <paramref name="b"/>.
         /// </summary>
-        /// <param name="rect">The <see cref="Rect"/> to test.</param>
-        /// <returns>This method returns true if there is any intersection.</returns>
-        public bool IntersectsWith(Rect rect)
+        /// <param name="a">The first rectangle.</param>
+        /// <param name="b">The second rectangle.</param>
+        /// <returns>The <see cref="Rectangle"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Rectangle Union(Rectangle a, Rectangle b)
         {
-            return (Left < rect.Right) && (Right > rect.Left) && (Top < rect.Bottom) && (Bottom > rect.Top);
-        }
+            int x1 = Math.Min(a.X, b.X);
+            int x2 = Math.Max(a.Right, b.Right);
+            int y1 = Math.Min(a.Y, b.Y);
+            int y2 = Math.Max(a.Bottom, b.Bottom);
 
-        /// <summary>
-        /// Determines if this rectangle intersects with another rectangle.
-        /// </summary>
-        /// <param name="rect">The rectangle to test.</param>
-        /// <returns>This method returns true if there is any intersection.</returns>
-        public bool IntersectsWithInclusive(Rect rect)
-        {
-            return (Left <= rect.Right) && (Right >= rect.Left)
-                && (Top <= rect.Bottom) && (Bottom >= rect.Top);
-        }
-
-        /// <summary>
-        /// Creates a rectangle that represents the union between two rectangles.
-        /// </summary>
-        /// <param name="value1">The first rectangle.</param>
-        /// <param name="value2">The second rectangle.</param>
-        /// <returns>The union rectangle.</returns>
-        public static Rect Union(Rect value1, Rect value2)
-        {
-            return new Rect(
-                Math.Min(value1.Left, value2.Left),
-                Math.Min(value1.Top, value2.Top),
-                Math.Max(value1.Right, value2.Right),
-                Math.Max(value1.Bottom, value2.Bottom));
+            return new Rectangle(x1, y1, x2 - x1, y2 - y1);
         }
 
         /// <summary>
         /// Translates this rectangle by a specified offset.
         /// </summary>
         /// <param name="offset">The offset value.</param>
-        public void Offset(Point offset)
-        {
-            unchecked
-            {
-                Left += offset.X;
-                Top += offset.Y;
-                Right += offset.X;
-                Bottom += offset.Y;
-            }
-        }
+        public void Offset(Point offset) => Offset(offset.X, offset.Y);
 
         /// <summary>
         /// Translates this rectangle by a specified offset.
         /// </summary>
-        /// <param name="x">The offset in the x-direction.</param>
-        /// <param name="y">The offset in the y-direction.</param>
-        public void Offset(int x, int y)
+        /// <param name="dx">The amount to offset the x-coordinate.</param>
+        /// <param name="dy">The amount to offset the y-coordinate.</param>
+        public void Offset(int dx, int dy)
         {
             unchecked
             {
-                Left += x;
-                Top += y;
-                Right += x;
-                Bottom += y;
+                X += dx;
+                Y += dy;
             }
+        }
+
+        /// <summary>
+        /// Creates a Rectangle that represents the intersection between this Rectangle and the <paramref name="rectangle"/>.
+        /// </summary>
+        /// <param name="rectangle">The rectangle.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Intersect(Rectangle rectangle)
+        {
+            var result = Intersect(rectangle, this);
+
+            X = result.X;
+            Y = result.Y;
+            Width = result.Width;
+            Height = result.Height;
         }
 
         /// <summary>
@@ -362,31 +372,85 @@ namespace Vortice.Mathematics
                 && (Y <= rectangle.Y) && (rectangle.Bottom <= Bottom);
         }
 
-        /// <inheritdoc/>
-		public override bool Equals(object obj) => obj is Rect value && Equals(ref value);
-
         /// <summary>
-        /// Determines whether the specified <see cref="Rect"/> is equal to this instance.
+        /// Determines if the specfied <see cref="Rectangle"/> intersects the rectangular region defined by
+        /// this <see cref="Rectangle"/>.
         /// </summary>
-        /// <param name="other">The <see cref="Rect"/> to compare with this instance.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Rect other) => Equals(ref other);
-
-        /// <summary>
-		/// Determines whether the specified <see cref="Rect"/> is equal to this instance.
-		/// </summary>
-		/// <param name="other">The <see cref="Rect"/> to compare with this instance.</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref Rect other)
+        /// <param name="rectangle">The other Rectange. </param>
+        /// <returns>The <see cref="bool"/>.</returns>
+        public bool IntersectsWith(Rectangle rectangle)
         {
-            return Left == other.Left
-                && Top == other.Top
-                && Right == other.Right
-                && Bottom == other.Bottom;
+            return (rectangle.X < Right) && (X < rectangle.Right)
+                && (rectangle.Y < Bottom) && (Y < rectangle.Bottom);
         }
 
         /// <summary>
-        /// Compares two <see cref="Rect"/> objects for equality.
+        /// Converts a <see cref="RectangleF"/> to a <see cref="Rectangle"/> by performing a truncate operation on all the coordinates.
+        /// </summary>
+        /// <param name="rectangle">The rectangle.</param>
+        /// <returns>The <see cref="Rectangle"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Rectangle Truncate(RectangleF rectangle)
+        {
+            unchecked
+            {
+                return new Rectangle(
+                    (int)rectangle.X,
+                    (int)rectangle.Y,
+                    (int)rectangle.Width,
+                    (int)rectangle.Height);
+            }
+        }
+
+        /// <summary>
+        /// Converts a <see cref="RectangleF"/> to a <see cref="Rectangle"/> by performing a round operation on all the coordinates.
+        /// </summary>
+        /// <param name="rectangle">The rectangle.</param>
+        /// <returns>The <see cref="Rectangle"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Rectangle Round(RectangleF rectangle)
+        {
+            unchecked
+            {
+                return new Rectangle(
+                    (int)MathF.Round(rectangle.X),
+                    (int)MathF.Round(rectangle.Y),
+                    (int)MathF.Round(rectangle.Width),
+                    (int)MathF.Round(rectangle.Height));
+            }
+        }
+
+        /// <summary>
+        /// Transforms a rectangle by the given matrix.
+        /// </summary>
+        /// <param name="rectangle">The source rectangle.</param>
+        /// <param name="matrix">The transformation matrix.</param>
+        /// <returns>A transformed rectangle.</returns>
+        public static RectangleF Transform(Rectangle rectangle, Matrix3x2 matrix)
+        {
+            PointF bottomRight = Point.Transform(new Point(rectangle.Right, rectangle.Bottom), matrix);
+            PointF topLeft = Point.Transform(rectangle.Location, matrix);
+            return new RectangleF(topLeft, new SizeF(bottomRight - topLeft));
+        }
+
+        /// <inheritdoc/>
+		public override bool Equals(object obj) => obj is Rectangle value && Equals(value);
+
+        /// <summary>
+        /// Determines whether the specified <see cref="Rectangle"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="Rectangle"/> to compare with this instance.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(Rectangle other)
+        {
+            return X == other.X
+                && Y == other.Y
+                && Width == other.Width
+                && Height == other.Height;
+        }
+
+        /// <summary>
+        /// Compares two <see cref="Rectangle"/> objects for equality.
         /// </summary>
         /// <param name="left">The <see cref="Rectangle"/> on the left hand of the operand.</param>
         /// <param name="right">The <see cref="Rectangle"/> on the right hand of the operand.</param>
@@ -394,7 +458,7 @@ namespace Vortice.Mathematics
         /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Rectangle left, Rectangle right) => left.Equals(ref right);
+        public static bool operator ==(Rectangle left, Rectangle right) => left.Equals(right);
 
         /// <summary>
         /// Compares two <see cref="Rectangle"/> objects for inequality.
@@ -405,23 +469,12 @@ namespace Vortice.Mathematics
         /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Rectangle left, Rectangle right) => !left.Equals(ref right);
+        public static bool operator !=(Rectangle left, Rectangle right) => !left.Equals(right);
 
         /// <inheritdoc/>
 		public override int GetHashCode() => HashCode.Combine(X, Y, Width, Height);
 
         /// <inheritdoc/>
-        public override string ToString()
-        {
-            return $"Rectangle [ X={X}, Y={Y}, Width={Width}, Height={Height} ]";
-        }
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is Rectangle other && Equals(other);
-
-        /// <inheritdoc/>
-        public bool Equals(Rectangle other) => X.Equals(other.X) && Y.Equals(other.Y) && Width.Equals(other.Width) && Height.Equals(other.Height);
+        public override string ToString() => $"{{X={X},Y={Y},Width={Width},Height={Height}}}";
     }
 }
-
-#endif
