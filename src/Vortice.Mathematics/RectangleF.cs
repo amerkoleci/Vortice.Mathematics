@@ -385,6 +385,12 @@ namespace Vortice.Mathematics
         public static implicit operator System.Drawing.RectangleF(RectangleF value) => new System.Drawing.RectangleF(value.X, value.Y, value.Width, value.Height);
 
         /// <summary>
+        /// Creates a new <see cref='Rectangle'/> with the specified left, top, right and bottom coordinate.
+        /// </summary>
+        public static RectangleF FromLTRB(float left, float top, float right, float bottom) =>
+            new RectangleF(left, top, right - left, bottom - top);
+
+        /// <summary>
         /// Compares two <see cref="RectangleF"/> objects for equality.
         /// </summary>
         /// <param name="left">The <see cref="RectangleF"/> on the left hand of the operand.</param>

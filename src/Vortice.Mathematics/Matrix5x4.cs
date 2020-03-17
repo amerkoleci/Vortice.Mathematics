@@ -9,7 +9,7 @@ namespace Vortice.Mathematics
     /// Describes a 5-by-4 floating point matrix.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct RawMatrix5x4
+    public struct Matrix5x4
     {
         /// <summary>
         /// Value at row 1 column 1.
