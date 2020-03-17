@@ -1,7 +1,9 @@
-﻿// Copyright (c) Amer Koleci and contributors.
+﻿#if TODO
+// Copyright (c) Amer Koleci and contributors.
 // Distributed under the MIT license. See the LICENSE file in the project root for more information.
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -9,193 +11,240 @@ using System.Runtime.InteropServices;
 namespace Vortice.Mathematics
 {
     /// <summary>
-    /// Stores a set of four integers that represent the upper-left corner and lower-right corner of a rectangle.
+    /// An integer rectangle structure defining X, Y, Width, Height.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    public struct Rect : IEquatable<Rect>
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    public struct Rectangle : IEquatable<Rectangle>
     {
         /// <summary>
-        /// Returns a <see cref="Rect"/> with all of its values set to zero.
+        /// Returns a <see cref="Rectangle"/> with all of its values set to zero.
         /// </summary>
-        public static readonly Rect Empty;
+        public static readonly Rectangle Empty = default;
 
         /// <summary>
-        /// The x-coordinate of the upper-left corner of the rectangle.
-        /// </summary>
-        public int Left;
-
-        /// <summary>
-        /// The y-coordinate of the upper-left corner of the rectangle.
-        /// </summary>
-        public int Top;
-
-        /// <summary>
-        /// The x-coordinate of the lower-right corner of the rectangle.
-        /// </summary>
-        public int Right;
-
-        /// <summary>
-        /// The y-coordinate of the lower-right corner of the rectangle.
-        /// </summary>
-        public int Bottom;
-
-        /// <summary>
-        /// Gets the width of the <see cref="Rect"/>.
-        /// </summary>
-        /// <remarks />
-        public int Width => unchecked(Right - Left);
-
-        /// <summary>
-        /// Gets the height of the <see cref="RectF"/>.
-        /// </summary>
-        /// <remarks />
-        public int Height => unchecked(Bottom - Top);
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="Rect"/> is empty.
-        /// </summary>
-        public bool IsEmpty => Equals(Empty);
-
-        /// <summary>
-		/// Gets the aspect ratio of the rectangle.
+		/// Initializes a new instance of the <see cref="Rectangle"/> struct.
 		/// </summary>
-		public float AspectRatio => (float)Width / Height;
+		/// <param name="x">The horizontal position of the rectangle.</param>
+        /// <param name="y">The vertical position of the rectangle.</param>
+        /// <param name="width">The width of the rectangle.</param>
+        /// <param name="height">The height of the rectangle.</param>
+		public Rectangle(int x, int y, int width, int height)
+        {
+            X = x;
+            Y = y;
+            Width = width;
+            Height = height;
+        }
 
         /// <summary>
-        /// Gets or sets the upper-left value of the <see cref="Rect"/>.
+		/// Initializes a new instance of the <see cref="Rectangle"/> struct.
+		/// </summary>
+        /// <param name="width">The width of the rectangle.</param>
+        /// <param name="height">The height of the rectangle.</param>
+		public Rectangle(int width, int height)
+        {
+            X = 0;
+            Y = 0;
+            Width = width;
+            Height = height;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
+        /// </summary>
+        /// <param name="point">
+        /// The <see cref="Point"/> which specifies the rectangles point in a two-dimensional plane.
+        /// </param>
+        /// <param name="size">
+        /// The <see cref="Size"/> which specifies the rectangles height and width.
+        /// </param>
+        public Rectangle(Point point, Size size)
+        {
+            X = point.X;
+            Y = point.Y;
+            Width = size.Width;
+            Height = size.Height;
+        }
+
+        /// <summary>
+        /// Gets or sets the x-coordinate of this <see cref="Rectangle"/>.
+        /// </summary>
+        public int X { get; set; }
+
+        /// <summary>
+        /// Gets or sets the y-coordinate of this <see cref="Rectangle"/>.
+        /// </summary>
+        public int Y { get; set; }
+
+        /// <summary>
+        /// Gets or sets the width of this <see cref="Rectangle"/>.
+        /// </summary>
+        public int Width { get; set; }
+
+        /// <summary>
+        /// Gets or sets the height of this <see cref="Rectangle"/>.
+        /// </summary>
+        public int Height { get; set; }
+
+        /// <summary>
+        /// Gets or sets the upper-left value of the <see cref="Rectangle"/>.
         /// </summary>
         public Point Location
         {
-            get => new Point(Left, Top);
+            get => new Point(X, Y);
             set
             {
-                this = Create(value, Size);
+                X = value.X;
+                Y = value.Y;
             }
         }
 
         /// <summary>
-		/// Gets or sets the size of this <see cref="Rect"/>.
+		/// Gets or sets the size of this <see cref="Rectangle"/>.
 		/// </summary>
 		public Size Size
         {
             get => new Size(Width, Height);
             set
             {
-                Right = Left + value.Width;
-                Bottom = Top + value.Height;
+                Width = value.Width;
+                Height = value.Height;
             }
         }
 
         /// <summary>
-        /// Gets the x-coordinate of the center of this rectangle.
+        /// Gets or sets the x-coordinate of the left edge of this <see cref="Rectangle"/>.
         /// </summary>
-        public int CenterX => unchecked(Left + (Width / 2));
-
-        /// <summary>
-        /// Gets the y-coordinate of the center of this rectangle.
-        /// </summary>
-        public int CenterY => unchecked(Top + (Height / 2));
-
-        /// <summary>
-		/// Initializes a new instance of the <see cref="Rect"/> struct.
-		/// </summary>
-		/// <param name="left">The x-coordinate of the rectangle.</param>
-		/// <param name="top">The y-coordinate of the rectangle.</param>
-		/// <param name="right">The x-coordinate of the lower-right corner of the rectangle.</param>
-		/// <param name="bottom">The y-coordinate of the lower-right corner of the rectangle.</param>
-		public Rect(int left, int top, int right, int bottom)
+        public int Left
         {
-            Left = left;
-            Top = top;
-            Right = right;
-            Bottom = bottom;
+            get => X;
+            set => X = value;
         }
 
         /// <summary>
-        /// Creates a new rectangle with the specified location and size.
+        /// Gets or sets the y-coordinate of the left edge of this <see cref="Rectangle"/>.
         /// </summary>
-        /// <param name="x">The x-coordinate.</param>
-        /// <param name="y">The y-coordinate.</param>
-        /// <param name="width">The rectangle width.</param>
-        /// <param name="height">The rectangle height.</param>
-        /// <returns>Returns the new rectangle.</returns>
-        public static Rect Create(int x, int y, int width, int height)
+        public int Top
         {
-            return new Rect(x, y, x + width, y + height);
+            get => Y;
+            set => Y = value;
         }
 
         /// <summary>
-        /// Creates a new rectangle with the specified size.
+        /// Gets the x-coordinate of the right edge of this <see cref="Rectangle"/>.
         /// </summary>
-        /// <param name="width">The rectangle width.</param>
-        /// <param name="height">The rectangle height.</param>
-        /// <returns>Returns the new rectangle.</returns>
-        public static Rect Create(int width, int height)
+        public int Right
         {
-            return new Rect(0, 0, width, height);
+            get => unchecked(X + Width);
         }
 
         /// <summary>
-        /// Creates a new rectangle with the specified location and size.
+        /// Gets the y-coordinate of the bottom edge of this <see cref="Rectangle"/>.
         /// </summary>
-        /// <param name="location">The rectangle location.</param>
-        /// <param name="size">The rectangle size.</param>
-        /// <returns>Returns the new rectangle.</returns>
-        public static Rect Create(Point location, Size size)
+        public int Bottom
         {
-            return new Rect(location.X, location.Y, location.X + size.Width, location.Y + size.Height);
+            get => unchecked(Y + Height);
         }
 
         /// <summary>
-        /// Creates a new rectangle with the specified size.
+        /// Gets the <see cref="Point"/> that specifies the center of this <see cref="Rectangle"/>.
         /// </summary>
-        /// <param name="size">The rectangle size.</param>
-        /// <returns>Returns the new rectangle.</returns>
-        public static Rect Create(Size size)
+        public Point Center => new Point(X + (Width / 2), Y + (Height / 2));
+
+        /// <summary>
+        /// Gets the x-coordinate of the center of this <see cref="Rectangle"/>.
+        /// </summary>
+        public int CenterX => unchecked(X + (Width / 2));
+
+        /// <summary>
+        /// Gets the y-coordinate of the center of this <see cref="Rectangle"/>.
+        /// </summary>
+        public int CenterY => unchecked(Y + (Height / 2));
+
+        /// <summary>
+        /// Gets the aspect ratio of this <see cref="Rectangle"/>.
+        /// </summary>
+        public float AspectRatio => (float)Width / Height;
+
+        /// <summary>
+        /// Gets the position of the top-left corner of this <see cref="Rectangle"/>.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public Point TopLeft => new Point(X, Y);
+
+        /// <summary>
+        /// Gets the position of the top-right corner of this <see cref="Rectangle"/>.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public Point TopRight => new Point(Right, Y);
+
+        /// <summary>
+        /// Gets the position of the bottom-left corner of <see cref="Rectangle"/>.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public Point BottomLeft => new Point(X, Bottom);
+
+        /// <summary>
+        /// Gets the position of the bottom-right corner of <see cref="Rectangle"/>.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public Point BottomRight => new Point(Right, Bottom);
+
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="Rectangle"/> is empty.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public bool IsEmpty => (Width == 0) && (Height == 0) && (X == 0) && (Y == 0);
+
+        /// <summary>
+        /// Inflates this <see cref="Rectangle"/> by the specified amount.
+        /// </summary>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        public void Inflate(int width, int height)
         {
-            return new Rect(0, 0, size.Width, size.Height);
+            unchecked
+            {
+                X -= width;
+                Y -= height;
+
+                Width += 2 * width;
+                Height += 2 * height;
+            }
         }
 
         /// <summary>
-        /// Inflates this <see cref="Rect"/> by the specified amount.
-        /// </summary>
-        /// <param name="x">X inflate amount.</param>
-        /// <param name="y">Y inflate amount.</param>
-        public void Inflate(int x, int y)
-        {
-            Left -= x;
-            Top -= y;
-            Right += x;
-            Bottom += y;
-        }
-
-        /// <summary>
-        /// Inflates this <see cref="Rect"/> by the specified amount.
+        /// Inflates this <see cref="Rectangle"/> by the specified amount.
         /// </summary>
         /// <param name="size">The size amount.</param>
         public void Inflate(Size size) => Inflate(size.Width, size.Height);
 
-        /// <summary>Creates and returns an enlarged copy of the specified <see cref="Rect" /> structure. 
-        /// The copy is enlarged by the specified amount and the original rectangle remains unmodified.
+        /// <summary>
+        /// Creates a <see cref="Rectangle"/> that is inflated by the specified amount.
         /// </summary>
-        /// <param name="rect">The <see cref="Rect" /> to be copied. This rectangle is not modified.</param>
-        /// <param name="x">The amount to enlarge the copy of the rectangle horizontally.</param>
-        /// <param name="y">The amount to enlarge the copy of the rectangle vertically.</param>
-        /// <returns>The enlarged <see cref="Rect" />.</returns>
-        public static Rect Inflate(Rect rect, int x, int y)
+        /// <param name="rectangle">The rectangle.</param>
+        /// <param name="x">The amount to inflate the width by.</param>
+        /// <param name="y">The amount to inflate the height by.</param>
+        /// <returns>A new <see cref="Rectangle"/>.</returns>
+        public static Rectangle Inflate(Rectangle rectangle, int x, int y)
         {
-            var result = new Rect(rect.Left, rect.Top, rect.Right, rect.Bottom);
-            result.Inflate(x, y);
-            return result;
+            Rectangle r = rectangle;
+            r.Inflate(x, y);
+            return r;
         }
 
         /// <summary>
-        /// Replaces this <see cref="Rect" /> structure with the intersection of itself and the specified <see cref="Rect" /> structure.
+        /// Replaces this <see cref="Rectangle" /> structure with the intersection of itself and the specified <see cref="Rect" /> structure.
         /// </summary>
-        /// <param name="rect">The rect to intersects with.</param>
-        public void Intersect(Rect rect)
+        /// <param name="rectangle">The rect to intersects with.</param>
+        public void Intersect(Rectangle rectangle)
         {
-            this = Intersect(rect, this);
+            Rectangle result = Intersect(rectangle, this);
+
+            X = result.X;
+            Y = result.Y;
+            Width = result.Width;
+            Height = result.Height;
         }
 
         /// <summary>
@@ -213,9 +262,9 @@ namespace Vortice.Mathematics
             }
 
             return new Rect(
-                Math.Max(value1.Left, value2.Left), 
-                Math.Max(value1.Top, value2.Top), 
-                Math.Min(value1.Right, value2.Right), 
+                Math.Max(value1.Left, value2.Left),
+                Math.Max(value1.Top, value2.Top),
+                Math.Min(value1.Right, value2.Right),
                 Math.Min(value1.Bottom, value2.Bottom));
         }
 
@@ -236,7 +285,7 @@ namespace Vortice.Mathematics
         /// <returns>This method returns true if there is any intersection.</returns>
         public bool IntersectsWithInclusive(Rect rect)
         {
-            return (Left <= rect.Right) && (Right >= rect.Left) 
+            return (Left <= rect.Right) && (Right >= rect.Left)
                 && (Top <= rect.Bottom) && (Bottom >= rect.Top);
         }
 
@@ -249,9 +298,9 @@ namespace Vortice.Mathematics
         public static Rect Union(Rect value1, Rect value2)
         {
             return new Rect(
-                Math.Min(value1.Left, value2.Left), 
-                Math.Min(value1.Top, value2.Top), 
-                Math.Max(value1.Right, value2.Right), 
+                Math.Min(value1.Left, value2.Left),
+                Math.Min(value1.Top, value2.Top),
+                Math.Max(value1.Right, value2.Right),
                 Math.Max(value1.Bottom, value2.Bottom));
         }
 
@@ -292,10 +341,7 @@ namespace Vortice.Mathematics
         /// <param name="x">The x-coordinate.</param>
         /// <param name="y">The y-coordinate.</param>
         /// <returns>Returns true if the coordinates are inside this rectangle, otherwise false.</returns>
-        public bool Contains(int x, int y)
-        {
-            return (x >= Left) && (x < Right) && (y >= Top) && (y < Bottom);
-        }
+        public bool Contains(int x, int y) => X <= x && x < Right && Y <= y && y < Bottom;
 
         /// <summary>
         /// Determines whether the specified coordinates are inside this rectangle.
@@ -307,70 +353,13 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Determines whether the specified rectangle is inside this rectangle.
         /// </summary>
-        /// <param name="rect">The rectangle to test.</param>
+        /// <param name="rectangle">The rectangle to test.</param>
         /// <returns>Returns true if the rectangle is inside this rectangle, otherwise false.</returns>
-        public bool Contains(Rect rect)
+        public bool Contains(Rectangle rectangle)
         {
-            return (Left <= rect.Left) && (Right >= rect.Right) 
-                && (Top <= rect.Top) && (Bottom >= rect.Bottom);
-        }
-
-        /// <summary>
-        /// Converts the specified <see cref="RectF" /> structure to a <see cref="Rect" /> structure by rounding the <see cref="Rect" /> values to the nearest integer values.
-        /// </summary>
-        /// <param name="value">The <see cref="RectF" /> structure to be converted.</param>
-        /// <returns>Returns a <see cref="Rect" />.</returns>
-        public static Rect Round(RectF value)
-        {
-            int x, y, r, b;
-            checked
-            {
-                x = (int)Math.Round(value.Left);
-                y = (int)Math.Round(value.Top);
-                r = (int)Math.Round(value.Right);
-                b = (int)Math.Round(value.Bottom);
-            }
-
-            return new Rect(x, y, r, b);
-        }
-
-        /// <summary>
-        /// Converts the specified <see cref="RectF" /> structure to a <see cref="Rect" /> structure by truncating the <see cref="RectF" /> values.
-        /// </summary>
-        /// <param name="value">The <see cref="RectF" /> to be converted.</param>
-        /// <returns>The truncated value of the <see cref="Rect" />.</returns>
-        public static Rect Truncate(RectF value)
-        {
-            int x, y, r, b;
-            checked
-            {
-                x = (int)value.Left;
-                y = (int)value.Top;
-                r = (int)value.Right;
-                b = (int)value.Bottom;
-            }
-
-            return new Rect(x, y, r, b);
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="Rectangle"/> to <see cref="Rect"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator Rect(Rectangle value)
-        {
-            return new Rect(value.Left, value.Top, value.Right, value.Bottom);
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="Rect"/> to <see cref="Rectangle"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator Rectangle(Rect value)
-        {
-            return Rectangle.FromLTRB(value.Left, value.Top, value.Right, value.Bottom);
+            return
+                (X <= rectangle.X) && (rectangle.Right <= Right)
+                && (Y <= rectangle.Y) && (rectangle.Bottom <= Bottom);
         }
 
         /// <inheritdoc/>
@@ -399,42 +388,40 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Compares two <see cref="Rect"/> objects for equality.
         /// </summary>
-        /// <param name="left">The <see cref="Rect"/> on the left hand of the operand.</param>
-        /// <param name="right">The <see cref="Rect"/> on the right hand of the operand.</param>
+        /// <param name="left">The <see cref="Rectangle"/> on the left hand of the operand.</param>
+        /// <param name="right">The <see cref="Rectangle"/> on the right hand of the operand.</param>
         /// <returns>
         /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Rect left, Rect right) => left.Equals(ref right);
+        public static bool operator ==(Rectangle left, Rectangle right) => left.Equals(ref right);
 
         /// <summary>
-        /// Compares two <see cref="Rect"/> objects for inequality.
+        /// Compares two <see cref="Rectangle"/> objects for inequality.
         /// </summary>
-        /// <param name="left">The <see cref="Rect"/> on the left hand of the operand.</param>
-        /// <param name="right">The <see cref="Rect"/> on the right hand of the operand.</param>
+        /// <param name="left">The <see cref="Rectangle"/> on the left hand of the operand.</param>
+        /// <param name="right">The <see cref="Rectangle"/> on the right hand of the operand.</param>
         /// <returns>
         /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Rect left, Rect right) => !left.Equals(ref right);
+        public static bool operator !=(Rectangle left, Rectangle right) => !left.Equals(ref right);
 
         /// <inheritdoc/>
-		public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = Left;
-                hashCode = (hashCode * 397) ^ Top;
-                hashCode = (hashCode * 397) ^ Right;
-                hashCode = (hashCode * 397) ^ Bottom;
-                return hashCode;
-            }
-        }
+		public override int GetHashCode() => HashCode.Combine(X, Y, Width, Height);
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{nameof(Left)}: {Left}, {nameof(Top)}: {Top}, {nameof(Width)}: {Width}, {nameof(Height)}: {Height}";
+            return $"Rectangle [ X={X}, Y={Y}, Width={Width}, Height={Height} ]";
         }
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj) => obj is Rectangle other && Equals(other);
+
+        /// <inheritdoc/>
+        public bool Equals(Rectangle other) => X.Equals(other.X) && Y.Equals(other.Y) && Width.Equals(other.Width) && Height.Equals(other.Height);
     }
 }
+
+#endif

@@ -52,7 +52,7 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="size">The width and height component of the extent.</param>
         /// <param name="depth">The depth component of the extent.</param>
-        public Extent3D(Size size, int depth)
+        public Extent3D(SizeI size, int depth)
         {
             Width = size.Width;
             Height = size.Height;

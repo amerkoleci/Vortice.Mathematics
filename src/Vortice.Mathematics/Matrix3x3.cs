@@ -73,9 +73,15 @@ namespace Vortice.Mathematics
         /// <param name="value">The value that will be assigned to all components.</param>
         public Matrix3x3(float value)
         {
-            M11 = M12 = M13 =
-            M21 = M22 = M23 =
-            M31 = M32 = M33 = value;
+            M11 = value;
+            M12 = value;
+            M13 = value;
+            M21 = value;
+            M22 = value;
+            M23 = value;
+            M31 = value;
+            M32 = value;
+            M33 = value;
         }
 
         /// <summary>
