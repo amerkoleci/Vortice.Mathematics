@@ -12,7 +12,6 @@ namespace Vortice.Mathematics
     /// <summary>
     /// Represents a 32-bit RGBA color (4 bytes).
     /// </summary>
-    [Serializable]
     [StructLayout(LayoutKind.Explicit)]
     public struct Color : IPackedVector<uint>, IEquatable<Color>
     {

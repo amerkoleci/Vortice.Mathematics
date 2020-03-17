@@ -29,7 +29,6 @@ namespace Vortice.Mathematics
     /// <summary>
     /// A half precision (16 bit) floating point value.
     /// </summary>
-    [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Half : IPackedVector<ushort>, IEquatable<Half>, IFormattable
     {

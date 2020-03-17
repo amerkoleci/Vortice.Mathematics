@@ -3,7 +3,6 @@
 
 using System;
 using System.Drawing;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -12,7 +11,6 @@ namespace Vortice.Mathematics
     /// <summary>
     /// Stores a set of four integers that represent the upper-left corner and lower-right corner of a rectangle.
     /// </summary>
-    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct Rect : IEquatable<Rect>
     {

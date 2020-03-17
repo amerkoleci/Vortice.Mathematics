@@ -12,7 +12,6 @@ namespace Vortice.Mathematics
     /// <summary>
     /// Defines a four floating-point numbers that represent the upper-left corner and lower-right corner of a rectangle.
     /// </summary>
-    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct RectF : IEquatable<RectF>
     {

@@ -11,7 +11,6 @@ namespace Vortice.Mathematics
     /// <summary>
     /// Represents a three-dimensional extent.
     /// </summary>
-    [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Extent3D : IEquatable<Extent3D>, IFormattable
     {

@@ -29,7 +29,6 @@ namespace Vortice.Mathematics
     /// <summary>
     /// Packed vector type containing two 16-bit floating-point values.
     /// </summary>
-    [Serializable]
     [StructLayout(LayoutKind.Explicit)]
     public struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormattable
     {

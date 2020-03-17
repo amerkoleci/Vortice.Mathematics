@@ -11,7 +11,6 @@ namespace Vortice.Mathematics
     /// <summary>
     /// Represents a three dimensional mathematical int vector.
     /// </summary>
-    [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Int3 : IEquatable<Int3>, IFormattable
     {
@@ -21,7 +20,7 @@ namespace Vortice.Mathematics
         public static readonly Int3 Zero = new Int3();
 
         /// <summary>
-        /// The X unit <see cref="Int2"/> (1, 0, 0).
+        /// The X unit <see cref="Int3"/> (1, 0, 0).
         /// </summary>
         public static readonly Int3 UnitX = new Int3(1, 0, 0);
 
@@ -91,11 +90,11 @@ namespace Vortice.Mathematics
         public int[] ToArray() => new int[] { X, Y, Z };
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Int4" /> to <see cref="Int2" />.
+        /// Performs an explicit conversion from <see cref="Int3" /> to <see cref="Point" />.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Int2(Int3 value) => new Int2(value.X, value.Y);
+        public static explicit operator Point(Int3 value) => new Point(value.X, value.Y);
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="Int3" /> to <see cref="Vector2"/>.

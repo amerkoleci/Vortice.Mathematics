@@ -11,7 +11,6 @@ namespace Vortice.Mathematics
     /// <summary>
     /// Represents a four dimensional mathematical int vector.
     /// </summary>
-    [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Int4 : IEquatable<Int4>, IFormattable
     {
@@ -75,7 +74,7 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Int3" /> struct.
+        /// Initializes a new instance of the <see cref="Int4" /> struct.
         /// </summary>
         /// <param name="x">Initial value for the X component of the vector.</param>
         /// <param name="y">Initial value for the Y component of the vector.</param>
@@ -105,10 +104,10 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Initializes a new instance of the <see cref="Int4" /> struct.
         /// </summary>
-        /// <param name="value">A <see cref="Int2"/> containing the values with which to initialize the X and Y components.</param>
+        /// <param name="value">A <see cref="Point"/> containing the values with which to initialize the X and Y components.</param>
         /// <param name="z">Initial value for the Z component of the vector.</param>
         /// <param name="w">Initial value for the W component of the vector.</param>
-        public Int4(Int2 value, int z, int w)
+        public Int4(Point value, int z, int w)
         {
             X = value.X;
             Y = value.Y;
@@ -159,11 +158,11 @@ namespace Vortice.Mathematics
         public int[] ToArray() => new[] { X, Y, Z, W };
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Int4" /> to <see cref="Int2" />.
+        /// Performs an explicit conversion from <see cref="Int4" /> to <see cref="Point" />.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Int2(Int4 value) => new Int2(value.X, value.Y);
+        public static explicit operator Point(Int4 value) => new Point(value.X, value.Y);
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="Int4" /> to <see cref="Int3" />.

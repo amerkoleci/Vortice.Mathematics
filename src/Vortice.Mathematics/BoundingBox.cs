@@ -12,7 +12,6 @@ namespace Vortice.Mathematics
     /// <summary>
     /// Defines an axis-aligned box-shaped 3D volume.
     /// </summary>
-    [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     {
