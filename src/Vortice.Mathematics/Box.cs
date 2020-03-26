@@ -85,9 +85,9 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Initializes a new instance of <see cref="Box"/> structure.
         /// </summary>
-        /// <param name="offset">The <see cref="Offset3D"/> containing Left, Top and Front coordiantes.</param>
-        /// <param name="extent">The <see cref="Extent3D"/> containing Width, Height and Depth.</param>
-        public Box(in Offset3D offset, in Extent3D extent)
+        /// <param name="offset">The <see cref="Point3"/> containing Left, Top and Front coordiantes.</param>
+        /// <param name="extent">The <see cref="Size3"/> containing Width, Height and Depth.</param>
+        public Box(in Point3 offset, in Size3 extent)
         {
             Left = offset.X;
             Top = offset.Y;

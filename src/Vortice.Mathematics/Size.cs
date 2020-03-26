@@ -21,6 +21,11 @@ namespace Vortice.Mathematics
         public static readonly Size Empty = default;
 
         /// <summary>
+        /// A special valued <see cref="Size"/>.
+        /// </summary>
+        public static readonly Size WholeSize = new Size(~0, ~0);
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Size" /> struct.
         /// </summary>
         /// <param name="width">The width of the size.</param>
