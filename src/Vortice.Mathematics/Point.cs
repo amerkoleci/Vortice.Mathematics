@@ -91,6 +91,20 @@ namespace Vortice.Mathematics
         public static implicit operator Vector2(Point value) => new Vector2(value.X, value.Y);
 
         /// <summary>
+        /// Performs an implicit conversion from <see cref="Point"/> to <see cref="System.Drawing.Point" />.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator System.Drawing.Point(Point value) => new System.Drawing.Point(value.X, value.Y);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="System.Drawing.Point" /> to <see cref="Point"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator Point(System.Drawing.Point value) => new Point(value.X, value.Y);
+
+        /// <summary>
         /// Performs an explicit conversion from <see cref="Point"/> to <see cref="Size" />.
         /// </summary>
         /// <param name="value">The value to convert.</param>

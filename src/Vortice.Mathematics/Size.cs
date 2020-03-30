@@ -85,11 +85,18 @@ namespace Vortice.Mathematics
             new Size(left.Width - right.Width, left.Height - right.Height);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cre ="SizeI"/> to <see cref="System.Drawing.Size" />.
+        /// Performs an implicit conversion from <see cref="Size"/> to <see cref="System.Drawing.Size" />.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>
         public static implicit operator System.Drawing.Size(Size value) => new System.Drawing.Size(value.Width, value.Height);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="System.Drawing.Size" /> to <see cref="Size"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator Size(System.Drawing.Size value) => new Size(value.Width, value.Height);
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="Size"/> to <see cref="Point"/>.

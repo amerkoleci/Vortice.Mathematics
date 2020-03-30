@@ -200,28 +200,35 @@ namespace Vortice.Mathematics
         public bool IsEmpty => (Width == 0) && (Height == 0) && (X == 0) && (Y == 0);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cre ="Rectangle"/> to <see cref="RectangleF" />.
+        /// Performs an implicit conversion from <see cref="Rectangle"/> to <see cref="RectangleF" />.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>
         public static implicit operator RectangleF(Rectangle value) => new RectangleF(value.X, value.Y, value.Width, value.Height);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cre ="Rectangle"/> to <see cref="System.Drawing.Rectangle" />.
+        /// Performs an implicit conversion from <see cref="Rectangle"/> to <see cref="System.Drawing.Rectangle" />.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>
         public static implicit operator System.Drawing.Rectangle(Rectangle value) => new System.Drawing.Rectangle(value.X, value.Y, value.Width, value.Height);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cre ="Rectangle"/> to <see cref="System.Drawing.RectangleF" />.
+        /// Performs an implicit conversion from <see cref="System.Drawing.Rectangle"/> to <see cref="Rectangle" />.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator Rectangle(System.Drawing.Rectangle value) => new Rectangle(value.X, value.Y, value.Width, value.Height);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Rectangle"/> to <see cref="System.Drawing.RectangleF" />.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>
         public static implicit operator System.Drawing.RectangleF(Rectangle value) => new System.Drawing.RectangleF(value.X, value.Y, value.Width, value.Height);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cre ="Rectangle"/> to <see cref="Vector4" />.
+        /// Performs an implicit conversion from <see cref="Rectangle"/> to <see cref="Vector4" />.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>

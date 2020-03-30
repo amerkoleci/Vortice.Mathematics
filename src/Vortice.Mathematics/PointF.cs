@@ -154,6 +154,13 @@ namespace Vortice.Mathematics
         public static implicit operator System.Drawing.PointF(PointF value) => new System.Drawing.PointF(value.X, value.Y);
 
         /// <summary>
+        /// Performs an implicit conversion from <see cref="System.Drawing.PointF" /> to <see cref="PointF"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator PointF(System.Drawing.PointF value) => new PointF(value.X, value.Y);
+
+        /// <summary>
         /// Performs an explicit conversion from <see cref="PointF"/> to <see cref="Point" />.
         /// </summary>
         /// <param name="value">The value to convert.</param>

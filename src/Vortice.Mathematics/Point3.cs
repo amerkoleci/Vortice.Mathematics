@@ -121,7 +121,7 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cre ="Point3"/> to <see cref="Vector3" />.
+        /// Performs an explicit conversion from <see cref="Point3"/> to <see cref="Vector3" />.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>

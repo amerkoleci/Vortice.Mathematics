@@ -248,10 +248,7 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Color(System.Drawing.Color value)
-        {
-            return new Color(value.R, value.G, value.B, value.A);
-        }
+        public static implicit operator Color(System.Drawing.Color value) => new Color(value.R, value.G, value.B, value.A);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Color"/> to <see cref="System.Drawing.Color"/>.

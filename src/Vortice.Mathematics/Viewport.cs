@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace Vortice.Mathematics
 {
@@ -16,36 +17,6 @@ namespace Vortice.Mathematics
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Viewport : IEquatable<Viewport>
     {
-        /// <summary>
-        /// Position of the pixel coordinate of the upper-left corner of the viewport.
-        /// </summary>
-        public float X;
-
-        /// <summary>
-        /// Position of the pixel coordinate of the upper-left corner of the viewport.
-        /// </summary>
-        public float Y;
-
-        /// <summary>
-        /// Width dimension of the viewport.
-        /// </summary>
-        public float Width;
-
-        /// <summary>
-        /// Height dimension of the viewport.
-        /// </summary>
-        public float Height;
-
-        /// <summary>
-        /// Gets or sets the minimum depth of the clip volume.
-        /// </summary>
-        public float MinDepth;
-
-        /// <summary>
-        /// Gets or sets the maximum depth of the clip volume.
-        /// </summary>
-        public float MaxDepth;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Viewport"/> struct.
         /// </summary>
@@ -100,11 +71,25 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Initializes a new instance of the <see cref="Viewport"/> struct.
         /// </summary>
+        /// <param name="bounds">A <see cref="Rectangle"/> that defines the location and size of the viewport in a render target.</param>
+        public Viewport(Rectangle bounds)
+        {
+            X = bounds.X;
+            Y = bounds.Y;
+            Width = bounds.Width;
+            Height = bounds.Height;
+            MinDepth = 0.0f;
+            MaxDepth = 1.0f;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Viewport"/> struct.
+        /// </summary>
         /// <param name="bounds">A <see cref="RectangleF"/> that defines the location and size of the viewport in a render target.</param>
         public Viewport(RectangleF bounds)
         {
-            X = bounds.Left;
-            Y = bounds.Top;
+            X = bounds.X;
+            Y = bounds.Y;
             Width = bounds.Width;
             Height = bounds.Height;
             MinDepth = 0.0f;
@@ -124,6 +109,37 @@ namespace Vortice.Mathematics
             MinDepth = 0.0f;
             MaxDepth = 1.0f;
         }
+
+
+        /// <summary>
+        /// Position of the pixel coordinate of the upper-left corner of the viewport.
+        /// </summary>
+        public float X;
+
+        /// <summary>
+        /// Position of the pixel coordinate of the upper-left corner of the viewport.
+        /// </summary>
+        public float Y;
+
+        /// <summary>
+        /// Width dimension of the viewport.
+        /// </summary>
+        public float Width;
+
+        /// <summary>
+        /// Height dimension of the viewport.
+        /// </summary>
+        public float Height;
+
+        /// <summary>
+        /// Gets or sets the minimum depth of the clip volume.
+        /// </summary>
+        public float MinDepth;
+
+        /// <summary>
+        /// Gets or sets the maximum depth of the clip volume.
+        /// </summary>
+        public float MaxDepth;
 
         /// <summary>
         /// Gets or sets the bounds of the viewport.
@@ -154,26 +170,123 @@ namespace Vortice.Mathematics
                     return Width / Height;
                 }
 
-                return 0f;
+                return 0.0f;
             }
         }
 
+        public Vector3 Project(Vector3 source, Matrix4x4 worldViewProjection)
+        {
+            float halfViewportWidth = Width * 0.5f;
+            float halfViewportHeight = Height * 0.5f;
+
+            Vector3 scale = new Vector3(halfViewportWidth, -halfViewportHeight, MaxDepth - MinDepth);
+            Vector3 offset = new Vector3(X + halfViewportWidth, Y + halfViewportHeight, MinDepth);
+
+            var result = Vector3.Transform(source, worldViewProjection);
+            result = VectorEx.MultiplyAdd(result, scale, offset);
+            return result;
+        }
+
+        public Vector3 Project(Vector3 source, Matrix4x4 projection, Matrix4x4 view, Matrix4x4 world)
+        {
+            float halfViewportWidth = Width * 0.5f;
+            float halfViewportHeight = Height * 0.5f;
+
+            Vector3 scale = new Vector3(halfViewportWidth, -halfViewportHeight, MaxDepth - MinDepth);
+            Vector3 offset = new Vector3(X + halfViewportWidth, Y + halfViewportHeight, MinDepth);
+
+            Matrix4x4 transform = Matrix4x4.Multiply(world, view);
+            transform = Matrix4x4.Multiply(transform, projection);
+
+            var result = Vector3.Transform(source, transform);
+            result = VectorEx.MultiplyAdd(result, scale, offset);
+            return result;
+        }
+
+        public Vector3 Unproject(Vector3 source, Matrix4x4 projection, Matrix4x4 view, Matrix4x4 world)
+        {
+            Vector3 scale = new Vector3(Width * 0.5f, -Height * 0.5f, MaxDepth - MinDepth);
+            scale = Vector3.Divide(Vector3.One, scale);
+
+            Vector3 offset = new Vector3(-X, -Y, -MinDepth);
+            offset = VectorEx.MultiplyAdd(scale, offset, new Vector3(-1.0f, 1.0f, 0.0f));
+
+            Matrix4x4 transform = Matrix4x4.Multiply(world, view);
+            transform = Matrix4x4.Multiply(transform, projection);
+            Matrix4x4.Invert(transform, out transform);
+
+            Vector3 result = VectorEx.MultiplyAdd(source, scale, offset);
+            return Vector3.Transform(result, transform);
+        }
+
+        public static RectangleF ComputeDisplayArea(ViewportScaling scaling, int backBufferWidth, int backBufferHeight, int outputWidth, int outputHeight)
+        {
+            switch (scaling)
+            {
+                case ViewportScaling.Stretch:
+                    // Output fills the entire window area
+                    return new RectangleF(outputWidth, outputHeight);
+
+                case ViewportScaling.AspectRatioStretch:
+                    // Output fills the window area but respects the original aspect ratio, using pillar boxing or letter boxing as required
+                    // Note: This scaling option is not supported for legacy Win32 windows swap chains
+                    {
+                        Debug.Assert(backBufferHeight > 0);
+                        float aspectRatio = (float)backBufferWidth / backBufferHeight;
+
+                        // Horizontal fill
+                        float scaledWidth = outputWidth;
+                        float scaledHeight = outputWidth / aspectRatio;
+                        if (scaledHeight >= outputHeight)
+                        {
+                            // Do vertical fill
+                            scaledWidth = outputHeight * aspectRatio;
+                            scaledHeight = outputHeight;
+                        }
+
+                        float offsetX = (outputWidth - scaledWidth) * 0.5f;
+                        float offsetY = (outputHeight - scaledHeight) * 0.5f;
+
+                        var result = new RectangleF(offsetX, offsetY, scaledWidth, scaledHeight);
+
+                        // Clip to display window
+                        result.X = Math.Max(0, result.X);
+                        result.Y = Math.Max(0, result.Y);
+                        result.Width = Math.Min(outputWidth, result.Width);
+                        result.Height = Math.Min(outputHeight, result.Height);
+                        return result;
+                    }
+
+                case ViewportScaling.None:
+                default:
+                    // Output is displayed in the upper left corner of the window area
+                    return new RectangleF(Math.Min(backBufferWidth, outputWidth), Math.Min(backBufferHeight, outputHeight));
+            }
+
+        }
+
+        public static RectangleF ComputeTitleSafeArea(int backBufferWidth, int backBufferHeight)
+        {
+            float safew = (backBufferWidth + 19.0f) / 20.0f;
+            float safeh = (backBufferHeight + 19.0f) / 20.0f;
+
+            return RectangleF.FromLTRB(
+                safew,
+                safeh,
+                backBufferWidth - safew + 0.5f,
+                backBufferHeight - safeh + 0.5f
+                );
+        }
+
         /// <inheritdoc/>
-		public override bool Equals(object obj) => obj is Viewport value && Equals(ref value);
+        public override bool Equals(object obj) => obj is Viewport value && Equals(value);
 
         /// <summary>
         /// Determines whether the specified <see cref="Viewport"/> is equal to this instance.
         /// </summary>
         /// <param name="other">The <see cref="Viewport"/> to compare with this instance.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Viewport other) => Equals(ref other);
-
-        /// <summary>
-		/// Determines whether the specified <see cref="Viewport"/> is equal to this instance.
-		/// </summary>
-		/// <param name="other">The <see cref="Viewport"/> to compare with this instance.</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref Viewport other)
+        public bool Equals(Viewport other) 
         {
             return MathHelper.NearEqual(X, other.X)
                 && MathHelper.NearEqual(Y, other.Y)
@@ -192,7 +305,7 @@ namespace Vortice.Mathematics
         /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Viewport left, Viewport right) => left.Equals(ref right);
+        public static bool operator ==(Viewport left, Viewport right) => left.Equals(right);
 
         /// <summary>
         /// Compares two <see cref="Viewport"/> objects for inequality.
@@ -203,27 +316,22 @@ namespace Vortice.Mathematics
         /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Viewport left, Viewport right) => !left.Equals(ref right);
+        public static bool operator !=(Viewport left, Viewport right) => !left.Equals(right);
 
         /// <inheritdoc/>
-		public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = X.GetHashCode();
-                hashCode = (hashCode * 397) ^ Y.GetHashCode();
-                hashCode = (hashCode * 397) ^ Width.GetHashCode();
-                hashCode = (hashCode * 397) ^ Height.GetHashCode();
-                hashCode = (hashCode * 397) ^ MinDepth.GetHashCode();
-                hashCode = (hashCode * 397) ^ MaxDepth.GetHashCode();
-                return hashCode;
-            }
-        }
+		public override int GetHashCode() => HashCode.Combine(X, Y, Width, Height, MinDepth, MaxDepth);
 
         /// <inheritdoc/>
         public override string ToString()
         {
             return $"{nameof(X)}: {X}, {nameof(Y)}: {Y}, {nameof(Width)}: {Width}, {nameof(Height)}: {Height}, {nameof(MinDepth)}: {MinDepth}, {nameof(MaxDepth)}: {MaxDepth}";
         }
+    }
+
+    public enum ViewportScaling
+    {
+        Stretch,
+        None,
+        AspectRatioStretch
     }
 }

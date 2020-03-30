@@ -378,11 +378,18 @@ namespace Vortice.Mathematics
         public static implicit operator Rectangle(RectangleF value) => Rectangle.Truncate(value);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cre ="Rectangle"/> to <see cref="System.Drawing.RectangleF" />.
+        /// Performs an implicit conversion from <see cref="Rectangle"/> to <see cref="System.Drawing.RectangleF" />.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>
         public static implicit operator System.Drawing.RectangleF(RectangleF value) => new System.Drawing.RectangleF(value.X, value.Y, value.Width, value.Height);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="System.Drawing.RectangleF"/> to <see cref="RectangleF" />.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator RectangleF(System.Drawing.RectangleF value) => new RectangleF(value.X, value.Y, value.Width, value.Height);
 
         /// <summary>
         /// Creates a new <see cref='Rectangle'/> with the specified left, top, right and bottom coordinate.

@@ -70,18 +70,25 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cre ="Size"/> to <see cref="Vector2" />.
+        /// Performs an implicit conversion from <see cref="Size"/> to <see cref="Vector2" />.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>
         public static implicit operator Vector2(SizeF value) => new Vector2(value.Width, value.Height);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cre ="Size"/> to <see cref="System.Drawing.SizeF" />.
+        /// Performs an implicit conversion from <see cref="Size"/> to <see cref="System.Drawing.SizeF" />.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>
         public static implicit operator System.Drawing.SizeF(SizeF value) => new System.Drawing.SizeF(value.Width, value.Height);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="System.Drawing.SizeF" /> to <see cref="SizeF"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator SizeF(System.Drawing.SizeF value) => new SizeF(value.Width, value.Height);
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="SizeF"/> to <see cref="PointF"/>.
