@@ -35,8 +35,8 @@ namespace Vortice.Mathematics
         /// <param name="value">The horizontal and vertical position of the point.</param>
         public Point(int value)
         {
-            X = LowInt16(value);
-            Y = HighInt16(value);
+            _x = LowInt16(value);
+            _y = HighInt16(value);
         }
 
         /// <summary>
@@ -46,8 +46,8 @@ namespace Vortice.Mathematics
         /// <param name="y">Initial value for the Y component of the point.</param>
         public Point(int x, int y)
         {
-            X = x;
-            Y = y;
+            _x = x;
+            _y = y;
         }
 
         /// <summary>
@@ -56,19 +56,30 @@ namespace Vortice.Mathematics
         /// <param name="size">The <see cref="Size"/> to initialize from.</param>
         public Point(Size size)
         {
-            X = size.Width;
-            Y = size.Height;
+            _x = size.Width;
+            _y = size.Height;
         }
 
+#pragma warning disable IDE0032 // DO NOT REMOVE UNLESS https://github.com/Microsoft/dotnet/issues/807 IS FIXED
+        private int _x;
+        private int _y;
+#pragma warning restore IDE0032
         /// <summary>
         /// Gets or sets the x-coordinate of this <see cref="Point"/>.
         /// </summary>
-        public int X { get; set; }
-
+        public int X
+        {
+            get => _x;
+            set => _x = value;
+        }
         /// <summary>
         /// Gets or sets the y-coordinate of this <see cref="Point"/>.
         /// </summary>
-        public int Y { get; set; }
+        public int Y
+        {
+            get => _y;
+            set => _y = value;
+        }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Point"/> is empty.

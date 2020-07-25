@@ -37,8 +37,8 @@ namespace Vortice.Mathematics
         /// <param name="y">Initial value for the Y component of the point.</param>
         public PointF(float x, float y)
         {
-            X = x;
-            Y = y;
+            _x = x;
+            _y = y;
         }
 
         /// <summary>
@@ -47,19 +47,29 @@ namespace Vortice.Mathematics
         /// <param name="size">The <see cref="SizeF"/> to initialize from.</param>
         public PointF(SizeF size)
         {
-            X = size.Width;
-            Y = size.Height;
+            _x = size.Width;
+            _y = size.Height;
         }
-
+#pragma warning disable IDE0032 // DO NOT REMOVE UNLESS https://github.com/Microsoft/dotnet/issues/807 IS FIXED
+        private float _x;
+        private float _y;
+#pragma warning restore IDE0032
         /// <summary>
         /// Gets or sets the x-coordinate of this <see cref="PointF"/>.
         /// </summary>
-        public float X { get; set; }
-
+        public float X
+        {
+            get => _x;
+            set => _x = value;
+        }
         /// <summary>
         /// Gets or sets the y-coordinate of this <see cref="PointF"/>.
         /// </summary>
-        public float Y { get; set; }
+        public float Y
+        {
+            get => _y;
+            set => _y = value;
+        }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="PointF"/> is empty.
@@ -67,9 +77,9 @@ namespace Vortice.Mathematics
         [EditorBrowsable(EditorBrowsableState.Never)]
         public readonly bool IsEmpty => this == Empty;
 
-        public readonly float Length => MathF.Sqrt(X * X + Y * Y);
+        public readonly float Length => MathF.Sqrt(_x * _x + _y * _y);
 
-        public readonly float LengthSquared => X * X + Y * Y;
+        public readonly float LengthSquared => _x * _x + _y * _y;
 
         public void Offset(PointF p)
         {

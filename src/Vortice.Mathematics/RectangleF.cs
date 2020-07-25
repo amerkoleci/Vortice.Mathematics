@@ -33,10 +33,10 @@ namespace Vortice.Mathematics
         /// <param name="height">The height of the rectangle.</param>
 		public RectangleF(float x, float y, float width, float height)
         {
-            X = x;
-            Y = y;
-            Width = width;
-            Height = height;
+            _x = x;
+            _y = y;
+            _width = width;
+            _height = height;
         }
 
 
@@ -47,10 +47,10 @@ namespace Vortice.Mathematics
         /// <param name="height">The height of the rectangle.</param>
         public RectangleF(float width, float height)
         {
-            X = 0.0f;
-            Y = 0.0f;
-            Width = width;
-            Height = height;
+            _x = 0.0f;
+            _y = 0.0f;
+            _width = width;
+            _height = height;
         }
 
         /// <summary>
@@ -64,31 +64,43 @@ namespace Vortice.Mathematics
         /// </param>
         public RectangleF(PointF point, SizeF size)
         {
-            X = point.X;
-            Y = point.Y;
-            Width = size.Width;
-            Height = size.Height;
+            _x = point.X;
+            _y = point.Y;
+            _width = size.Width;
+            _height = size.Height;
         }
-
+#pragma warning disable IDE0032 // DO NOT REMOVE UNLESS https://github.com/Microsoft/dotnet/issues/807 IS FIXED
+        private float _x;
+        private float _y;
+        private float _width;
+        private float _height;
+#pragma warning restore IDE0032
         /// <summary>
         /// Gets or sets the x-coordinate of this <see cref="RectangleF"/>.
         /// </summary>
-        public float X { get; set; }
-
+        public float X
+        {
+            get => _x;
+            set => _x = value;
+        }
         /// <summary>
         /// Gets or sets the y-coordinate of this <see cref="RectangleF"/>.
         /// </summary>
-        public float Y { get; set; }
+        public float Y
+        {
+            get => _y;
+            set => _y = value;
+        }
 
         /// <summary>
         /// Gets or sets the width of this <see cref="RectangleF"/>.
         /// </summary>
-        public float Width { get; set; }
+        public float Width { get => _width; set => _width = value; }
 
         /// <summary>
         /// Gets or sets the height of this <see cref="RectangleF"/>.
         /// </summary>
-        public float Height { get; set; }
+        public float Height { get => _height; set => _height = value; }
 
         /// <summary>
         /// Gets or sets the upper-left value of the <see cref="RectangleF"/>.

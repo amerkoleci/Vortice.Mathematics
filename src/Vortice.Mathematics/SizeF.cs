@@ -28,8 +28,8 @@ namespace Vortice.Mathematics
         /// <param name="height">The height of the size.</param>
         public SizeF(float width, float height)
         {
-            Width = width;
-            Height = height;
+            _width = width;
+            _height = height;
         }
 
         /// <summary>
@@ -38,19 +38,23 @@ namespace Vortice.Mathematics
         /// <param name="point">The point.</param>
         public SizeF(PointF point)
         {
-            Width = point.X;
-            Height = point.Y;
+            _width = point.X;
+            _height = point.Y;
         }
 
+#pragma warning disable IDE0032 // DO NOT REMOVE UNLESS https://github.com/Microsoft/dotnet/issues/807 IS FIXED
+        private float _width;
+        private float _height;
+#pragma warning restore IDE0032
         /// <summary>
         /// Gets or sets the width of this <see cref="SizeF"/>.
         /// </summary>
-        public float Width { get; set; }
+        public float Width { get => _width; set => _width = value; }
 
         /// <summary>
         /// Gets or sets the height of this <see cref="SizeF"/>.
         /// </summary>
-        public float Height { get; set; }
+        public float Height { get => _height; set => _height = value; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="SizeF"/> is empty.

@@ -86,11 +86,13 @@ namespace Vortice.Mathematics
         /// Minimum value of the number.
         /// </summary>
         public static readonly float MinValue = 6.103516E-05f;
-
+#pragma warning disable IDE0032 // DO NOT REMOVE UNLESS https://github.com/Microsoft/dotnet/issues/807 IS FIXED
+        private ushort _packedValue;
+#pragma warning disable IDE0032
         /// <summary>
         /// Gets or sets the packed value of this <see cref="Half"/> structure. 
         /// </summary>
-        public ushort PackedValue { get; set; }
+        public ushort PackedValue { get => _packedValue; set => _packedValue = value; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Half"/> structure.
@@ -98,7 +100,7 @@ namespace Vortice.Mathematics
         /// <param name="value">The floating point value that should be stored in 16 bit format.</param>
         public Half(float value)
         {
-            PackedValue = HalfUtils.ConvertFloatToHalf(value);
+            _packedValue = HalfUtils.ConvertFloatToHalf(value);
         }
 
         /// <summary>
@@ -107,7 +109,7 @@ namespace Vortice.Mathematics
         /// <param name="value">The pack value.</param>
         public Half(ushort value)
         {
-            PackedValue = value;
+            _packedValue = value;
         }
 
         /// <summary>

@@ -32,8 +32,8 @@ namespace Vortice.Mathematics
         /// <param name="height">The height of the size.</param>
         public Size(int width, int height)
         {
-            Width = width;
-            Height = height;
+            _width = width;
+            _height = height;
         }
 
         /// <summary>
@@ -42,19 +42,22 @@ namespace Vortice.Mathematics
         /// <param name="point">The point.</param>
         public Size(Point point)
         {
-            Width = point.X;
-            Height = point.Y;
+            _width = point.X;
+            _height = point.Y;
         }
-
+#pragma warning disable IDE0032 // DO NOT REMOVE UNLESS https://github.com/Microsoft/dotnet/issues/807 IS FIXED
+        private int _width;
+        private int _height;
+#pragma warning restore IDE0032 // DO NOT REMOVE UNLESS https://github.com/Microsoft/dotnet/issues/807 IS FIXED
         /// <summary>
         /// Gets or sets the width of this <see cref="Size"/>.
         /// </summary>
-        public int Width { get; set; }
+        public int Width { get => _width; set => _width = value; }
 
         /// <summary>
         /// Gets or sets the height of this <see cref="Size"/>.
         /// </summary>
-        public int Height { get; set; }
+        public int Height { get => _height; set => _height = value; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Size"/> is empty.
@@ -62,7 +65,7 @@ namespace Vortice.Mathematics
         [EditorBrowsable(EditorBrowsableState.Never)]
         public readonly bool IsEmpty => this == Empty;
 
-        public readonly Point ToPoint() => new Point(Width, Height);
+        public readonly Point ToPoint() => new Point(_width, _height);
 
         public static Size Add(Size left, Size right) => left + right;
         public static Size Subtract(Size left, Size right) => left - right;
