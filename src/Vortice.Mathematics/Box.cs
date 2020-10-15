@@ -2,8 +2,10 @@
 // Distributed under the MIT license. See the LICENSE file in the project root for more information.
 
 using System;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Vortice.Mathematics
 {
@@ -11,57 +13,12 @@ namespace Vortice.Mathematics
     /// Represents a 3D box.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Box : IEquatable<Box>, IFormattable
+    public readonly struct Box : IEquatable<Box>, IFormattable
     {
         /// <summary>
         /// A <see cref="Box"/> with all of its components set to zero.
         /// </summary>
         public static readonly Box Zero = new Box();
-
-        /// <summary>
-        /// The x position of the left hand side of the box.
-        /// </summary>
-        public int Left;
-
-        /// <summary>
-        /// The y position of the top of the box.
-        /// </summary>
-        public int Top;
-
-        /// <summary>
-        /// The z position of the front of the box.
-        /// </summary>
-        public int Front;
-
-        /// <summary>
-        /// The x position of the right hand side of the box, plus 1. This means that Right - Left equals the width of the box.
-        /// </summary>
-        public int Right;
-
-        /// <summary>
-        /// The y position of the bottom of the box, plus 1. This means that top - bottom equals the height of the box.
-        /// </summary>
-        public int Bottom;
-
-        /// <summary>
-        /// The z position of the back of the box, plus 1. This means that front - back equals the depth of the box.
-        /// </summary>
-        public int Back;
-
-        /// <summary>
-        /// The width of the box (equals to Right - Left).
-        /// </summary>
-        public int Width => unchecked(Right - Left);
-
-        /// <summary>
-        /// The height of the box (equals to Top - Bottom).
-        /// </summary>
-        public int Height => unchecked(Top - Bottom);
-
-        /// <summary>
-        /// The depth of the box (equals to Front - Back).
-        /// </summary>
-        public int Depth => unchecked(Front - Back);
 
         /// <summary>
         /// Initializes a new instance of <see cref="Box"/> structure.
@@ -97,8 +54,53 @@ namespace Vortice.Mathematics
             Back = offset.Z + extent.Depth;
         }
 
+        /// <summary>
+        /// The x position of the left hand side of the box.
+        /// </summary>
+        public int Left { get; }
+
+        /// <summary>
+        /// The y position of the top of the box.
+        /// </summary>
+        public int Top { get; }
+
+        /// <summary>
+        /// The z position of the front of the box.
+        /// </summary>
+        public int Front { get; }
+
+        /// <summary>
+        /// The x position of the right hand side of the box, plus 1. This means that Right - Left equals the width of the box.
+        /// </summary>
+        public int Right { get; }
+
+        /// <summary>
+        /// The y position of the bottom of the box, plus 1. This means that top - bottom equals the height of the box.
+        /// </summary>
+        public int Bottom { get; }
+
+        /// <summary>
+        /// The z position of the back of the box, plus 1. This means that front - back equals the depth of the box.
+        /// </summary>
+        public int Back { get; }
+
+        /// <summary>
+        /// The width of the box (equals to Right - Left).
+        /// </summary>
+        public int Width => unchecked(Right - Left);
+
+        /// <summary>
+        /// The height of the box (equals to Top - Bottom).
+        /// </summary>
+        public int Height => unchecked(Top - Bottom);
+
+        /// <summary>
+        /// The depth of the box (equals to Front - Back).
+        /// </summary>
+        public int Depth => unchecked(Front - Back);
+
         /// <inheritdoc/>
-		public override bool Equals(object obj) => obj is Box value && Equals(ref value);
+		public override bool Equals(object? obj) => obj is Box value && Equals(ref value);
 
         /// <summary>
         /// Determines whether the specified <see cref="Box"/> is equal to this instance.
@@ -147,27 +149,36 @@ namespace Vortice.Mathematics
         /// <inheritdoc/>
 		public override int GetHashCode()
         {
-            unchecked
+            var hashCode = new HashCode();
             {
-                var hashCode = Left.GetHashCode();
-                hashCode = (hashCode * 397) ^ Top.GetHashCode();
-                hashCode = (hashCode * 397) ^ Front.GetHashCode();
-                hashCode = (hashCode * 397) ^ Right.GetHashCode();
-                hashCode = (hashCode * 397) ^ Bottom.GetHashCode();
-                hashCode = (hashCode * 397) ^ Back.GetHashCode();
-                return hashCode;
+                hashCode.Add(Left);
+                hashCode.Add(Top);
+                hashCode.Add(Front);
+                hashCode.Add(Right);
+                hashCode.Add(Bottom);
+                hashCode.Add(Back);
             }
+            return hashCode.ToHashCode();
         }
 
         /// <inheritdoc/>
-        public override string ToString()
-        {
-            return $"{nameof(Left)}={Left}, {nameof(Top)}={Top}, {nameof(Front)}={Front}, {nameof(Right)}={Right}, {nameof(Bottom)}={Bottom}, {nameof(Back)}={Back}";
-        }
+        public override string ToString() => ToString(format: null, formatProvider: null);
 
-        public string ToString(string format, IFormatProvider formatProvider)
+        /// <inheritdoc />
+        public string ToString(string? format, IFormatProvider? formatProvider)
         {
-            return $"{nameof(Left)}={Left.ToString(format, formatProvider)}, {nameof(Top)}={Top.ToString(format, formatProvider)}, {nameof(Front)}={Front.ToString(format, formatProvider)}, {nameof(Right)}={Right.ToString(format, formatProvider)}, {nameof(Bottom)}={Bottom.ToString(format, formatProvider)}, {nameof(Back)}={Back.ToString(format, formatProvider)}";
+            var separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
+
+            return new StringBuilder()
+                .Append('<')
+                .Append(Left.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(Top.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(Front.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(Right.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(Bottom.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(Back.ToString(format, formatProvider))
+                .Append('>')
+                .ToString();
         }
     }
 }

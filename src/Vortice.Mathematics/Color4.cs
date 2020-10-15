@@ -2,9 +2,11 @@
 // Distributed under the MIT license. See the LICENSE file in the project root for more information.
 
 using System;
+using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Vortice.Mathematics
 {
@@ -13,28 +15,8 @@ namespace Vortice.Mathematics
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Color4 : IEquatable<Color4>
+    public readonly struct Color4 : IEquatable<Color4>, IFormattable
     {
-        /// <summary>
-        /// Red component of the color.
-        /// </summary>
-        public float R;
-
-        /// <summary>
-        /// Green component of the color.
-        /// </summary>
-        public float G;
-
-        /// <summary>
-        /// Blue component of the color.
-        /// </summary>
-        public float B;
-
-        /// <summary>
-        /// Alpha component of the color.
-        /// </summary>
-        public float A;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Color4"/> struct.
         /// </summary>
@@ -122,6 +104,26 @@ namespace Vortice.Mathematics
             A = color.A / 255.0f;
         }
 
+        /// <summary>
+        /// Red component of the color.
+        /// </summary>
+        public float R { get; }
+
+        /// <summary>
+        /// Green component of the color.
+        /// </summary>
+        public float G { get; }
+
+        /// <summary>
+        /// Blue component of the color.
+        /// </summary>
+        public float B { get; }
+
+        /// <summary>
+        /// Alpha component of the color.
+        /// </summary>
+        public float A { get; }
+
         public void Deconstruct(out float r, out float g, out float b, out float a)
         {
             r = R;
@@ -202,27 +204,19 @@ namespace Vortice.Mathematics
         /// <returns>The result of the conversion.</returns>
         public static explicit operator System.Drawing.Color(Color4 value)
         {
-            value.ToBgra(out var red, out var green, out var blue, out var alpha);
+            value.ToBgra(out byte red, out byte green, out byte blue, out byte alpha);
             return System.Drawing.Color.FromArgb(alpha, red, green, blue);
         }
 
-
         /// <inheritdoc/>
-		public override bool Equals(object obj) => obj is Color4 value && Equals(ref value);
+		public override bool Equals(object? obj) => obj is Color4 value && Equals(value);
 
         /// <summary>
         /// Determines whether the specified <see cref="Color4"/> is equal to this instance.
         /// </summary>
         /// <param name="other">The <see cref="Color4"/> to compare with this instance.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Color4 other) => Equals(ref other);
-
-        /// <summary>
-		/// Determines whether the specified <see cref="Color4"/> is equal to this instance.
-		/// </summary>
-		/// <param name="other">The <see cref="Color4"/> to compare with this instance.</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref Color4 other)
+        public bool Equals(Color4 other)
         {
             return R.Equals(other.R)
                 && G.Equals(other.G)
@@ -239,7 +233,7 @@ namespace Vortice.Mathematics
         /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Color4 left, Color4 right) => left.Equals(ref right);
+        public static bool operator ==(Color4 left, Color4 right) => left.Equals(right);
 
         /// <summary>
         /// Compares two <see cref="Color4"/> objects for inequality.
@@ -250,25 +244,37 @@ namespace Vortice.Mathematics
         /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Color4 left, Color4 right) => !left.Equals(ref right);
+        public static bool operator !=(Color4 left, Color4 right) => !left.Equals(right);
 
         /// <inheritdoc/>
 		public override int GetHashCode()
         {
-            unchecked
+            var hashCode = new HashCode();
             {
-                var hashCode = R.GetHashCode();
-                hashCode = (hashCode * 397) ^ G.GetHashCode();
-                hashCode = (hashCode * 397) ^ B.GetHashCode();
-                hashCode = (hashCode * 397) ^ A.GetHashCode();
-                return hashCode;
+                hashCode.Add(R);
+                hashCode.Add(G);
+                hashCode.Add(B);
+                hashCode.Add(A);
             }
+            return hashCode.ToHashCode();
         }
 
         /// <inheritdoc/>
-        public override string ToString()
+        public override string ToString() => ToString(format: null, formatProvider: null);
+
+        /// <inheritdoc />
+        public string ToString(string? format, IFormatProvider? formatProvider)
         {
-            return $"{nameof(R)}: {R}, {nameof(G)}: {G}, {nameof(B)}: {B}, {nameof(A)}: {A}";
+            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
+
+            return new StringBuilder()
+                .Append('<')
+                .Append(R.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(G.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(B.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(A.ToString(format, formatProvider))
+                .Append('>')
+                .ToString();
         }
     }
 }

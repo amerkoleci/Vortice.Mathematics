@@ -30,40 +30,30 @@ namespace Vortice.Mathematics
     /// Packed vector type containing two 16-bit floating-point values.
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
-    public struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormattable
+    public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormattable
     {
         [FieldOffset(0)]
-        private uint _packedValue;
+        public readonly uint PackedValue;
 
         /// <summary>
         /// Gets or sets the X component of the vector.
         /// </summary>
         [FieldOffset(0)]
-        public Half X;
+        public readonly Half X;
 
         /// <summary>
         /// Gets or sets the Y component of the vector.
         /// </summary>
         [FieldOffset(2)]
-        public Half Y;
-
-        /// <summary>
-        /// Gets or sets the packed value of this <see cref="Half2"/> structure. 
-        /// </summary>
-        public uint PackedValue
-        {
-            get => _packedValue;
-            set => _packedValue = value;
-        }
+        public readonly Half Y;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Half2"/> structure.
         /// </summary>
         /// <param name="x">The X component.</param>
         /// <param name="y">The Y component.</param>
-        public Half2(Half x, Half y)
+        public Half2(Half x, Half y) : this()
         {
-            _packedValue = 0;
             X = x;
             Y = y;
         }
@@ -73,45 +63,51 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="x">The X component.</param>
         /// <param name="y">The Y component.</param>
-        public Half2(float x, float y)
+        public Half2(float x, float y) : this()
         {
-            _packedValue = 0;
             X = new Half(x);
             Y = new Half(y);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:SharpDX.Half2" /> structure.
+        /// Initializes a new instance of the <see cref="Half2" /> structure.
         /// </summary>
         /// <param name="x">The X component.</param>
         /// <param name="y">The Y component.</param>
-        public Half2(ushort x, ushort y)
+        public Half2(ushort x, ushort y) : this()
         {
-            _packedValue = 0;
             X = new Half(x);
             Y = new Half(y);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:SharpDX.Half2" /> structure.
+        /// Initializes a new instance of the <see cref="Half2" /> structure.
         /// </summary>
         /// <param name="value">The value to set for both the X and Y components.</param>
-        public Half2(Half value)
+        public Half2(Half value) : this()
         {
-            _packedValue = 0;
             X = value;
             Y = value;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:SharpDX.Half2" /> structure.
+        /// Initializes a new instance of the <see cref="Half2" /> structure.
         /// </summary>
         /// <param name="value">Value to initialize X and Y components with.</param>
-        public Half2(float value)
+        public Half2(float value) : this()
         {
-            _packedValue = 0;
             X = new Half(value);
             Y = new Half(value);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Half2"/> structure.
+        /// </summary>
+        /// <param name="vector">The <see cref="Vector4"/> to pack from.</param>
+        public Half2(Vector4 vector) : this()
+        {
+            X = new Half(vector.X);
+            Y = new Half(vector.Y);
         }
 
         /// <summary>
@@ -140,21 +136,17 @@ namespace Vortice.Mathematics
         }
 
         #region IPackedVector Implementation
+        uint IPackedVector<uint>.PackedValue => PackedValue;
+
         Vector4 IPackedVector.ToVector4()
         {
-            var vector = ToVector2();
+            Vector2 vector = ToVector2();
             return new Vector4(vector.X, vector.Y, 0.0f, 1.0f);
-        }
-
-        void IPackedVector.PackFromVector4(Vector4 vector)
-        {
-            X = new Half(vector.X);
-            Y = new Half(vector.Y);
         }
         #endregion IPackedVector Implementation
 
         /// <inheritdoc/>
-		public override bool Equals(object obj) => obj is Half2 value && Equals(ref value);
+		public override bool Equals(object? obj) => obj is Half2 value && Equals(ref value);
 
         /// <summary>
         /// Determines whether the specified <see cref="Half2"/> is equal to this instance.
@@ -170,8 +162,8 @@ namespace Vortice.Mathematics
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Half2 other)
         {
-            return X.Equals(ref other.X)
-                && Y.Equals(ref other.Y);
+            return X == other.X
+                && Y == other.Y;
         }
 
         /// <summary>
@@ -199,17 +191,14 @@ namespace Vortice.Mathematics
         /// <inheritdoc/>
 		public override int GetHashCode() => PackedValue.GetHashCode();
 
-        /// <inheritdoc/>
-        public override string ToString()
-        {
-            var vector = ToVector2();
-            return $"{nameof(Half2)}({vector.X}, {vector.Y})";
-        }
+        /// <inheritdoc />
+        public override string ToString() => ToString(format: null, formatProvider: null);
 
-        public string ToString(string format, IFormatProvider formatProvider)
+        /// <inheritdoc />
+        public string ToString(string? format, IFormatProvider? formatProvider)
         {
-            var vector = ToVector2();
-            return $"{nameof(Half2)}({vector.X.ToString(format, formatProvider)}, {vector.Y.ToString(format, formatProvider)})";
+            Vector2 vector = ToVector2();
+            return vector.ToString(format, formatProvider);
         }
 
         private static uint Pack(float x, float y)

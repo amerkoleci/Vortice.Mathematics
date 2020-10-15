@@ -2,9 +2,11 @@
 // Distributed under the MIT license. See the LICENSE file in the project root for more information.
 
 using System;
+using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Vortice.Mathematics
 {
@@ -12,7 +14,7 @@ namespace Vortice.Mathematics
     /// Represents a three dimensional mathematical int vector.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Int3 : IEquatable<Int3>, IFormattable
+    public readonly struct Int3 : IEquatable<Int3>, IFormattable
     {
         /// <summary>
         /// A <see cref="Int3"/> with all of its components set to zero.
@@ -40,21 +42,6 @@ namespace Vortice.Mathematics
         public static readonly Int3 One = new Int3(1, 1, 1);
 
         /// <summary>
-        /// The X component of the vector.
-        /// </summary>
-        public int X;
-
-        /// <summary>
-        /// The Y component of the vector.
-        /// </summary>
-        public int Y;
-
-        /// <summary>
-        /// The Z component of the vector.
-        /// </summary>
-        public int Z;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Int3"/> struct.
         /// </summary>
         /// <param name="value">The value that will be assigned to all components.</param>
@@ -75,6 +62,21 @@ namespace Vortice.Mathematics
             Y = y;
             Z = z;
         }
+
+        /// <summary>
+        /// The X component of the vector.
+        /// </summary>
+        public int X { get; }
+
+        /// <summary>
+        /// The Y component of the vector.
+        /// </summary>
+        public int Y { get; }
+
+        /// <summary>
+        /// The Z component of the vector.
+        /// </summary>
+        public int Z { get; }
 
         public void Deconstruct(out int x, out int y, out int z)
         {
@@ -111,7 +113,7 @@ namespace Vortice.Mathematics
         public static explicit operator Vector3(Int3 value) => new Vector3(value.X, value.Y, value.Z);
 
         /// <inheritdoc/>
-		public override bool Equals(object obj) => obj is Int3 value && Equals(ref value);
+		public override bool Equals(object? obj) => obj is Int3 value && Equals(ref value);
 
         /// <summary>
         /// Determines whether the specified <see cref="Int3"/> is equal to this instance.
@@ -157,24 +159,30 @@ namespace Vortice.Mathematics
         /// <inheritdoc/>
 		public override int GetHashCode()
         {
-            unchecked
+            var hashCode = new HashCode();
             {
-                var hashCode = X.GetHashCode();
-                hashCode = (hashCode * 397) ^ Y.GetHashCode();
-                hashCode = (hashCode * 397) ^ Z.GetHashCode();
-                return hashCode;
+                hashCode.Add(X);
+                hashCode.Add(Y);
+                hashCode.Add(Z);
             }
+            return hashCode.ToHashCode();
         }
 
         /// <inheritdoc/>
-        public override string ToString()
-        {
-            return $"{nameof(Int3)}({X}, {Y}, {Z})";
-        }
+        public override string ToString() => ToString(format: null, formatProvider: null);
 
-        public string ToString(string format, IFormatProvider formatProvider)
+        /// <inheritdoc />
+        public string ToString(string? format, IFormatProvider? formatProvider)
         {
-            return $"{nameof(Int3)}({X.ToString(format, formatProvider)}, {Y.ToString(format, formatProvider)}, {Z.ToString(format, formatProvider)})";
+            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
+
+            return new StringBuilder()
+                .Append('<')
+                .Append(X.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(Y.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(Z.ToString(format, formatProvider))
+                .Append('>')
+                .ToString();
         }
     }
 }

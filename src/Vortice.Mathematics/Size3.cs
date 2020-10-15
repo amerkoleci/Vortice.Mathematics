@@ -3,9 +3,10 @@
 
 using System;
 using System.ComponentModel;
-using System.Numerics;
-using System.Runtime.InteropServices;
+using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Vortice.Mathematics
 {
@@ -13,7 +14,7 @@ namespace Vortice.Mathematics
     /// Stores an ordered pair of integer numbers describing the width, height and depth of a rectangle.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Size3 : IEquatable<Size3>
+    public readonly struct Size3 : IEquatable<Size3>, IFormattable
     {
         /// <summary>
         /// A <see cref="Size3"/> with all of its components set to zero.
@@ -50,22 +51,20 @@ namespace Vortice.Mathematics
             Depth = depth;
         }
 
-
-
         /// <summary>
         /// The width component of the extent.
         /// </summary>
-        public int Width;
+        public int Width { get; }
 
         /// <summary>
         /// The height component of the extent.
         /// </summary>
-        public int Height;
+        public int Height { get; }
 
         /// <summary>
         /// The depth component of the extent.
         /// </summary>
-        public int Depth;
+        public int Depth { get; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Point"/> is empty.
@@ -95,7 +94,7 @@ namespace Vortice.Mathematics
         /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Size3 left, Size3 right) => left.Equals(right);
+        public static bool operator ==(Size3 left, Size3 right) => left.Width == right.Width && left.Height == right.Height && left.Depth == right.Depth;
 
         /// <summary>
         /// Compares two <see cref="Size3"/> objects for inequality.
@@ -106,18 +105,41 @@ namespace Vortice.Mathematics
         /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Size3 left, Size3 right) => !left.Equals(right);
+        public static bool operator !=(Size3 left, Size3 right) => (left.Width != right.Width) || (left.Height != right.Height) || (left.Depth != right.Depth);
 
         /// <inheritdoc/>
-		public override int GetHashCode() => HashCode.Combine(Width, Height, Depth);
+        public override bool Equals(object? obj) => obj is Size3 other && Equals(other);
 
         /// <inheritdoc/>
-        public override string ToString() => $"{{{nameof(Width)}={Width}, {nameof(Height)}={Height}, {nameof(Depth)}={Depth}}}";
+        public bool Equals(Size3 other) => this == other;
 
         /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is Size3 other && Equals(other);
+        public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+            {
+                hashCode.Add(Width);
+                hashCode.Add(Height);
+                hashCode.Add(Depth);
+            }
+            return hashCode.ToHashCode();
+        }
 
         /// <inheritdoc/>
-        public bool Equals(Size3 other) => Width == other.Width && Height == other.Height && Depth == other.Depth;
+        public override string ToString() => ToString(format: null, formatProvider: null);
+
+        /// <inheritdoc />
+        public string ToString(string? format, IFormatProvider? formatProvider)
+        {
+            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
+
+            return new StringBuilder()
+                .Append('<')
+                .Append(Width.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(Height.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(Depth.ToString(format, formatProvider))
+                .Append('>')
+                .ToString();
+        }
     }
 }

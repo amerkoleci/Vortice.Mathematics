@@ -7,14 +7,16 @@
 
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Numerics;
+using System.Text;
 
 namespace Vortice.Mathematics
 {
     /// <summary>
     /// Stores an ordered pair of floating-point numbers describing the width and height of a rectangle.
     /// </summary>
-    public struct SizeF : IEquatable<SizeF>
+    public readonly struct SizeF : IEquatable<SizeF>, IFormattable
     {
         /// <summary>
         /// Represents a <see cref="SizeF"/> that has Width and Height values set to zero.
@@ -45,12 +47,12 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Gets or sets the width of this <see cref="SizeF"/>.
         /// </summary>
-        public float Width { get; set; }
+        public float Width { get; }
 
         /// <summary>
         /// Gets or sets the height of this <see cref="SizeF"/>.
         /// </summary>
-        public float Height { get; set; }
+        public float Height { get; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="SizeF"/> is empty.
@@ -118,15 +120,38 @@ namespace Vortice.Mathematics
         public static bool operator !=(SizeF left, SizeF right) => !left.Equals(right);
 
         /// <inheritdoc/>
-		public override int GetHashCode() => HashCode.Combine(Width, Height);
-
-        /// <inheritdoc/>
-        public override string ToString() => $"{{Width={Width}, Height={Height}}}";
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is SizeF other && Equals(other);
+        public override bool Equals(object? obj) => obj is SizeF other && Equals(other);
 
         /// <inheritdoc/>
         public bool Equals(SizeF other) => Width.Equals(other.Width) && Height.Equals(other.Height);
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+            {
+                hashCode.Add(Width);
+                hashCode.Add(Height);
+            }
+            return hashCode.ToHashCode();
+        }
+
+        /// <inheritdoc/>
+        public override string ToString() => ToString(format: null, formatProvider: null);
+
+        /// <inheritdoc />
+        public string ToString(string? format, IFormatProvider? formatProvider)
+        {
+            var separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
+
+            return new StringBuilder()
+                .Append('<')
+                .Append(Width.ToString(format, formatProvider))
+                .Append(separator)
+                .Append(' ')
+                .Append(Height.ToString(format, formatProvider))
+                .Append('>')
+                .ToString();
+        }
     }
 }

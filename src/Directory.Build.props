@@ -1,14 +1,21 @@
 <Project>
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <RepositoryRootDirectory>$(MSBuildThisFileDirectory)</RepositoryRootDirectory>
+    <RepositoryRootDirectory>$(MSBuildThisFileDirectory)..\</RepositoryRootDirectory>
     <BinDir>$(RepositoryRootDirectory)bin</BinDir>
     <OutputPath>$([System.IO.Path]::GetFullPath('$(RepositoryRootDirectory)bin\$(Configuration)'))\$(MSBuildProjectName)</OutputPath>
     <BaseIntermediateOutputPath>$([System.IO.Path]::GetFullPath('$(RepositoryRootDirectory)bin\obj\$(MSBuildProjectName)'))\</BaseIntermediateOutputPath>
 
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>portable</DebugType>
+    <DebugSymbols Condition=" '$(Configuration)' == 'Debug' ">true</DebugSymbols>
+    <Configurations>Debug;Release</Configurations>
+    
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>CS1591;CS1701</NoWarn>
-
+    
     <PackageTags>3D Engine Graphics gamedev vortice Direct3D DirectX Vulkan OpenGL Metal Core Standard Game</PackageTags>
     <Company>Amer Koleci</Company>
     <Authors>Amer Koleci</Authors>
@@ -17,11 +24,17 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/amerkoleci/Vortice.Mathematics</PackageProjectUrl>
 
+    <VersionPrefix>1.2.4</VersionPrefix>
+    <VersionSuffix>alpha</VersionSuffix>
+    <VersionSuffix Condition="'$(GITHUB_EVENT_NAME)' == 'pull_request'">pr</VersionSuffix>
+
+    <RepositoryType>git</RepositoryType>
+    <RestoreSources>
+      https://api.nuget.org/v3/index.json;
+    </RestoreSources>
+    
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-
-    <!-- Packages versions -->
-    <NerdbankGitVersioningVersion>3.1.71</NerdbankGitVersioningVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
@@ -36,8 +49,4 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
     <DefineConstants>$(DefineConstants);SUPPORTS_MATHF;SUPPORTS_HASHCODE</DefineConstants>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning" Version="$(NerdbankGitVersioningVersion)" PrivateAssets="All" />
-  </ItemGroup>
 </Project>

@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Vortice.Mathematics
 {
@@ -106,7 +107,7 @@ namespace Vortice.Mathematics
         }
 
         /// <inheritdoc/>
-		public override bool Equals(object obj) => obj is BoundingBox value && Equals(ref value);
+		public override bool Equals(object? obj) => obj is BoundingBox value && Equals(ref value);
 
         /// <summary>
         /// Determines whether the specified <see cref="BoundingBox"/> is equal to this instance.
@@ -151,39 +152,30 @@ namespace Vortice.Mathematics
         /// <inheritdoc/>
 		public override int GetHashCode()
         {
-            return Minimum.GetHashCode() + Maximum.GetHashCode();
+            var hashCode = new HashCode();
+            {
+                hashCode.Add(Minimum);
+                hashCode.Add(Maximum);
+            }
+            return hashCode.ToHashCode();
         }
 
-        /// <inheritdoc/>
-        public override string ToString()
+        /// <inheritdoc />
+        public override string ToString() => ToString(format: null, formatProvider: null);
+
+        /// <inheritdoc />
+        public string ToString(string? format, IFormatProvider? formatProvider)
         {
-            return string.Format(CultureInfo.CurrentCulture, "Minimum:{0} Maximum:{1}", Minimum.ToString(), Maximum.ToString());
-        }
+            var separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
 
-        public string ToString(string format)
-        {
-            if (format == null)
-                return ToString();
-
-            return string.Format(
-                CultureInfo.CurrentCulture,
-                "Minimum:{0} Maximum:{1}",
-                Minimum.ToString(format, CultureInfo.CurrentCulture),
-                Maximum.ToString(format, CultureInfo.CurrentCulture));
-        }
-
-        public string ToString(IFormatProvider formatProvider)
-        {
-            return string.Format(formatProvider, "Minimum:{0} Maximum:{1}", Minimum.ToString(), Maximum.ToString());
-        }
-
-        public string ToString(string format, IFormatProvider formatProvider)
-        {
-            if (format == null)
-                return ToString(formatProvider);
-
-            return string.Format(formatProvider, "Minimum:{0} Maximum:{1}", Minimum.ToString(format, formatProvider),
-                Maximum.ToString(format, formatProvider));
+            return new StringBuilder(5 + separator.Length)
+                .Append('<')
+                .Append(Minimum.ToString(format, formatProvider))
+                .Append(separator)
+                .Append(' ')
+                .Append(Maximum.ToString(format, formatProvider))
+                .Append('>')
+                .ToString();
         }
     }
 }

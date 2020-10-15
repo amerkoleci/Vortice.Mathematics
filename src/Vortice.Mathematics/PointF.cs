@@ -7,15 +7,17 @@
 
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace Vortice.Mathematics
 {
     /// <summary>
     /// Represents an ordered pair of floating-point x and y-coordinates that defines a point in a two-dimensional plane.
     /// </summary>
-    public struct PointF : IEquatable<PointF>
+    public readonly struct PointF : IEquatable<PointF>, IFormattable
     {
         /// <summary>
         /// Represents a <see cref="PointF"/> that has X and Y values set to zero.
@@ -54,12 +56,12 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Gets or sets the x-coordinate of this <see cref="PointF"/>.
         /// </summary>
-        public float X { get; set; }
+        public float X { get; }
 
         /// <summary>
         /// Gets or sets the y-coordinate of this <see cref="PointF"/>.
         /// </summary>
-        public float Y { get; set; }
+        public float Y { get; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="PointF"/> is empty.
@@ -71,17 +73,8 @@ namespace Vortice.Mathematics
 
         public readonly float LengthSquared => X * X + Y * Y;
 
-        public void Offset(PointF p)
-        {
-            X += p.X;
-            Y += p.Y;
-        }
-
-        public void Offset(float dx, float dy)
-        {
-            X += dx;
-            Y += dy;
-        }
+        public PointF Offset(PointF p) => new PointF(X + p.X, Y + p.Y);
+        public PointF Offset(float dx, float dy) => new PointF(X + dx, Y + dy);
 
         public static PointF Add(PointF point, Size size) => point + size;
         public static PointF Add(PointF point, SizeF size) => point + size;
@@ -95,32 +88,30 @@ namespace Vortice.Mathematics
 
         public static PointF Normalize(PointF point)
         {
-            var ls = point.X * point.X + point.Y * point.Y;
-            var invNorm = 1.0f / MathF.Sqrt(ls);
+            float ls = point.X * point.X + point.Y * point.Y;
+            float invNorm = 1.0f / MathF.Sqrt(ls);
             return new PointF(point.X * invNorm, point.Y * invNorm);
         }
 
         public static float Distance(PointF point, PointF other)
         {
-            var dx = point.X - other.X;
-            var dy = point.Y - other.Y;
-            var ls = dx * dx + dy * dy;
+            float dx = point.X - other.X;
+            float dy = point.Y - other.Y;
+            float ls = dx * dx + dy * dy;
             return MathF.Sqrt(ls);
         }
 
         public static float DistanceSquared(PointF point, PointF other)
         {
-            var dx = point.X - other.Y;
-            var dy = point.Y - other.Y;
+            float dx = point.X - other.Y;
+            float dy = point.Y - other.Y;
             return dx * dx + dy * dy;
         }
 
         public static PointF Reflect(PointF point, PointF normal)
         {
-            var dot = point.X * point.X + point.Y * point.Y;
-            return new PointF(
-                point.X - 2.0f * dot * normal.X,
-                point.Y - 2.0f * dot * normal.Y);
+            float dot = point.X * point.X + point.Y * point.Y;
+            return new PointF(point.X - 2.0f * dot * normal.X, point.Y - 2.0f * dot * normal.Y);
         }
 
         /// <summary>
@@ -217,15 +208,38 @@ namespace Vortice.Mathematics
         }
 
         /// <inheritdoc/>
-		public override int GetHashCode() => HashCode.Combine(X, Y);
-
-        /// <inheritdoc/>
-        public override string ToString() => $"{{X={X}, Y={Y}}}";
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is PointF other && Equals(other);
+        public override bool Equals(object? obj) => obj is PointF other && Equals(other);
 
         /// <inheritdoc/>
         public bool Equals(PointF other) => X.Equals(other.X) && Y.Equals(other.Y);
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+            {
+                hashCode.Add(X);
+                hashCode.Add(Y);
+            }
+            return hashCode.ToHashCode();
+        }
+
+        /// <inheritdoc/>
+        public override string ToString() => ToString(format: null, formatProvider: null);
+
+        /// <inheritdoc />
+        public string ToString(string? format, IFormatProvider? formatProvider)
+        {
+            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
+
+            return new StringBuilder()
+                .Append('<')
+                .Append(X.ToString(format, formatProvider))
+                .Append(separator)
+                .Append(' ')
+                .Append(Y.ToString(format, formatProvider))
+                .Append('>')
+                .ToString();
+        }
     }
 }

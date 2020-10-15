@@ -7,14 +7,16 @@
 
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Numerics;
+using System.Text;
 
 namespace Vortice.Mathematics
 {
     /// <summary>
     /// Represents an ordered pair of integer x and y-coordinates that defines a point in a two-dimensional plane.
     /// </summary>
-    public struct Point : IEquatable<Point>
+    public readonly struct Point : IEquatable<Point>, IFormattable
     {
         /// <summary>
         /// Represents a <see cref="Point"/> that has X and Y values set to zero.
@@ -63,12 +65,12 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Gets or sets the x-coordinate of this <see cref="Point"/>.
         /// </summary>
-        public int X { get; set; }
+        public int X { get; }
 
         /// <summary>
         /// Gets or sets the y-coordinate of this <see cref="Point"/>.
         /// </summary>
-        public int Y { get; set; }
+        public int Y { get; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Point"/> is empty.
@@ -263,8 +265,8 @@ namespace Vortice.Mathematics
         /// <returns>Returns a point with a length of one.</returns>
         public static Point Normalize(Point point)
         {
-            var ls = point.X * point.X + point.Y * point.Y;
-            var invNorm = 1.0f / MathF.Sqrt(ls);
+            int ls = point.X * point.X + point.Y * point.Y;
+            float invNorm = 1.0f / MathF.Sqrt(ls);
             return new Point((int)(point.X * invNorm), (int)(point.Y * invNorm));
         }
 
@@ -276,9 +278,9 @@ namespace Vortice.Mathematics
         /// <returns>Returns the Euclidean distance between two points.</returns>
         public static float Distance(Point first, Point second)
         {
-            var dx = first.X - second.X;
-            var dy = first.Y - second.Y;
-            var ls = dx * dx + dy * dy;
+            int dx = first.X - second.X;
+            int dy = first.Y - second.Y;
+            int ls = dx * dx + dy * dy;
             return MathF.Sqrt(ls);
         }
 
@@ -290,8 +292,8 @@ namespace Vortice.Mathematics
         /// <returns>Returns the Euclidean distance squared between two points</returns>
         public static float DistanceSquared(Point first, Point second)
         {
-            var dx = first.X - second.X;
-            var dy = first.Y - second.Y;
+            int dx = first.X - second.X;
+            int dy = first.Y - second.Y;
             return dx * dx + dy * dy;
         }
 
@@ -333,12 +335,11 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="dx">The amount to offset the x-coordinate.</param>
         /// <param name="dy">The amount to offset the y-coordinate.</param>
-        public void Offset(int dx, int dy)
+        public Point Offset(int dx, int dy)
         {
             unchecked
             {
-                X += dx;
-                Y += dy;
+                return new Point(X + dx, Y + dy);
             }
         }
 
@@ -346,16 +347,10 @@ namespace Vortice.Mathematics
         /// Translates this <see cref="Point"/> by the specified amount.
         /// </summary>
         /// <param name="point">The <see cref="Point"/> used offset this <see cref="Point"/>.</param>
-        public void Offset(Point point) => Offset(point.X, point.Y);
+        public Point Offset(Point point) => Offset(point.X, point.Y);
 
         /// <inheritdoc/>
-		public override int GetHashCode() => HashCode.Combine(X, Y);
-
-        /// <inheritdoc/>
-        public override string ToString() => $"{{X={X}, Y={Y}}}";
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is Point other && Equals(other);
+        public override bool Equals(object? obj) => obj is Point other && Equals(other);
 
         /// <inheritdoc/>
         public bool Equals(Point other) => X == other.X && Y == other.Y;
@@ -363,5 +358,34 @@ namespace Vortice.Mathematics
         private static short HighInt16(int n) => unchecked((short)((n >> 16) & 0xffff));
 
         private static short LowInt16(int n) => unchecked((short)(n & 0xffff));
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+            {
+                hashCode.Add(X);
+                hashCode.Add(Y);
+            }
+            return hashCode.ToHashCode();
+        }
+
+        /// <inheritdoc/>
+        public override string ToString() => ToString(format: null, formatProvider: null);
+
+        /// <inheritdoc />
+        public string ToString(string? format, IFormatProvider? formatProvider)
+        {
+            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
+
+            return new StringBuilder()
+                .Append('<')
+                .Append(X.ToString(format, formatProvider))
+                .Append(separator)
+                .Append(' ')
+                .Append(Y.ToString(format, formatProvider))
+                .Append('>')
+                .ToString();
+        }
     }
 }

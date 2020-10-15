@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Vortice.Mathematics
 {
@@ -85,7 +86,7 @@ namespace Vortice.Mathematics
         {
             result.Center = Vector3.Transform(sphere.Center, transform);
 
-            var majorAxisLengthSquared = Math.Max(
+            float majorAxisLengthSquared = Math.Max(
                (transform.M11 * transform.M11) + (transform.M12 * transform.M12) + (transform.M13 * transform.M13), Math.Max(
                (transform.M21 * transform.M21) + (transform.M22 * transform.M22) + (transform.M23 * transform.M23),
                (transform.M31 * transform.M31) + (transform.M32 * transform.M32) + (transform.M33 * transform.M33)));
@@ -100,13 +101,13 @@ namespace Vortice.Mathematics
         /// <returns>True if intersects, false otherwise.</returns>
         public bool Intersects(in BoundingBox box)
         {
-            var clampedVector = Vector3.Clamp(Center, box.Minimum, box.Maximum);
-            var distance = Vector3.DistanceSquared(Center, clampedVector);
+            Vector3 clampedVector = Vector3.Clamp(Center, box.Minimum, box.Maximum);
+            float distance = Vector3.DistanceSquared(Center, clampedVector);
             return distance <= Radius * Radius;
         }
 
         /// <inheritdoc/>
-		public override bool Equals(object obj) => obj is BoundingSphere value && Equals(ref value);
+		public override bool Equals(object? obj) => obj is BoundingSphere value && Equals(ref value);
 
         /// <summary>
         /// Determines whether the specified <see cref="BoundingSphere"/> is equal to this instance.
@@ -151,41 +152,31 @@ namespace Vortice.Mathematics
         /// <inheritdoc/>
 		public override int GetHashCode()
         {
-            return Center.GetHashCode() + Radius.GetHashCode();
+
+            var hashCode = new HashCode();
+            {
+                hashCode.Add(Center);
+                hashCode.Add(Radius);
+            }
+            return hashCode.ToHashCode();
         }
 
-        /// <inheritdoc/>
-        public override string ToString()
+        /// <inheritdoc />
+        public override string ToString() => ToString(format: null, formatProvider: null);
+
+        /// <inheritdoc />
+        public string ToString(string? format, IFormatProvider? formatProvider)
         {
-            return string.Format(CultureInfo.CurrentCulture, "Center:{0} Radius:{1}", Center.ToString(), Radius.ToString());
-        }
+            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
 
-        public string ToString(string format)
-        {
-            if (format == null)
-                return ToString();
-
-            return string.Format(
-                CultureInfo.CurrentCulture,
-                "Center:{0} Radius:{1}",
-                Center.ToString(format, CultureInfo.CurrentCulture),
-                Radius.ToString(format, CultureInfo.CurrentCulture));
-        }
-
-        public string ToString(IFormatProvider formatProvider)
-        {
-            return string.Format(formatProvider, "Center:{0} Radius:{1}", Center.ToString(), Radius.ToString());
-        }
-
-        public string ToString(string format, IFormatProvider formatProvider)
-        {
-            if (format == null)
-                return ToString(formatProvider);
-
-            return string.Format(formatProvider,
-                "Center:{0} Radius:{1}",
-                Center.ToString(format, formatProvider),
-                Radius.ToString(format, formatProvider));
+            return new StringBuilder()
+                .Append('<')
+                .Append(Center.ToString(format, formatProvider))
+                .Append(separator)
+                .Append(' ')
+                .Append(Radius.ToString(format, formatProvider))
+                .Append('>')
+                .ToString();
         }
     }
 }

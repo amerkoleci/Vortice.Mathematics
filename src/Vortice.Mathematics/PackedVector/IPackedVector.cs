@@ -14,10 +14,6 @@ namespace Vortice.Mathematics.PackedVector
         /// Converts the packed representation into a <see cref="Vector4"/>.
         /// </summary>
         Vector4 ToVector4();
-
-        /// <summary>Packed value from a <see cref="Vector4"/>.</summary>
-        /// <param name="vector">The vector to create the packed representation from.</param>
-        void PackFromVector4(Vector4 vector);
     }
 
     /// <summary>
@@ -28,10 +24,6 @@ namespace Vortice.Mathematics.PackedVector
         /// <summary>
         /// Gets or Sets the packed representation of the value.
         /// </summary>
-        TPacked PackedValue
-        {
-            get;
-            set;
-        }
+        TPacked PackedValue { get; }
     }
 }

@@ -7,13 +7,15 @@
 
 using System;
 using System.ComponentModel;
+using System.Globalization;
+using System.Text;
 
 namespace Vortice.Mathematics
 {
     /// <summary>
     /// Stores an ordered pair of integer numbers describing the width and height of a rectangle.
     /// </summary>
-    public struct Size : IEquatable<Size>
+    public readonly struct Size : IEquatable<Size>, IFormattable
     {
         /// <summary>
         /// Represents a <see cref="Size"/> that has Width and Height values set to zero.
@@ -49,12 +51,12 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Gets or sets the width of this <see cref="Size"/>.
         /// </summary>
-        public int Width { get; set; }
+        public int Width { get; }
 
         /// <summary>
         /// Gets or sets the height of this <see cref="Size"/>.
         /// </summary>
-        public int Height { get; set; }
+        public int Height { get; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Size"/> is empty.
@@ -113,7 +115,7 @@ namespace Vortice.Mathematics
         /// <returns>
         /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
-        public static bool operator ==(Size left, Size right) => left.Equals(right);
+        public static bool operator ==(Size left, Size right) => left.Width == right.Width && left.Height == right.Height;
 
         /// <summary>
         /// Compares two <see cref="Size"/> objects for inequality.
@@ -123,18 +125,41 @@ namespace Vortice.Mathematics
         /// <returns>
         /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
-        public static bool operator !=(Size left, Size right) => !left.Equals(right);
+        public static bool operator !=(Size left, Size right) => (left.Width != right.Width) || (left.Height != right.Height);
 
         /// <inheritdoc/>
-		public override int GetHashCode() => HashCode.Combine(Width, Height);
+        public override bool Equals(object? obj) => (obj is Size other) && Equals(other);
 
         /// <inheritdoc/>
-        public override string ToString() => $"{{Width={Width}, Height={Height}}}";
+        public bool Equals(Size other) => this == other;
 
         /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is Size other && Equals(other);
+        public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+            {
+                hashCode.Add(Width);
+                hashCode.Add(Height);
+            }
+            return hashCode.ToHashCode();
+        }
 
         /// <inheritdoc/>
-        public bool Equals(Size other) => Width == other.Width && Height == other.Height;
+        public override string ToString() => ToString(format: null, formatProvider: null);
+
+        /// <inheritdoc />
+        public string ToString(string? format, IFormatProvider? formatProvider)
+        {
+            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
+
+            return new StringBuilder()
+                .Append('<')
+                .Append(Width.ToString(format, formatProvider))
+                .Append(separator)
+                .Append(' ')
+                .Append(Height.ToString(format, formatProvider))
+                .Append('>')
+                .ToString();
+        }
     }
 }

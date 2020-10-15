@@ -13,51 +13,46 @@ namespace Vortice.Mathematics
     /// Represents a 32-bit RGBA color (4 bytes).
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
-    public struct Color : IPackedVector<uint>, IEquatable<Color>
+    public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     {
         [FieldOffset(0)]
-        private uint _packedValue;
+        private readonly uint _packedValue;
 
         /// <summary>
         /// The red component of the color.
         /// </summary>
         [FieldOffset(0)]
-        public byte R;
+        public readonly byte R;
 
         /// <summary>
         /// The green component of the color.
         /// </summary>
         [FieldOffset(1)]
-        public byte G;
+        public readonly byte G;
 
         /// <summary>
         /// The blue component of the color.
         /// </summary>
         [FieldOffset(2)]
-        public byte B;
+        public readonly byte B;
 
         /// <summary>
         /// The alpha component of the color.
         /// </summary>
         [FieldOffset(3)]
-        public byte A;
+        public readonly byte A;
 
         /// <summary>
         /// Gets or Sets the current color as a packed value.
         /// </summary>
-        public uint PackedValue
-        {
-            get => _packedValue;
-            set => _packedValue = value;
-        }
+        public uint PackedValue => _packedValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Color"/> struct.
         /// </summary>
         /// <param name="value">The value that will be assigned to all components.</param>
-        public Color(byte value)
+        public Color(byte value) : this()
         {
-            _packedValue = 0;
             A = R = G = B = value;
         }
 
@@ -77,9 +72,8 @@ namespace Vortice.Mathematics
         /// <param name="g">The green component of the color.</param>
         /// <param name="b">The blue component of the color.</param>
         /// <param name="a">The alpha component of the color.</param>
-		public Color(byte r, byte g, byte b, byte a)
+		public Color(byte r, byte g, byte b, byte a) : this()
         {
-            _packedValue = 0;
             R = r;
             G = g;
             B = b;
@@ -92,9 +86,8 @@ namespace Vortice.Mathematics
         /// <param name="red">The red component of the color.</param>
         /// <param name="green">The green component of the color.</param>
         /// <param name="blue">The blue component of the color.</param>
-        public Color(byte red, byte green, byte blue)
+        public Color(byte red, byte green, byte blue) : this()
         {
-            _packedValue = 0;
             R = red;
             G = green;
             B = blue;
@@ -108,9 +101,8 @@ namespace Vortice.Mathematics
         /// <param name="green">The green component of the color.</param>
         /// <param name="blue">The blue component of the color.</param>
         /// <param name="alpha">The alpha component of the color</param>
-        public Color(int red, int green, int blue, int alpha)
+        public Color(int red, int green, int blue, int alpha) : this()
         {
-            _packedValue = 0;
             R = PackHelpers.ToByte(red);
             G = PackHelpers.ToByte(green);
             B = PackHelpers.ToByte(blue);
@@ -123,9 +115,8 @@ namespace Vortice.Mathematics
         /// <param name="red">The red component of the color.</param>
         /// <param name="green">The green component of the color.</param>
         /// <param name="blue">The blue component of the color.</param>
-        public Color(int red, int green, int blue)
+        public Color(int red, int green, int blue) : this()
         {
-            _packedValue = 0;
             R = PackHelpers.ToByte(red);
             G = PackHelpers.ToByte(green);
             B = PackHelpers.ToByte(blue);
@@ -183,7 +174,6 @@ namespace Vortice.Mathematics
             _packedValue = PackHelpers.PackRGBA(vector.X, vector.Y, vector.Z, vector.W);
         }
 
-
         public void Deconstruct(out byte red, out byte green, out byte blue, out byte alpha)
         {
             red = R;
@@ -208,11 +198,6 @@ namespace Vortice.Mathematics
         {
             PackHelpers.UnpackRGBA(_packedValue, out var x, out var y, out var z, out var w);
             return new Color4(x, y, z, w);
-        }
-
-        void IPackedVector.PackFromVector4(Vector4 vector)
-        {
-            _packedValue = PackHelpers.PackRGBA(vector.X, vector.Y, vector.Z, vector.W);
         }
 
         /// <summary>
@@ -261,7 +246,7 @@ namespace Vortice.Mathematics
         }
 
         /// <inheritdoc/>
-		public override bool Equals(object obj) => obj is Color color && Equals(ref color);
+		public override bool Equals(object? obj) => obj is Color color && Equals(ref color);
 
         /// <summary>
         /// Determines whether the specified <see cref="Color"/> is equal to this instance.
@@ -308,14 +293,7 @@ namespace Vortice.Mathematics
         /// <inheritdoc/>
 		public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = R.GetHashCode();
-                hashCode = (hashCode * 397) ^ G.GetHashCode();
-                hashCode = (hashCode * 397) ^ B.GetHashCode();
-                hashCode = (hashCode * 397) ^ A.GetHashCode();
-                return hashCode;
-            }
+            return PackedValue.GetHashCode();
         }
 
         /// <inheritdoc/>

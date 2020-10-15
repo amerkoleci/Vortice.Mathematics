@@ -2,9 +2,11 @@
 // Distributed under the MIT license. See the LICENSE file in the project root for more information.
 
 using System;
+using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Vortice.Mathematics
 {
@@ -13,23 +15,8 @@ namespace Vortice.Mathematics
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Color3 : IEquatable<Color3>
+    public readonly struct Color3 : IEquatable<Color3>, IFormattable
     {
-        /// <summary>
-        /// Red component of the color.
-        /// </summary>
-        public float R;
-
-        /// <summary>
-        /// Green component of the color.
-        /// </summary>
-        public float G;
-
-        /// <summary>
-        /// Blue component of the color.
-        /// </summary>
-        public float B;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Color3"/> struct.
         /// </summary>
@@ -63,6 +50,21 @@ namespace Vortice.Mathematics
             B = value.Z;
         }
 
+        /// <summary>
+        /// Red component of the color.
+        /// </summary>
+        public float R { get; }
+
+        /// <summary>
+        /// Green component of the color.
+        /// </summary>
+        public float G { get; }
+
+        /// <summary>
+        /// Blue component of the color.
+        /// </summary>
+        public float B { get; }
+
         public void Deconstruct(out float r, out float g, out float b)
         {
             r = R;
@@ -71,7 +73,7 @@ namespace Vortice.Mathematics
         }
 
         /// <inheritdoc/>
-		public override bool Equals(object obj) => obj is Color3 value && Equals(ref value);
+		public override bool Equals(object? obj) => obj is Color3 value && Equals(ref value);
 
         /// <summary>
         /// Determines whether the specified <see cref="Color3"/> is equal to this instance.
@@ -115,21 +117,32 @@ namespace Vortice.Mathematics
         public static bool operator !=(Color3 left, Color3 right) => !left.Equals(ref right);
 
         /// <inheritdoc/>
-		public override int GetHashCode()
+        public override int GetHashCode()
         {
-            unchecked
+            var hashCode = new HashCode();
             {
-                var hashCode = R.GetHashCode();
-                hashCode = (hashCode * 397) ^ G.GetHashCode();
-                hashCode = (hashCode * 397) ^ B.GetHashCode();
-                return hashCode;
+                hashCode.Add(R);
+                hashCode.Add(G);
+                hashCode.Add(B);
             }
+            return hashCode.ToHashCode();
         }
 
         /// <inheritdoc/>
-        public override string ToString()
+        public override string ToString() => ToString(format: null, formatProvider: null);
+
+        /// <inheritdoc />
+        public string ToString(string? format, IFormatProvider? formatProvider)
         {
-            return $"{nameof(R)}: {R}, {nameof(G)}: {G}, {nameof(B)}: {B}";
+            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
+
+            return new StringBuilder()
+                .Append('<')
+                .Append(R.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(G.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(B.ToString(format, formatProvider))
+                .Append('>')
+                .ToString();
         }
     }
 }
