@@ -2,6 +2,7 @@
 // Distributed under the MIT license. See the LICENSE file in the project root for more information.
 
 using System;
+using System.Globalization;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
@@ -11,48 +12,69 @@ namespace Vortice.Mathematics.PackedVector
     /// Packed vector type containing two 16-bit signed integer values.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct Short2 : IPackedVector<uint>
+    public readonly struct Short2 : IPackedVector<uint>, IEquatable<Short2>
     {
-        private uint _packedValue;
-
-        /// <summary>Gets or Sets the packed value.</summary>
-        public uint PackedValue
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Short2"/> struct.
+        /// </summary>
+        /// <param name="x">The x value.</param>
+        /// <param name="y">The y value.</param>
+        public Short2(float x, float y)
         {
-            get => _packedValue;
-            set => _packedValue = value;
+            PackedValue = Pack(x, y);
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Short2"/> struct.
+        /// </summary>
+        /// <param name="vector">The <see cref="Vector2"/> containing X and Y value.</param>
+        public Short2(Vector2 vector)
+        {
+            PackedValue = Pack(vector.X, vector.Y);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Short2"/> struct.
+        /// </summary>
+        /// <param name="vector">The <see cref="Vector2"/> containing X and Y value.</param>
+        public Short2(Vector4 vector)
+        {
+            PackedValue = Pack(vector.X, vector.Y);
+        }
+
+        /// <summary>
+        /// Gets the packed value.
+        /// </summary>
+        public uint PackedValue { get; }
 
         /// <summary>
         /// Expands the packed representation to a <see cref="Vector2"/>.
         /// </summary>
-        public Vector2 ToVector2()
-        {
-            return new Vector2(
-                (short)(_packedValue & 0xFFFF),
-                (short)(_packedValue >> 0x10));
-        }
+        public Vector2 ToVector2() => new Vector2((short)PackedValue, (short)(PackedValue >> 16));
 
         Vector4 IPackedVector.ToVector4()
         {
-            var vector = ToVector2();
+            Vector2 vector = ToVector2();
             return new Vector4(vector.X, vector.Y, 0.0f, 1.0f);
-        }
-
-        void IPackedVector.PackFromVector4(Vector4 vector)
-        {
-            _packedValue = Pack(vector.X, vector.Y);
         }
 
         private static uint Pack(float x, float y)
         {
-            const float maxPos = 0x7FFF; // Largest two byte positive number 0xFFFF >> 1;
-            const float minNeg = ~(int)maxPos; // two's complement
-
-            // clamp the value between min and max values
-            var word2 = ((uint)Math.Round(MathHelper.Clamp(x, minNeg, maxPos)) & 0xFFFF);
-            var word1 = (((uint)Math.Round(MathHelper.Clamp(y, minNeg, maxPos)) & 0xFFFF) << 0x10);
-
-            return (word2 | word1);
+            uint word1 = PackHelpers.PackSigned(ushort.MaxValue, x);
+            uint word2 = PackHelpers.PackSigned(ushort.MaxValue, y) << 16;
+            return word1 | word2;
         }
+
+        /// <inheritdoc/>
+        public override bool Equals(object? obj) => obj is Short2 other && Equals(other);
+
+        /// <inheritdoc/>
+        public bool Equals(Short2 other) => PackedValue.Equals(other.PackedValue);
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => PackedValue.GetHashCode();
+
+        /// <inheritdoc/>
+        public override string ToString() => PackedValue.ToString("X8", CultureInfo.InvariantCulture);
     }
 }

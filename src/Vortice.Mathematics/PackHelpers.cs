@@ -19,16 +19,18 @@ namespace Vortice.Mathematics
             {
                 return float.IsNegativeInfinity(value) ? min : max;
             }
+
             if (value < min)
             {
                 return min;
             }
+
             if (value > max)
             {
                 return max;
             }
 
-            return (float)Math.Round(value);
+            return MathF.Round(value);
         }
 
         public static uint PackUNorm(float bitmask, float value)
@@ -40,7 +42,7 @@ namespace Vortice.Mathematics
         public static float UnpackUNorm(uint bitmask, uint value)
         {
             value &= bitmask;
-            return (float)value / (float)bitmask;
+            return (float)value / bitmask;
         }
 
         public static uint PackRGBA(float x, float y, float z, float w)
@@ -50,6 +52,13 @@ namespace Vortice.Mathematics
             uint blue = PackUNorm(255.0f, z) << 16;
             uint alpha = PackUNorm(255.0f, w) << 24;
             return red | green | blue | alpha;
+        }
+
+        public static uint PackSigned(uint bitmask, float value)
+        {
+            float max = bitmask >> 1;
+            float min = 0f - max - 1.0f;
+            return (uint)(int)ClampAndRound(value, min, max) & bitmask;
         }
 
         public static void UnpackRGBA(uint packedValue, out float x, out float y, out float z, out float w)
