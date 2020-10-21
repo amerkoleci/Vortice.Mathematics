@@ -24,7 +24,7 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/amerkoleci/Vortice.Mathematics</PackageProjectUrl>
 
-    <VersionPrefix>1.2.4</VersionPrefix>
+    <VersionPrefix>1.2.5</VersionPrefix>
 
     <RepositoryType>git</RepositoryType>
     <RestoreSources>
