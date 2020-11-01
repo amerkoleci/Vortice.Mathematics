@@ -148,19 +148,19 @@ namespace Vortice.Mathematics
         /// Converts the color to <see cref="Vector3"/>.
         /// </summary>
         /// <returns>An instance of <see cref="Vector3"/> with R, G, B component.</returns>
-        public Vector3 ToVector3()
-        {
-            return new Vector3(R, G, B);
-        }
+        public Vector3 ToVector3() => new Vector3(R, G, B);
 
         /// <summary>
         /// Converts the color to <see cref="Vector4"/>
         /// </summary>
         /// <returns>An instance of <see cref="Vector4"/> with R, G, B, A component.</returns>
-        public Vector4 ToVector4()
-        {
-            return new Vector4(R, G, B, A);
-        }
+        public Vector4 ToVector4() => new Vector4(R, G, B, A);
+
+        /// <summary>
+        /// Creates an array containing the elements of the color.
+        /// </summary>
+        /// <returns>A four-element array containing the components of the color.</returns>
+        public float[] ToArray() => new[] { R, G, B, A };
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="Color4"/> to <see cref="Vector3"/>.

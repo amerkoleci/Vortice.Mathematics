@@ -72,6 +72,18 @@ namespace Vortice.Mathematics
             b = B;
         }
 
+        /// <summary>
+        /// Converts the color into a three component vector.
+        /// </summary>
+        /// <returns>A three component vector containing the red, green, and blue components of the color.</returns>
+        public Vector3 ToVector3() => new Vector3(R, G, B);
+
+        /// <summary>
+        /// Creates an array containing the elements of the color.
+        /// </summary>
+        /// <returns>A four-element array containing the components of the color.</returns>
+        public float[] ToArray() => new[] { R, G, B };
+
         /// <inheritdoc/>
 		public override bool Equals(object? obj) => obj is Color3 value && Equals(ref value);
 
