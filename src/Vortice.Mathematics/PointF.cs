@@ -54,12 +54,12 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
-        /// Gets or sets the x-coordinate of this <see cref="PointF"/>.
+        /// Gets the x-coordinate of this <see cref="PointF"/>.
         /// </summary>
         public float X { get; }
 
         /// <summary>
-        /// Gets or sets the y-coordinate of this <see cref="PointF"/>.
+        /// Gets the y-coordinate of this <see cref="PointF"/>.
         /// </summary>
         public float Y { get; }
 

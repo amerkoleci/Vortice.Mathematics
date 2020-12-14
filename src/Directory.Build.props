@@ -6,7 +6,7 @@
     <OutputPath>$([System.IO.Path]::GetFullPath('$(RepositoryRootDirectory)bin\$(Configuration)'))\$(MSBuildProjectName)</OutputPath>
     <BaseIntermediateOutputPath>$([System.IO.Path]::GetFullPath('$(RepositoryRootDirectory)bin\obj\$(MSBuildProjectName)'))\</BaseIntermediateOutputPath>
 
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>portable</DebugType>
@@ -24,7 +24,7 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/amerkoleci/Vortice.Mathematics</PackageProjectUrl>
 
-    <VersionPrefix>1.2.6</VersionPrefix>
+    <VersionPrefix>1.2.7</VersionPrefix>
 
     <RepositoryType>git</RepositoryType>
     <RestoreSources>

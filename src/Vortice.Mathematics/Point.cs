@@ -63,12 +63,12 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
-        /// Gets or sets the x-coordinate of this <see cref="Point"/>.
+        /// Gets the x-coordinate of this <see cref="Point"/>.
         /// </summary>
         public int X { get; }
 
         /// <summary>
-        /// Gets or sets the y-coordinate of this <see cref="Point"/>.
+        /// Gets the y-coordinate of this <see cref="Point"/>.
         /// </summary>
         public int Y { get; }
 

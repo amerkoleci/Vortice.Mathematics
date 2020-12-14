@@ -17,7 +17,7 @@ namespace Vortice.Mathematics
     /// Defines an integer rectangle structure defining X, Y, Width, Height.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Rectangle : IEquatable<Rectangle>
+    public readonly struct Rectangle : IEquatable<Rectangle>
     {
         /// <summary>
         /// Returns a <see cref="Rectangle"/> with all of its values set to zero.
@@ -72,82 +72,52 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Gets or sets the x-coordinate of this <see cref="Rectangle"/>.
         /// </summary>
-        public int X { get; set; }
+        public int X { get; }
 
         /// <summary>
         /// Gets or sets the y-coordinate of this <see cref="Rectangle"/>.
         /// </summary>
-        public int Y { get; set; }
+        public int Y { get; }
 
         /// <summary>
         /// Gets or sets the width of this <see cref="Rectangle"/>.
         /// </summary>
-        public int Width { get; set; }
+        public int Width { get; }
 
         /// <summary>
         /// Gets or sets the height of this <see cref="Rectangle"/>.
         /// </summary>
-        public int Height { get; set; }
+        public int Height { get; }
 
         /// <summary>
         /// Gets or sets the upper-left value of the <see cref="Rectangle"/>.
         /// </summary>
-        public Point Location
-        {
-            get => new Point(X, Y);
-            set
-            {
-                X = value.X;
-                Y = value.Y;
-            }
-        }
+        public Point Location => new Point(X, Y);
 
         /// <summary>
-		/// Gets or sets the size of this <see cref="Rectangle"/>.
-		/// </summary>
-		public Size Size
-        {
-            get => new Size(Width, Height);
-            set
-            {
-                Width = value.Width;
-                Height = value.Height;
-            }
-        }
+        /// Gets or sets the size of this <see cref="Rectangle"/>.
+        /// </summary>
+        public Size Size => new Size(Width, Height);
 
         /// <summary>
         /// Gets or sets the x-coordinate of the left edge of this <see cref="Rectangle"/>.
         /// </summary>
-        public int Left
-        {
-            get => X;
-            set => X = value;
-        }
+        public int Left => X;
 
         /// <summary>
         /// Gets or sets the y-coordinate of the left edge of this <see cref="Rectangle"/>.
         /// </summary>
-        public int Top
-        {
-            get => Y;
-            set => Y = value;
-        }
+        public int Top => Y;
 
         /// <summary>
         /// Gets the x-coordinate of the right edge of this <see cref="Rectangle"/>.
         /// </summary>
-        public int Right
-        {
-            get => unchecked(X + Width);
-        }
+        public int Right => unchecked(X + Width);
 
         /// <summary>
         /// Gets the y-coordinate of the bottom edge of this <see cref="Rectangle"/>.
         /// </summary>
-        public int Bottom
-        {
-            get => unchecked(Y + Height);
-        }
+        public int Bottom => unchecked(Y + Height);
 
         /// <summary>
         /// Gets the <see cref="Point"/> that specifies the center of this <see cref="Rectangle"/>.
@@ -243,17 +213,18 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Inflates this <see cref="Rectangle"/> by the specified amount.
         /// </summary>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        public void Inflate(int width, int height)
+        /// <param name="horizontalAmount">X inflate amount.</param>
+        /// <param name="verticalAmount">Y inflate amount.</param>
+        /// <returns>New inflated <see cref="Rectangle"/>.</returns>
+        public Rectangle Inflate(int horizontalAmount, int verticalAmount)
         {
             unchecked
             {
-                X -= width;
-                Y -= height;
-
-                Width += 2 * width;
-                Height += 2 * height;
+                int x = X - horizontalAmount;
+                int y = Y - verticalAmount;
+                int width = Width + 2 * horizontalAmount;
+                int height = Height + 2 * verticalAmount;
+                return new Rectangle(x, y, width, height);
             }
         }
 
@@ -267,14 +238,20 @@ namespace Vortice.Mathematics
         /// Creates a <see cref="Rectangle"/> that is inflated by the specified amount.
         /// </summary>
         /// <param name="rectangle">The rectangle.</param>
-        /// <param name="x">The amount to inflate the width by.</param>
-        /// <param name="y">The amount to inflate the height by.</param>
+        /// <param name="horizontalAmount">The amount to inflate the width by.</param>
+        /// <param name="verticalAmount">The amount to inflate the height by.</param>
         /// <returns>A new <see cref="Rectangle"/>.</returns>
-        public static Rectangle Inflate(Rectangle rectangle, int x, int y)
+        public static Rectangle Inflate(Rectangle rectangle, int horizontalAmount, int verticalAmount)
         {
-            var r = rectangle;
-            r.Inflate(x, y);
-            return r;
+            unchecked
+            {
+                return new Rectangle(
+                    rectangle.X - horizontalAmount,
+                    rectangle.Y - verticalAmount,
+                    rectangle.Width + 2 * horizontalAmount,
+                    rectangle.Height + 2 * verticalAmount
+                    );
+            }
         }
 
         /// <summary>
@@ -326,30 +303,15 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Translates this rectangle by a specified offset.
         /// </summary>
-        /// <param name="dx">The amount to offset the x-coordinate.</param>
-        /// <param name="dy">The amount to offset the y-coordinate.</param>
-        public void Offset(int dx, int dy)
+        /// <param name="offsetX">The amount to offset the x-coordinate.</param>
+        /// <param name="offsetY">The amount to offset the y-coordinate.</param>
+        /// <returns>The new offseted <see cref="Rectangle"/>.</returns>
+        public Rectangle Offset(int offsetX, int offsetY)
         {
             unchecked
             {
-                X += dx;
-                Y += dy;
+                return new Rectangle(X + offsetX, Y + offsetY, Width, Height);
             }
-        }
-
-        /// <summary>
-        /// Creates a Rectangle that represents the intersection between this Rectangle and the <paramref name="rectangle"/>.
-        /// </summary>
-        /// <param name="rectangle">The rectangle.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Intersect(Rectangle rectangle)
-        {
-            var result = Intersect(rectangle, this);
-
-            X = result.X;
-            Y = result.Y;
-            Width = result.Width;
-            Height = result.Height;
         }
 
         /// <summary>
@@ -441,7 +403,7 @@ namespace Vortice.Mathematics
         }
 
         /// <inheritdoc/>
-		public override bool Equals(object obj) => obj is Rectangle value && Equals(value);
+		public override bool Equals(object? obj) => obj is Rectangle value && Equals(value);
 
         /// <summary>
         /// Determines whether the specified <see cref="Rectangle"/> is equal to this instance.
@@ -479,7 +441,17 @@ namespace Vortice.Mathematics
         public static bool operator !=(Rectangle left, Rectangle right) => !left.Equals(right);
 
         /// <inheritdoc/>
-		public override int GetHashCode() => HashCode.Combine(X, Y, Width, Height);
+		public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+            {
+                hashCode.Add(X);
+                hashCode.Add(Y);
+                hashCode.Add(Width);
+                hashCode.Add(Height);
+            }
+            return hashCode.ToHashCode();
+        }
 
         /// <inheritdoc/>
         public override string ToString() => $"{{X={X},Y={Y},Width={Width},Height={Height}}}";

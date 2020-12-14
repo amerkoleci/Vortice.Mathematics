@@ -99,7 +99,7 @@ namespace Vortice.Mathematics
         /// The code is using the technique described by Bruce Dawson in 
         /// <a href="http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/">Comparing Floating point numbers 2012 edition</a>. 
         /// </remarks>
-        public unsafe static bool NearEqual(float a, float b)
+        public static unsafe bool NearEqual(float a, float b)
         {
             // Check if the numbers are really close -- needed
             // when comparing numbers near zero.
@@ -158,10 +158,7 @@ namespace Vortice.Mathematics
         /// <param name="min">The min.</param>
         /// <param name="max">The max.</param>
         /// <returns>The result of clamping a value between min and max</returns>
-        public static float Clamp(float value, float min, float max)
-        {
-            return value < min ? min : value > max ? max : value;
-        }
+        public static float Clamp(float value, float min, float max) => value < min ? min : value > max ? max : value;
 
         /// <summary>
         /// Clamps the specified value.
@@ -170,10 +167,7 @@ namespace Vortice.Mathematics
         /// <param name="min">The min.</param>
         /// <param name="max">The max.</param>
         /// <returns>The result of clamping a value between min and max</returns>
-        public static int Clamp(int value, int min, int max)
-        {
-            return value < min ? min : value > max ? max : value;
-        }
+        public static int Clamp(int value, int min, int max) => value < min ? min : value > max ? max : value;
 
         /// <summary>
         /// Linearly interpolates between two values.

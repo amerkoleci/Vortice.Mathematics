@@ -2,9 +2,11 @@
 // Distributed under the MIT license. See the LICENSE file in the project root for more information.
 
 using System;
+using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Vortice.Mathematics
 {
@@ -12,7 +14,7 @@ namespace Vortice.Mathematics
     /// Represents a four dimensional mathematical int vector.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Int4 : IEquatable<Int4>, IFormattable
+    public readonly struct Int4 : IEquatable<Int4>, IFormattable
     {
         /// <summary>
         /// A <see cref="Int4"/> with all of its components set to zero.
@@ -47,22 +49,22 @@ namespace Vortice.Mathematics
         /// <summary>
         /// The X component of the vector.
         /// </summary>
-        public int X;
+        public int X { get; }
 
         /// <summary>
         /// The Y component of the vector.
         /// </summary>
-        public int Y;
+        public int Y { get; }
 
         /// <summary>
         /// The Z component of the vector.
         /// </summary>
-        public int Z;
+        public int Z { get; }
 
         /// <summary>
         /// The W component of the vector.
         /// </summary>
-        public int W;
+        public int W { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Int4"/> struct.
@@ -193,7 +195,7 @@ namespace Vortice.Mathematics
         public static explicit operator Vector4(Int4 value) => new Vector4(value.X, value.Y, value.Z, value.W);
 
         /// <inheritdoc/>
-		public override bool Equals(object obj) => obj is Int4 value && Equals(ref value);
+		public override bool Equals(object? obj) => obj is Int4 value && Equals(ref value);
 
         /// <summary>
         /// Determines whether the specified <see cref="Int4"/> is equal to this instance.
@@ -240,14 +242,14 @@ namespace Vortice.Mathematics
         /// <inheritdoc/>
 		public override int GetHashCode()
         {
-            unchecked
+            var hashCode = new HashCode();
             {
-                var hashCode = X.GetHashCode();
-                hashCode = (hashCode * 397) ^ Y.GetHashCode();
-                hashCode = (hashCode * 397) ^ Z.GetHashCode();
-                hashCode = (hashCode * 397) ^ W.GetHashCode();
-                return hashCode;
+                hashCode.Add(X);
+                hashCode.Add(Y);
+                hashCode.Add(Z);
+                hashCode.Add(W);
             }
+            return hashCode.ToHashCode();
         }
 
         /// <inheritdoc/>
@@ -256,9 +258,18 @@ namespace Vortice.Mathematics
             return $"{nameof(Int4)}({X}, {Y}, {Z}, {W})";
         }
 
-        public string ToString(string format, IFormatProvider formatProvider)
+        public string ToString(string? format, IFormatProvider? formatProvider)
         {
-            return $"{nameof(Int4)}({X.ToString(format, formatProvider)}, {Y.ToString(format, formatProvider)}, {Z.ToString(format, formatProvider)}, {W.ToString(format, formatProvider)})";
+            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
+
+            return new StringBuilder()
+                .Append('<')
+                .Append(X.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(Y.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(Z.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(W.ToString(format, formatProvider))
+                .Append('>')
+                .ToString();
         }
     }
 }

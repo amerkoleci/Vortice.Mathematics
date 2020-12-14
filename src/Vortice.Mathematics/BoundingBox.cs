@@ -14,7 +14,7 @@ namespace Vortice.Mathematics
     /// Defines an axis-aligned box-shaped 3D volume.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
+    public readonly struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     {
         /// <summary>
         /// Specifies the total number of corners (8) in the BoundingBox.
@@ -25,16 +25,6 @@ namespace Vortice.Mathematics
         /// A <see cref="BoundingBox"/> which represents an empty space.
         /// </summary>
         public static readonly BoundingBox Empty = new BoundingBox(new Vector3(float.MaxValue), new Vector3(float.MinValue));
-
-        /// <summary>
-        /// The minimum point of the box.
-        /// </summary>
-        public Vector3 Minimum;
-
-        /// <summary>
-        /// The maximum point of the box.
-        /// </summary>
-        public Vector3 Maximum;
 
         /// <summary>
         /// Gets the center of this bouding box.
@@ -56,6 +46,16 @@ namespace Vortice.Mathematics
             Minimum = minimum;
             Maximum = maximum;
         }
+
+        /// <summary>
+        /// The minimum point of the box.
+        /// </summary>
+        public Vector3 Minimum { get; }
+
+        /// <summary>
+        /// The maximum point of the box.
+        /// </summary>
+        public Vector3 Maximum { get; }
 
         /// <summary>
         /// Retrieves the eight corners of the bounding box.
@@ -101,8 +101,8 @@ namespace Vortice.Mathematics
         /// <returns>True if intersects, false otherwise.</returns>
         public bool Intersects(in BoundingSphere sphere)
         {
-            var clampedVector = Vector3.Clamp(sphere.Center, Minimum, Maximum);
-            var distance = Vector3.DistanceSquared(sphere.Center, clampedVector);
+            Vector3 clampedVector = Vector3.Clamp(sphere.Center, Minimum, Maximum);
+            float distance = Vector3.DistanceSquared(sphere.Center, clampedVector);
             return distance <= sphere.Radius * sphere.Radius;
         }
 

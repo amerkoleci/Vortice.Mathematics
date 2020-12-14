@@ -6,6 +6,8 @@ using System.ComponentModel;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
+using System.Globalization;
+using System.Text;
 
 namespace Vortice.Mathematics
 {
@@ -13,7 +15,7 @@ namespace Vortice.Mathematics
     /// Represents a three-dimensional offset.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Point3 : IEquatable<Point3>
+    public readonly struct Point3 : IEquatable<Point3>, IFormattable
     {
         /// <summary>
         /// A <see cref="Point3"/> with all of its components set to zero.
@@ -87,19 +89,19 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
-        /// The X component of the offset.
+        /// Gets the x-coordinate of this <see cref="Point3"/>.
         /// </summary>
-        public int X;
+        public int X { get; }
 
         /// <summary>
-        /// The Y component of the offset.
+        /// Gets the y-coordinate of this <see cref="Point3"/>.
         /// </summary>
-        public int Y;
+        public int Y { get; }
 
         /// <summary>
-        /// The Z component of the offset.
+        /// Gets the z-coordinate of this <see cref="Point3"/>.
         /// </summary>
-        public int Z;
+        public int Z { get; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Point"/> is empty.
@@ -157,15 +159,39 @@ namespace Vortice.Mathematics
         public static bool operator !=(Point3 left, Point3 right) => !left.Equals(right);
 
         /// <inheritdoc/>
-		public override int GetHashCode() => HashCode.Combine(X, Y, Z);
-
-        /// <inheritdoc/>
-        public override string ToString() => $"{{X={X}, Y={Y}, Z={Z}}}";
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is Point3 other && Equals(other);
+        public override bool Equals(object? obj) => obj is Point3 other && Equals(other);
 
         /// <inheritdoc/>
         public bool Equals(Point3 other) => X == other.X && Y == other.Y && Z == other.Z;
+
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+            {
+                hashCode.Add(X);
+                hashCode.Add(Y);
+                hashCode.Add(Z);
+            }
+            return hashCode.ToHashCode();
+        }
+
+        /// <inheritdoc/>
+        public override string ToString() => ToString(format: null, formatProvider: null);
+
+        /// <inheritdoc />
+        public string ToString(string? format, IFormatProvider? formatProvider)
+        {
+            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
+
+            return new StringBuilder()
+                .Append('<')
+                .Append(X.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(Y.ToString(format, formatProvider)).Append(separator).Append(' ')
+                .Append(Z.ToString(format, formatProvider))
+                .Append('>')
+                .ToString();
+        }
     }
 }

@@ -1,12 +1,8 @@
 ﻿// Copyright (c) Amer Koleci and contributors.
 // Distributed under the MIT license. See the LICENSE file in the project root for more information.
 
+#if NETSTANDARD2_0
 using System.Runtime.CompilerServices;
-
-#if SUPPORTS_MATHF
-[assembly: TypeForwardedTo(typeof(System.MathF))]
-#else
-
 namespace System
 {
     internal static class MathF

@@ -2,11 +2,11 @@
 // Distributed under the MIT license. See the LICENSE file in the project root for more information.
 
 using System;
-using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using static System.Math;
 
 namespace Vortice.Mathematics
 {
@@ -15,7 +15,7 @@ namespace Vortice.Mathematics
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Viewport : IEquatable<Viewport>
+    public readonly struct Viewport : IEquatable<Viewport>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Viewport"/> struct.
@@ -110,52 +110,41 @@ namespace Vortice.Mathematics
             MaxDepth = 1.0f;
         }
 
+        /// <summary>
+        /// Position of the pixel coordinate of the upper-left corner of the viewport.
+        /// </summary>
+        public float X { get; }
 
         /// <summary>
         /// Position of the pixel coordinate of the upper-left corner of the viewport.
         /// </summary>
-        public float X;
-
-        /// <summary>
-        /// Position of the pixel coordinate of the upper-left corner of the viewport.
-        /// </summary>
-        public float Y;
+        public float Y { get; }
 
         /// <summary>
         /// Width dimension of the viewport.
         /// </summary>
-        public float Width;
+        public float Width { get; }
 
         /// <summary>
         /// Height dimension of the viewport.
         /// </summary>
-        public float Height;
+        public float Height { get; }
 
         /// <summary>
         /// Gets or sets the minimum depth of the clip volume.
         /// </summary>
-        public float MinDepth;
+        public float MinDepth { get; }
 
         /// <summary>
         /// Gets or sets the maximum depth of the clip volume.
         /// </summary>
-        public float MaxDepth;
+        public float MaxDepth { get; }
 
         /// <summary>
         /// Gets or sets the bounds of the viewport.
         /// </summary>
         /// <value>The bounds.</value>
-        public RectangleF Bounds
-        {
-            get => new RectangleF(X, Y, Width, Height);
-            set
-            {
-                X = value.X;
-                Y = value.Y;
-                Width = value.Width;
-                Height = value.Height;
-            }
-        }
+        public RectangleF Bounds => new RectangleF(X, Y, Width, Height);
 
         /// <summary>
         /// Gets the aspect ratio used by the viewport.
@@ -247,14 +236,13 @@ namespace Vortice.Mathematics
                         float offsetX = (outputWidth - scaledWidth) * 0.5f;
                         float offsetY = (outputHeight - scaledHeight) * 0.5f;
 
-                        var result = new RectangleF(offsetX, offsetY, scaledWidth, scaledHeight);
-
                         // Clip to display window
-                        result.X = Math.Max(0, result.X);
-                        result.Y = Math.Max(0, result.Y);
-                        result.Width = Math.Min(outputWidth, result.Width);
-                        result.Height = Math.Min(outputHeight, result.Height);
-                        return result;
+                        return new RectangleF(
+                            Max(0, offsetX),
+                            Max(0, offsetY),
+                            Min(outputWidth, scaledWidth),
+                            Min(outputHeight, scaledHeight)
+                            );
                     }
 
                 case ViewportScaling.None:
@@ -279,14 +267,14 @@ namespace Vortice.Mathematics
         }
 
         /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is Viewport value && Equals(value);
+        public override bool Equals(object? obj) => obj is Viewport value && Equals(value);
 
         /// <summary>
         /// Determines whether the specified <see cref="Viewport"/> is equal to this instance.
         /// </summary>
         /// <param name="other">The <see cref="Viewport"/> to compare with this instance.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Viewport other) 
+        public bool Equals(Viewport other)
         {
             return MathHelper.NearEqual(X, other.X)
                 && MathHelper.NearEqual(Y, other.Y)
@@ -319,7 +307,19 @@ namespace Vortice.Mathematics
         public static bool operator !=(Viewport left, Viewport right) => !left.Equals(right);
 
         /// <inheritdoc/>
-		public override int GetHashCode() => HashCode.Combine(X, Y, Width, Height, MinDepth, MaxDepth);
+		public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+            {
+                hashCode.Add(X);
+                hashCode.Add(Y);
+                hashCode.Add(Width);
+                hashCode.Add(Height);
+                hashCode.Add(MinDepth);
+                hashCode.Add(MaxDepth);
+            }
+            return hashCode.ToHashCode();
+        }
 
         /// <inheritdoc/>
         public override string ToString()

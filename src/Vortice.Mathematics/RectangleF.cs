@@ -17,7 +17,7 @@ namespace Vortice.Mathematics
     /// Defines a floating-point rectangle structure defining X, Y, Width, Height.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RectangleF : IEquatable<RectangleF>
+    public readonly struct RectangleF : IEquatable<RectangleF>
     {
         /// <summary>
         /// Returns a <see cref="RectangleF"/> with all of its values set to zero.
@@ -38,7 +38,6 @@ namespace Vortice.Mathematics
             Width = width;
             Height = height;
         }
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RectangleF"/> struct.
@@ -73,82 +72,52 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Gets or sets the x-coordinate of this <see cref="RectangleF"/>.
         /// </summary>
-        public float X { get; set; }
+        public float X { get; }
 
         /// <summary>
         /// Gets or sets the y-coordinate of this <see cref="RectangleF"/>.
         /// </summary>
-        public float Y { get; set; }
+        public float Y { get; }
 
         /// <summary>
         /// Gets or sets the width of this <see cref="RectangleF"/>.
         /// </summary>
-        public float Width { get; set; }
+        public float Width { get; }
 
         /// <summary>
         /// Gets or sets the height of this <see cref="RectangleF"/>.
         /// </summary>
-        public float Height { get; set; }
+        public float Height { get; }
 
         /// <summary>
         /// Gets or sets the upper-left value of the <see cref="RectangleF"/>.
         /// </summary>
-        public PointF Location
-        {
-            get => new PointF(X, Y);
-            set
-            {
-                X = value.X;
-                Y = value.Y;
-            }
-        }
+        public PointF Location => new PointF(X, Y);
 
         /// <summary>
 		/// Gets or sets the size of this <see cref="RectangleF"/>.
 		/// </summary>
-		public SizeF Size
-        {
-            get => new SizeF(Width, Height);
-            set
-            {
-                Width = value.Width;
-                Height = value.Height;
-            }
-        }
+		public SizeF Size => new SizeF(Width, Height);
 
         /// <summary>
         /// Gets or sets the x-coordinate of the left edge of this <see cref="RectangleF"/>.
         /// </summary>
-        public float Left
-        {
-            get => X;
-            set => X = value;
-        }
+        public float Left => X;
 
         /// <summary>
         /// Gets or sets the y-coordinate of the left edge of this <see cref="RectangleF"/>.
         /// </summary>
-        public float Top
-        {
-            get => Y;
-            set => Y = value;
-        }
+        public float Top => Y;
 
         /// <summary>
         /// Gets the x-coordinate of the right edge of this <see cref="RectangleF"/>.
         /// </summary>
-        public float Right
-        {
-            get => X + Width;
-        }
+        public float Right => X + Width;
 
         /// <summary>
         /// Gets the y-coordinate of the bottom edge of this <see cref="RectangleF"/>.
         /// </summary>
-        public float Bottom
-        {
-            get => Y + Height;
-        }
+        public float Bottom => Y + Height;
 
         /// <summary>
         /// Gets the <see cref="PointF"/> that specifies the center of this <see cref="RectangleF"/>.
@@ -220,12 +189,14 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="horizontalAmount">X inflate amount.</param>
         /// <param name="verticalAmount">Y inflate amount.</param>
-        public void Inflate(float horizontalAmount, float verticalAmount)
+        /// <returns>New inflated <see cref="RectangleF"/>.</returns>
+        public RectangleF Inflate(float horizontalAmount, float verticalAmount)
         {
-            X -= horizontalAmount;
-            Y -= verticalAmount;
-            Width += 2 * horizontalAmount;
-            Height += 2 * verticalAmount;
+            float x = X - horizontalAmount;
+            float y = Y - verticalAmount;
+            float width = Width + 2 * horizontalAmount;
+            float height = Height + 2 * verticalAmount;
+            return new RectangleF(x, y, width, height);
         }
 
         /// <summary>
@@ -272,21 +243,6 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
-        /// Creates a RectangleF that represents the intersection between this RectangleF and the <paramref name="rectangle"/>.
-        /// </summary>
-        /// <param name="rectangle">The rectangle.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Intersect(RectangleF rectangle)
-        {
-            var result = Intersect(rectangle, this);
-
-            X = result.X;
-            Y = result.Y;
-            Width = result.Width;
-            Height = result.Height;
-        }
-
-        /// <summary>
         /// Determines if the specfied <see cref="RectangleF"/> intersects the rectangular region defined by
         /// this <see cref="RectangleF"/>.
         /// </summary>
@@ -325,10 +281,10 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="offsetX">The offset in the x-direction.</param>
         /// <param name="offsetY">The offset in the y-direction.</param>
-        public void Offset(float offsetX, float offsetY)
+        /// <returns>The new offseted <see cref="RectangleF"/>.</returns>
+        public RectangleF Offset(float offsetX, float offsetY)
         {
-            X += offsetX;
-            Y += offsetY;
+            return new RectangleF(X + offsetX, Y + offsetY, Width, Height);
         }
 
         /// <summary>
@@ -420,13 +376,23 @@ namespace Vortice.Mathematics
         public static bool operator !=(RectangleF left, RectangleF right) => !left.Equals(right);
 
         /// <inheritdoc/>
-        public override int GetHashCode() => HashCode.Combine(X, Y, Width, Height);
+		public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+            {
+                hashCode.Add(X);
+                hashCode.Add(Y);
+                hashCode.Add(Width);
+                hashCode.Add(Height);
+            }
+            return hashCode.ToHashCode();
+        }
 
         /// <inheritdoc/>
         public override string ToString() => $"{{X={X},Y={Y},Width={Width},Height={Height}}}";
 
         /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is RectangleF other && Equals(other);
+        public override bool Equals(object? obj) => obj is RectangleF other && Equals(other);
 
         /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

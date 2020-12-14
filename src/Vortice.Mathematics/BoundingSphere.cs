@@ -14,22 +14,12 @@ namespace Vortice.Mathematics
     /// Defines an sphere in three dimensional space.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
+    public readonly struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     {
         /// <summary>
         /// An empty bounding sphere (Center = 0 and Radius = 0).
         /// </summary>
         public static readonly BoundingSphere Empty = new BoundingSphere();
-
-        /// <summary>
-        /// The center point of the sphere.
-        /// </summary>
-        public Vector3 Center;
-
-        /// <summary>
-        /// The radious of the sphere.
-        /// </summary>
-        public float Radius;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BoundingSphere"/> struct.
@@ -43,14 +33,26 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
+        /// The center point of the sphere.
+        /// </summary>
+        public Vector3 Center { get; }
+
+        /// <summary>
+        /// The radious of the sphere.
+        /// </summary>
+        public float Radius { get; }
+
+        /// <summary>
         /// Creates the smallest <see cref="BoundingSphere"/> that can contain a specified <see cref="BoundingBox"/>.
         /// </summary>
         /// <param name="box">The <see cref="BoundingBox"/> to create the <see cref="BoundingSphere"/> from.</param>
         /// <param name="result">The created <see cref="BoundingSphere"/>.</param>
         public static void CreateFromBoundingBox(in BoundingBox box, out BoundingSphere result)
         {
-            result.Center = Vector3.Lerp(box.Minimum, box.Maximum, 0.5f);
-            result.Radius = Vector3.Distance(box.Minimum, box.Maximum) * 0.5f;
+            result = new BoundingSphere(
+                Vector3.Lerp(box.Minimum, box.Maximum, 0.5f),
+                Vector3.Distance(box.Minimum, box.Maximum) * 0.5f
+                );
         }
 
         /// <summary>
@@ -84,14 +86,15 @@ namespace Vortice.Mathematics
         /// <param name="result">The transformed BoundingSphere.</param>
         public static void Transform(in BoundingSphere sphere, in Matrix4x4 transform, out BoundingSphere result)
         {
-            result.Center = Vector3.Transform(sphere.Center, transform);
+            Vector3 center = Vector3.Transform(sphere.Center, transform);
 
             float majorAxisLengthSquared = Math.Max(
                (transform.M11 * transform.M11) + (transform.M12 * transform.M12) + (transform.M13 * transform.M13), Math.Max(
                (transform.M21 * transform.M21) + (transform.M22 * transform.M22) + (transform.M23 * transform.M23),
                (transform.M31 * transform.M31) + (transform.M32 * transform.M32) + (transform.M33 * transform.M33)));
 
-            result.Radius = sphere.Radius * (float)Math.Sqrt(majorAxisLengthSquared);
+            float radius = sphere.Radius * (float)Math.Sqrt(majorAxisLengthSquared);
+            result = new BoundingSphere(center, radius);
         }
 
         /// <summary>
@@ -152,7 +155,6 @@ namespace Vortice.Mathematics
         /// <inheritdoc/>
 		public override int GetHashCode()
         {
-
             var hashCode = new HashCode();
             {
                 hashCode.Add(Center);
@@ -171,9 +173,7 @@ namespace Vortice.Mathematics
 
             return new StringBuilder()
                 .Append('<')
-                .Append(Center.ToString(format, formatProvider))
-                .Append(separator)
-                .Append(' ')
+                .Append(Center.ToString(format, formatProvider)).Append(separator).Append(' ')
                 .Append(Radius.ToString(format, formatProvider))
                 .Append('>')
                 .ToString();
