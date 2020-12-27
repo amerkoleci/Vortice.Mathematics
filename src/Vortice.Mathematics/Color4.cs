@@ -83,6 +83,19 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Initializes a new instance of the <see cref="Color4"/> struct.
         /// </summary>
+        /// <param name="value">The red, green, and blue components of the color.</param>
+        /// <param name="alpha">The alpha component of the color.</param>
+        public Color4(Color3 value, float alpha)
+        {
+            R = value.R;
+            G = value.G;
+            B = value.B;
+            A = alpha;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Color4"/> struct.
+        /// </summary>
         /// <param name="color"><see cref="Color"/> used to initialize the color.</param>
         public Color4(Color color)
         {
