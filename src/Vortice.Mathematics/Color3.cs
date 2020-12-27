@@ -18,6 +18,16 @@ namespace Vortice.Mathematics
     public readonly struct Color3 : IEquatable<Color3>, IFormattable
     {
         /// <summary>
+        /// Static declaration of white
+        /// </summary>
+        public static readonly Color3 White = new Color3(1);
+
+        /// <summary>
+        /// Static declaration of black
+        /// </summary>
+        public static readonly Color3 Black = new Color3(0);
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Color3"/> struct.
         /// </summary>
         /// <param name="value">The value that will be assigned to all components.</param>
