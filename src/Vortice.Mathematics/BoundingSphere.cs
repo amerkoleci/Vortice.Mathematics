@@ -1,12 +1,36 @@
 ﻿// Copyright (c) Amer Koleci and contributors.
 // Distributed under the MIT license. See the LICENSE file in the project root for more information.
+//
+// -----------------------------------------------------------------------------
+// Original code from SlimMath project. http://code.google.com/p/slimmath/
+// Greetings to SlimDX Group. Original code published with the following license:
+// -----------------------------------------------------------------------------
+/*
+* Copyright (c) 2007-2011 SlimDX Group
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*/
 
 using System;
-using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Vortice.Mathematics
 {
@@ -97,6 +121,62 @@ namespace Vortice.Mathematics
             result = new BoundingSphere(center, radius);
         }
 
+        public ContainmentType Contains(in Vector3 point)
+        {
+            if (Vector3.DistanceSquared(point, Center) <= Radius * Radius)
+                return ContainmentType.Contains;
+
+            return ContainmentType.Disjoint;
+        }
+
+        public ContainmentType Contains(in BoundingBox box)
+        {
+            return box.Contains(this);
+        }
+
+        public ContainmentType Contains(in BoundingSphere sphere)
+        {
+            float distance = Vector3.Distance(Center, sphere.Center);
+
+            if (Radius + sphere.Radius < distance)
+                return ContainmentType.Disjoint;
+
+            if (Radius - sphere.Radius < distance)
+                return ContainmentType.Intersects;
+
+            return ContainmentType.Contains;
+        }
+
+        public float? Intersects(in Ray ray)
+        {
+            //Source: Real-Time Collision Detection by Christer Ericson
+            //Reference: Page 177
+
+            Vector3 m = Vector3.Subtract(ray.Position, Center);
+
+            float b = Vector3.Dot(m, ray.Direction);
+            float c = Vector3.Dot(m, m) - (Radius * Radius);
+
+            if (c > 0f && b > 0f)
+            {
+                return null;
+            }
+
+            float discriminant = b * b - c;
+
+            if (discriminant < 0f)
+            {
+                return null;
+            }
+
+            float distance = -b - (float)Math.Sqrt(discriminant);
+
+            if (distance < 0f)
+                distance = 0f;
+
+            return distance;
+        }
+
         /// <summary>
         /// Checks whether the current <see cref="BoundingSphere"/> intersects with a specified <see cref="BoundingBox"/>.
         /// </summary>
@@ -109,22 +189,38 @@ namespace Vortice.Mathematics
             return distance <= Radius * Radius;
         }
 
+        public bool Intersects(in BoundingSphere sphere)
+        {
+            float radiisum = Radius + sphere.Radius;
+            return Vector3.DistanceSquared(Center, sphere.Center) <= radiisum * radiisum;
+        }
+
+        public PlaneIntersectionType Intersects(in Plane plane)
+        {
+            //Source: Real-Time Collision Detection by Christer Ericson
+            //Reference: Page 160
+
+            float distance = Vector3.Dot(plane.Normal, Center);
+            distance += plane.D;
+
+            if (distance > Radius)
+                return PlaneIntersectionType.Front;
+
+            if (distance < -Radius)
+                return PlaneIntersectionType.Back;
+
+            return PlaneIntersectionType.Intersecting;
+        }
+
         /// <inheritdoc/>
-		public override bool Equals(object? obj) => obj is BoundingSphere value && Equals(ref value);
+        public override bool Equals(object? obj) => obj is BoundingSphere value && Equals(value);
 
         /// <summary>
         /// Determines whether the specified <see cref="BoundingSphere"/> is equal to this instance.
         /// </summary>
         /// <param name="other">The <see cref="Int4"/> to compare with this instance.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(BoundingSphere other) => Equals(ref other);
-
-        /// <summary>
-		/// Determines whether the specified <see cref="BoundingSphere"/> is equal to this instance.
-		/// </summary>
-		/// <param name="other">The <see cref="BoundingSphere"/> to compare with this instance.</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref BoundingSphere other)
+        public bool Equals(BoundingSphere other)
         {
             return Center.Equals(other.Center)
                 && Radius == other.Radius;
@@ -139,7 +235,7 @@ namespace Vortice.Mathematics
         /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(BoundingSphere left, BoundingSphere right) => left.Equals(ref right);
+        public static bool operator ==(BoundingSphere left, BoundingSphere right) => left.Equals(right);
 
         /// <summary>
         /// Compares two <see cref="BoundingSphere"/> objects for inequality.
@@ -150,12 +246,12 @@ namespace Vortice.Mathematics
         /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(BoundingSphere left, BoundingSphere right) => !left.Equals(ref right);
+        public static bool operator !=(BoundingSphere left, BoundingSphere right) => !left.Equals(right);
 
         /// <inheritdoc/>
 		public override int GetHashCode()
         {
-            var hashCode = new HashCode();
+            HashCode hashCode = new HashCode();
             {
                 hashCode.Add(Center);
                 hashCode.Add(Radius);
@@ -169,14 +265,7 @@ namespace Vortice.Mathematics
         /// <inheritdoc />
         public string ToString(string? format, IFormatProvider? formatProvider)
         {
-            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
-
-            return new StringBuilder()
-                .Append('<')
-                .Append(Center.ToString(format, formatProvider)).Append(separator).Append(' ')
-                .Append(Radius.ToString(format, formatProvider))
-                .Append('>')
-                .ToString();
+            return $"Center:{Center.ToString(format, formatProvider)} Radius:{Radius.ToString(format, formatProvider)}";
         }
     }
 }
