@@ -300,6 +300,54 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
+        /// Lerps between color source and destination by a supplied amount
+        /// </summary>
+        /// <param name="start"><see cref="Color4"/> is the initial color</param>
+        /// <param name="end"><see cref="Color4"/> is the target color</param>
+        /// <param name="by"> is the lerp value defining the colour between the start and end.</param>
+        public static Color4 Lerp(Color4 start, Color4 end, float by)
+        {
+            return new Color4(
+                MathHelper.Lerp(start.R, end.R, by),
+                MathHelper.Lerp(start.G, end.G, by),
+                MathHelper.Lerp(start.B, end.B, by),
+                MathHelper.Lerp(start.A, end.A, by)
+                );
+        }
+
+        /// <summary>
+        /// Lerps between color source and destination by a supplied amount
+        /// </summary>
+        /// <param name="start"><see cref="Color4"/> is the initial color</param>
+        /// <param name="end"><see cref="Color4"/> is the target color</param>
+        /// <param name="by"> is the lerp value defining the colour between the start and end.</param>
+        /// <param name="result">return <see cref="Color4"/> of the lerp value</param>
+        public static void Lerp(Color4 start, Color4 end, float by, out Color4 result)
+        {
+            result = new Color4(
+                MathHelper.Lerp(start.R, end.R, by),
+                MathHelper.Lerp(start.G, end.G, by),
+                MathHelper.Lerp(start.B, end.B, by),
+                MathHelper.Lerp(start.A, end.A, by)
+                );
+        }
+
+        /// <summary>
+        /// Lerps between color source and destination by a supplied amount
+        /// </summary>
+        /// <param name="end"><see cref="Color4"/> is the target color</param>
+        /// <param name="by"> is the lerp value defining the colour between the start and end.</param>
+        public Color4 Lerp(Color4 end, float by)
+        {
+            return new Color4(
+                MathHelper.Lerp(R, end.R, by),
+                MathHelper.Lerp(G, end.G, by),
+                MathHelper.Lerp(B, end.B, by),
+                MathHelper.Lerp(A, end.A, by)
+                );
+        }
+
+        /// <summary>
         /// Converts the color to <see cref="Vector3"/>.
         /// </summary>
         /// <returns>An instance of <see cref="Vector3"/> with R, G, B component.</returns>
