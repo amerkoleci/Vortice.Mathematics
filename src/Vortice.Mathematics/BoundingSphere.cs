@@ -80,6 +80,33 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
+        /// Creates a <see cref="BoundingBox"/> from the sum of 2 <see cref="BoundingBox"/>es.
+        /// </summary>
+        /// <param name="primary"><see cref="BoundingBox"/> is the first subject</param>
+        /// <param name="secondary"><see cref="BoundingBox"/> is second subject</param>
+        public static BoundingBox MergeBoundingBoxes(in BoundingBox primary, in BoundingBox secondary)
+        {
+            return new BoundingBox(
+                Vector3.Min(primary.Minimum, secondary.Minimum),
+                Vector3.Max(primary.Maximum, secondary.Maximum)
+                );
+        }
+
+        /// <summary>
+        /// Creates a <see cref="BoundingBox"/> from the sum of 2 <see cref="BoundingBox"/>es.
+        /// </summary>
+        /// <param name="primary"><see cref="BoundingBox"/> is the first subject</param>
+        /// <param name="secondary"><see cref="BoundingBox"/> is second subject</param>
+        /// <param name="result">The created <see cref="BoundingBox"/> is the result of the sum of the input.</param>
+        public static void MergeBoundingBoxes(in BoundingBox primary, in BoundingBox secondary, out BoundingBox result)
+        {
+            result = new BoundingBox(
+                Vector3.Min(primary.Minimum, secondary.Minimum),
+                Vector3.Max(primary.Maximum, secondary.Maximum)
+                );
+        }
+
+        /// <summary>
         /// Creates the smallest <see cref="BoundingSphere"/> that can contain a specified <see cref="BoundingBox"/>.
         /// </summary>
         /// <param name="box">The <see cref="BoundingBox"/> to create the <see cref="BoundingSphere"/> from.</param>
@@ -189,12 +216,22 @@ namespace Vortice.Mathematics
             return distance <= Radius * Radius;
         }
 
+        /// <summary>
+        /// Checks whether the current <see cref="BoundingSphere"/> intersects with a specified <see cref="BoundingBox"/>.
+        /// </summary>
+        /// <param name="sphere">The <see cref="BoundingSphere"/> to check for intersection with the current <see cref="BoundingSphere"/>.</param>
+        /// <returns>True if intersects, false otherwise.</returns>
         public bool Intersects(in BoundingSphere sphere)
         {
             float radiisum = Radius + sphere.Radius;
             return Vector3.DistanceSquared(Center, sphere.Center) <= radiisum * radiisum;
         }
 
+        /// <summary>
+        /// Checks whether the current <see cref="BoundingSphere"/> intersects with a specified <see cref="BoundingBox"/>.
+        /// </summary>
+        /// <param name="plane">The <see cref="Plane"/> to check for intersection with the current <see cref="Plane"/>.</param>
+        /// <returns>True if intersects, false otherwise.</returns>
         public PlaneIntersectionType Intersects(in Plane plane)
         {
             //Source: Real-Time Collision Detection by Christer Ericson
