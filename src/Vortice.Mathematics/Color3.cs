@@ -214,6 +214,51 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
+        /// Lerps between color source and destination by a supplied amount
+        /// </summary>
+        /// <param name="start"><see cref="Color3"/> is the initial color</param>
+        /// <param name="end"><see cref="Color3"/> is the target color</param>
+        /// <param name="by"> is the lerp value defining the colour between the start and end.</param>
+        public static Color3 Lerp(Color3 start, Color3 end, float by)
+        {
+            return new Color3(
+                MathHelper.Lerp(start.R, end.R, by),
+                MathHelper.Lerp(start.G, end.G, by),
+                MathHelper.Lerp(start.B, end.B, by)            
+                );
+        }
+
+        /// <summary>
+        /// Lerps between color source and destination by a supplied amount
+        /// </summary>
+        /// <param name="start"><see cref="Color3"/> is the initial color</param>
+        /// <param name="end"><see cref="Color3"/> is the target color</param>
+        /// <param name="by"> is the lerp value defining the colour between the start and end.</param>
+        /// <param name="result">return <see cref="Color3"/> of the lerp value</param>
+        public static void Lerp(Color3 start, Color3 end, float by, out Color3 result)
+        {
+            result = new Color3(
+                MathHelper.Lerp(start.R, end.R, by),
+                MathHelper.Lerp(start.G, end.G, by),
+                MathHelper.Lerp(start.B, end.B, by)
+                );
+        }
+
+        /// <summary>
+        /// Lerps between color source and destination by a supplied amount
+        /// </summary>
+        /// <param name="end"><see cref="Color4"/> is the target color</param>
+        /// <param name="by"> is the lerp value defining the colour between the start and end.</param>
+        public Color3 Lerp(Color3 end, float by)
+        {
+            return new Color3(
+                MathHelper.Lerp(R, end.R, by),
+                MathHelper.Lerp(G, end.G, by),
+                MathHelper.Lerp(B, end.B, by)
+                );
+        }
+
+        /// <summary>
         /// Converts the color into a three component vector.
         /// </summary>
         /// <returns>A three component vector containing the red, green, and blue components of the color.</returns>
