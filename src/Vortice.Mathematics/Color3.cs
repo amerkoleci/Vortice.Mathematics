@@ -218,13 +218,13 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="start"><see cref="Color3"/> is the initial color</param>
         /// <param name="end"><see cref="Color3"/> is the target color</param>
-        /// <param name="by"> is the lerp value defining the colour between the start and end.</param>
-        public static Color3 Lerp(Color3 start, Color3 end, float by)
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        public static Color3 Lerp(in Color3 start, in Color3 end, float amount)
         {
             return new Color3(
-                MathHelper.Lerp(start.R, end.R, by),
-                MathHelper.Lerp(start.G, end.G, by),
-                MathHelper.Lerp(start.B, end.B, by)            
+                MathHelper.Lerp(start.R, end.R, amount),
+                MathHelper.Lerp(start.G, end.G, amount),
+                MathHelper.Lerp(start.B, end.B, amount)            
                 );
         }
 
@@ -233,28 +233,14 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="start"><see cref="Color3"/> is the initial color</param>
         /// <param name="end"><see cref="Color3"/> is the target color</param>
-        /// <param name="by"> is the lerp value defining the colour between the start and end.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <param name="result">return <see cref="Color3"/> of the lerp value</param>
-        public static void Lerp(Color3 start, Color3 end, float by, out Color3 result)
+        public static void Lerp(in Color3 start, in Color3 end, float amount, out Color3 result)
         {
             result = new Color3(
-                MathHelper.Lerp(start.R, end.R, by),
-                MathHelper.Lerp(start.G, end.G, by),
-                MathHelper.Lerp(start.B, end.B, by)
-                );
-        }
-
-        /// <summary>
-        /// Lerps between color source and destination by a supplied amount
-        /// </summary>
-        /// <param name="end"><see cref="Color4"/> is the target color</param>
-        /// <param name="by"> is the lerp value defining the colour between the start and end.</param>
-        public Color3 Lerp(Color3 end, float by)
-        {
-            return new Color3(
-                MathHelper.Lerp(R, end.R, by),
-                MathHelper.Lerp(G, end.G, by),
-                MathHelper.Lerp(B, end.B, by)
+                MathHelper.Lerp(start.R, end.R, amount),
+                MathHelper.Lerp(start.G, end.G, amount),
+                MathHelper.Lerp(start.B, end.B, amount)
                 );
         }
 
