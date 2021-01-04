@@ -7,6 +7,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Vortice.Mathematics
 {
@@ -76,6 +77,36 @@ namespace Vortice.Mathematics
         {
             width = Width;
             height = Height;
+        }
+
+        /// <summary>
+        /// Returns a size whose elements are the maximum of each of the pairs of elements in the two source sizes.
+        /// </summary>
+        /// <param name="value1">The first source size.</param>
+        /// <param name="value2">The second source size.</param>
+        /// <returns>The maximized size.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Size Max(in Size value1, in Size value2)
+        {
+            return new Size(
+                (value1.Width > value2.Width) ? value1.Width : value2.Width,
+                (value1.Height > value2.Height) ? value1.Height : value2.Height
+            );
+        }
+
+        /// <summary>
+        /// Returns a vector size elements are the minimum of each of the pairs of elements in the two source sizes.
+        /// </summary>
+        /// <param name="value1">The first source size.</param>
+        /// <param name="value2">The second source size.</param>
+        /// <returns>The minimized size.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Size Min(in Size value1, in Size value2)
+        {
+            return new Size(
+                (value1.Width < value2.Width) ? value1.Width : value2.Width,
+                (value1.Height < value2.Height) ? value1.Height : value2.Height
+            );
         }
 
         public static Size operator +(Size left, Size right) =>
