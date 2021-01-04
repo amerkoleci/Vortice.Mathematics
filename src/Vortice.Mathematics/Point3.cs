@@ -4,18 +4,17 @@
 using System;
 using System.ComponentModel;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
-using System.Globalization;
-using System.Text;
+using System.Runtime.InteropServices;
 
 namespace Vortice.Mathematics
 {
     /// <summary>
     /// Represents a three-dimensional offset.
     /// </summary>
+    [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public readonly struct Point3 : IEquatable<Point3>, IFormattable
+    public struct Point3 : IEquatable<Point3>
     {
         /// <summary>
         /// A <see cref="Point3"/> with all of its components set to zero.
@@ -91,17 +90,17 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Gets the x-coordinate of this <see cref="Point3"/>.
         /// </summary>
-        public int X { get; }
+        public int X { readonly get; set; }
 
         /// <summary>
         /// Gets the y-coordinate of this <see cref="Point3"/>.
         /// </summary>
-        public int Y { get; }
+        public int Y { readonly get; set; }
 
         /// <summary>
         /// Gets the z-coordinate of this <see cref="Point3"/>.
         /// </summary>
-        public int Z { get; }
+        public int Z { readonly get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Point"/> is empty.
@@ -164,7 +163,6 @@ namespace Vortice.Mathematics
         /// <inheritdoc/>
         public bool Equals(Point3 other) => X == other.X && Y == other.Y && Z == other.Z;
 
-
         /// <inheritdoc/>
         public override int GetHashCode()
         {
@@ -178,20 +176,6 @@ namespace Vortice.Mathematics
         }
 
         /// <inheritdoc/>
-        public override string ToString() => ToString(format: null, formatProvider: null);
-
-        /// <inheritdoc />
-        public string ToString(string? format, IFormatProvider? formatProvider)
-        {
-            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
-
-            return new StringBuilder()
-                .Append('<')
-                .Append(X.ToString(format, formatProvider)).Append(separator).Append(' ')
-                .Append(Y.ToString(format, formatProvider)).Append(separator).Append(' ')
-                .Append(Z.ToString(format, formatProvider))
-                .Append('>')
-                .ToString();
-        }
+        public override readonly string ToString() => $"{{X={X},Y={Y},Z={Z}}}";
     }
 }

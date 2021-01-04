@@ -17,7 +17,7 @@ namespace Vortice.Mathematics
     /// Defines an integer rectangle structure defining X, Y, Width, Height.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public readonly struct Rectangle : IEquatable<Rectangle>
+    public struct Rectangle : IEquatable<Rectangle>
     {
         /// <summary>
         /// Returns a <see cref="Rectangle"/> with all of its values set to zero.
@@ -53,6 +53,18 @@ namespace Vortice.Mathematics
         }
 
         /// <summary>
+		/// Initializes a new instance of the <see cref="Rectangle"/> struct.
+		/// </summary>
+        /// <param name="size">The size of the rectangle.</param>
+		public Rectangle(in Size size)
+        {
+            X = 0;
+            Y = 0;
+            Width = size.Width;
+            Height = size.Height;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Rectangle"/> struct.
         /// </summary>
         /// <param name="point">
@@ -61,7 +73,7 @@ namespace Vortice.Mathematics
         /// <param name="size">
         /// The <see cref="Size"/> which specifies the rectangles height and width.
         /// </param>
-        public Rectangle(Point point, Size size)
+        public Rectangle(in Point point, in Size size)
         {
             X = point.X;
             Y = point.Y;
@@ -72,102 +84,126 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Gets or sets the x-coordinate of this <see cref="Rectangle"/>.
         /// </summary>
-        public int X { get; }
+        public int X { readonly get; set; }
 
         /// <summary>
         /// Gets or sets the y-coordinate of this <see cref="Rectangle"/>.
         /// </summary>
-        public int Y { get; }
+        public int Y { readonly get; set; }
 
         /// <summary>
         /// Gets or sets the width of this <see cref="Rectangle"/>.
         /// </summary>
-        public int Width { get; }
+        public int Width { readonly get; set; }
 
         /// <summary>
         /// Gets or sets the height of this <see cref="Rectangle"/>.
         /// </summary>
-        public int Height { get; }
+        public int Height { readonly get; set; }
 
         /// <summary>
         /// Gets or sets the upper-left value of the <see cref="Rectangle"/>.
         /// </summary>
-        public Point Location => new Point(X, Y);
+        public Point Location
+        {
+            readonly get => new Point(X, Y);
+            set
+            {
+                X = value.X;
+                Y = value.Y;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the size of this <see cref="Rectangle"/>.
         /// </summary>
-        public Size Size => new Size(Width, Height);
+        public Size Size
+        {
+            readonly get => new Size(Width, Height);
+            set
+            {
+                Width = value.Width;
+                Height = value.Height;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the x-coordinate of the left edge of this <see cref="Rectangle"/>.
         /// </summary>
-        public int Left => X;
+        public int Left
+        {
+            readonly get => X;
+            set { X = value; }
+        }
 
         /// <summary>
         /// Gets or sets the y-coordinate of the left edge of this <see cref="Rectangle"/>.
         /// </summary>
-        public int Top => Y;
+        public int Top
+        {
+            readonly get => Y;
+            set { Y = value; }
+        }
 
         /// <summary>
         /// Gets the x-coordinate of the right edge of this <see cref="Rectangle"/>.
         /// </summary>
-        public int Right => unchecked(X + Width);
+        public readonly int Right => unchecked(X + Width);
 
         /// <summary>
         /// Gets the y-coordinate of the bottom edge of this <see cref="Rectangle"/>.
         /// </summary>
-        public int Bottom => unchecked(Y + Height);
+        public readonly int Bottom => unchecked(Y + Height);
+
+        /// <summary>
+        /// Gets the x-coordinate of the center of this rectangle.
+        /// </summary>
+        public readonly int CenterX => Left + Width / 2;
+
+        /// <summary>
+        /// Gets the y-coordinate of the midcenterdle of this rectangle.
+        /// </summary>
+        public readonly int CenterY => Top + Height / 2;
 
         /// <summary>
         /// Gets the <see cref="Point"/> that specifies the center of this <see cref="Rectangle"/>.
         /// </summary>
-        public Point Center => new Point(X + (Width / 2), Y + (Height / 2));
-
-        /// <summary>
-        /// Gets the x-coordinate of the center of this <see cref="Rectangle"/>.
-        /// </summary>
-        public int CenterX => unchecked(X + (Width / 2));
-
-        /// <summary>
-        /// Gets the y-coordinate of the center of this <see cref="Rectangle"/>.
-        /// </summary>
-        public int CenterY => unchecked(Y + (Height / 2));
+        public readonly Point Center => new Point(CenterX, CenterY);
 
         /// <summary>
         /// Gets the aspect ratio of this <see cref="Rectangle"/>.
         /// </summary>
-        public float AspectRatio => (float)Width / Height;
+        public readonly float AspectRatio => (float)Width / Height;
 
         /// <summary>
         /// Gets the position of the top-left corner of this <see cref="Rectangle"/>.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public Point TopLeft => new Point(X, Y);
+        public readonly Point TopLeft => new Point(X, Y);
 
         /// <summary>
         /// Gets the position of the top-right corner of this <see cref="Rectangle"/>.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public Point TopRight => new Point(Right, Y);
+        public readonly Point TopRight => new Point(Right, Y);
 
         /// <summary>
         /// Gets the position of the bottom-left corner of <see cref="Rectangle"/>.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public Point BottomLeft => new Point(X, Bottom);
+        public readonly Point BottomLeft => new Point(X, Bottom);
 
         /// <summary>
         /// Gets the position of the bottom-right corner of <see cref="Rectangle"/>.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public Point BottomRight => new Point(Right, Bottom);
+        public readonly Point BottomRight => new Point(Right, Bottom);
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Rectangle"/> is empty.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public bool IsEmpty => (Width == 0) && (Height == 0) && (X == 0) && (Y == 0);
+        public readonly bool IsEmpty => (Width == 0) && (Height == 0) && (X == 0) && (Y == 0);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Rectangle"/> to <see cref="RectangleF" />.
@@ -215,16 +251,15 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="horizontalAmount">X inflate amount.</param>
         /// <param name="verticalAmount">Y inflate amount.</param>
-        /// <returns>New inflated <see cref="Rectangle"/>.</returns>
-        public Rectangle Inflate(int horizontalAmount, int verticalAmount)
+        public void Inflate(int horizontalAmount, int verticalAmount)
         {
             unchecked
             {
-                int x = X - horizontalAmount;
-                int y = Y - verticalAmount;
-                int width = Width + 2 * horizontalAmount;
-                int height = Height + 2 * verticalAmount;
-                return new Rectangle(x, y, width, height);
+                X -= horizontalAmount;
+                Y -= verticalAmount;
+
+                Width += 2 * horizontalAmount;
+                Height += 2 * verticalAmount;
             }
         }
 
@@ -298,19 +333,26 @@ namespace Vortice.Mathematics
         /// Translates this rectangle by a specified offset.
         /// </summary>
         /// <param name="offset">The offset value.</param>
-        public void Offset(Point offset) => Offset(offset.X, offset.Y);
+        public void Offset(Point offset)
+        {
+            unchecked
+            {
+                X += offset.X;
+                Y += offset.Y;
+            }
+        }
 
         /// <summary>
         /// Translates this rectangle by a specified offset.
         /// </summary>
         /// <param name="offsetX">The amount to offset the x-coordinate.</param>
         /// <param name="offsetY">The amount to offset the y-coordinate.</param>
-        /// <returns>The new offseted <see cref="Rectangle"/>.</returns>
-        public Rectangle Offset(int offsetX, int offsetY)
+        public void Offset(int offsetX, int offsetY)
         {
             unchecked
             {
-                return new Rectangle(X + offsetX, Y + offsetY, Width, Height);
+                X += offsetX;
+                Y += offsetY;
             }
         }
 
@@ -454,6 +496,6 @@ namespace Vortice.Mathematics
         }
 
         /// <inheritdoc/>
-        public override string ToString() => $"{{X={X},Y={Y},Width={Width},Height={Height}}}";
+        public override readonly string ToString() => $"{{X={X},Y={Y},Width={Width},Height={Height}}}";
     }
 }

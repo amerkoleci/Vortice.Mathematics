@@ -11,10 +11,10 @@ using System.Text;
 namespace Vortice.Mathematics
 {
     /// <summary>
-    /// Represents a four dimensional mathematical int vector.
+    /// Represents a four dimensional mathematical integer vector.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public readonly struct Int4 : IEquatable<Int4>, IFormattable
+    public readonly struct Int4 : IEquatable<Int4>
     {
         /// <summary>
         /// A <see cref="Int4"/> with all of its components set to zero.
@@ -195,21 +195,14 @@ namespace Vortice.Mathematics
         public static explicit operator Vector4(Int4 value) => new Vector4(value.X, value.Y, value.Z, value.W);
 
         /// <inheritdoc/>
-		public override bool Equals(object? obj) => obj is Int4 value && Equals(ref value);
+		public override bool Equals(object? obj) => obj is Int4 value && Equals(value);
 
         /// <summary>
         /// Determines whether the specified <see cref="Int4"/> is equal to this instance.
         /// </summary>
         /// <param name="other">The <see cref="Int4"/> to compare with this instance.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Int4 other) => Equals(ref other);
-
-        /// <summary>
-		/// Determines whether the specified <see cref="Int4"/> is equal to this instance.
-		/// </summary>
-		/// <param name="other">The <see cref="Int4"/> to compare with this instance.</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref Int4 other)
+        public bool Equals(Int4 other)
         {
             return X == other.X
                 && Y == other.Y
@@ -226,7 +219,7 @@ namespace Vortice.Mathematics
         /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Int4 left, Int4 right) => left.Equals(ref right);
+        public static bool operator ==(Int4 left, Int4 right) => left.Equals(right);
 
         /// <summary>
         /// Compares two <see cref="Int4"/> objects for inequality.
@@ -237,7 +230,7 @@ namespace Vortice.Mathematics
         /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Int4 left, Int4 right) => !left.Equals(ref right);
+        public static bool operator !=(Int4 left, Int4 right) => !left.Equals(right);
 
         /// <inheritdoc/>
 		public override int GetHashCode()
@@ -253,23 +246,6 @@ namespace Vortice.Mathematics
         }
 
         /// <inheritdoc/>
-        public override string ToString()
-        {
-            return $"{nameof(Int4)}({X}, {Y}, {Z}, {W})";
-        }
-
-        public string ToString(string? format, IFormatProvider? formatProvider)
-        {
-            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
-
-            return new StringBuilder()
-                .Append('<')
-                .Append(X.ToString(format, formatProvider)).Append(separator).Append(' ')
-                .Append(Y.ToString(format, formatProvider)).Append(separator).Append(' ')
-                .Append(Z.ToString(format, formatProvider)).Append(separator).Append(' ')
-                .Append(W.ToString(format, formatProvider))
-                .Append('>')
-                .ToString();
-        }
+        public override readonly string ToString() => $"{{X={X},Y={Y},Z={Z},W={W}}}";
     }
 }

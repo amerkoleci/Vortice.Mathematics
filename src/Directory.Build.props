@@ -24,8 +24,6 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/amerkoleci/Vortice.Mathematics</PackageProjectUrl>
 
-    <VersionPrefix>1.2.9</VersionPrefix>
-
     <RepositoryType>git</RepositoryType>
     <RestoreSources>
       https://api.nuget.org/v3/index.json;

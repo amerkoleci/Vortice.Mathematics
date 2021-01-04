@@ -7,16 +7,14 @@
 
 using System;
 using System.ComponentModel;
-using System.Globalization;
 using System.Numerics;
-using System.Text;
 
 namespace Vortice.Mathematics
 {
     /// <summary>
     /// Stores an ordered pair of floating-point numbers describing the width and height of a rectangle.
     /// </summary>
-    public readonly struct SizeF : IEquatable<SizeF>, IFormattable
+    public struct SizeF : IEquatable<SizeF>
     {
         /// <summary>
         /// Represents a <see cref="SizeF"/> that has Width and Height values set to zero.
@@ -47,12 +45,12 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Gets or sets the width of this <see cref="SizeF"/>.
         /// </summary>
-        public float Width { get; }
+        public float Width { readonly get; set; }
 
         /// <summary>
         /// Gets or sets the height of this <see cref="SizeF"/>.
         /// </summary>
-        public float Height { get; }
+        public float Height { readonly get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="SizeF"/> is empty.
@@ -76,14 +74,14 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Vector2(SizeF value) => new Vector2(value.Width, value.Height);
+        public static implicit operator Vector2(in SizeF value) => new Vector2(value.Width, value.Height);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Size"/> to <see cref="System.Drawing.SizeF" />.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator System.Drawing.SizeF(SizeF value) => new System.Drawing.SizeF(value.Width, value.Height);
+        public static implicit operator System.Drawing.SizeF(in SizeF value) => new System.Drawing.SizeF(value.Width, value.Height);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.Drawing.SizeF" /> to <see cref="SizeF"/>.
@@ -97,7 +95,7 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator PointF(SizeF value) => new PointF(value.Width, value.Height);
+        public static explicit operator PointF(in SizeF value) => new PointF(value.Width, value.Height);
 
         /// <summary>
         /// Compares two <see cref="SizeF"/> objects for equality.
@@ -137,21 +135,6 @@ namespace Vortice.Mathematics
         }
 
         /// <inheritdoc/>
-        public override string ToString() => ToString(format: null, formatProvider: null);
-
-        /// <inheritdoc />
-        public string ToString(string? format, IFormatProvider? formatProvider)
-        {
-            var separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
-
-            return new StringBuilder()
-                .Append('<')
-                .Append(Width.ToString(format, formatProvider))
-                .Append(separator)
-                .Append(' ')
-                .Append(Height.ToString(format, formatProvider))
-                .Append('>')
-                .ToString();
-        }
+        public override readonly string ToString() => $"{{{nameof(Width)}={Width},{nameof(Height)}={Height}}}";
     }
 }

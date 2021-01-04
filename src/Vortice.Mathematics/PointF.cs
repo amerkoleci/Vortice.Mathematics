@@ -7,17 +7,18 @@
 
 using System;
 using System.ComponentModel;
-using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Text;
+using System.Runtime.InteropServices;
 
 namespace Vortice.Mathematics
 {
     /// <summary>
     /// Represents an ordered pair of floating-point x and y-coordinates that defines a point in a two-dimensional plane.
     /// </summary>
-    public readonly struct PointF : IEquatable<PointF>, IFormattable
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    public struct PointF : IEquatable<PointF>
     {
         /// <summary>
         /// Represents a <see cref="PointF"/> that has X and Y values set to zero.
@@ -56,12 +57,12 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Gets the x-coordinate of this <see cref="PointF"/>.
         /// </summary>
-        public float X { get; }
+        public float X { readonly get; set; }
 
         /// <summary>
         /// Gets the y-coordinate of this <see cref="PointF"/>.
         /// </summary>
-        public float Y { get; }
+        public float Y { readonly get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="PointF"/> is empty.
@@ -73,8 +74,18 @@ namespace Vortice.Mathematics
 
         public readonly float LengthSquared => X * X + Y * Y;
 
-        public PointF Offset(PointF p) => new PointF(X + p.X, Y + p.Y);
-        public PointF Offset(float dx, float dy) => new PointF(X + dx, Y + dy);
+        public void Offset(PointF p)
+        {
+            X += p.X;
+            Y += p.Y;
+        }
+
+
+        public void Offset(float dx, float dy)
+        {
+            X += dx;
+            Y += dy;
+        }
 
         public static PointF Add(PointF point, Size size) => point + size;
         public static PointF Add(PointF point, SizeF size) => point + size;
@@ -225,21 +236,6 @@ namespace Vortice.Mathematics
         }
 
         /// <inheritdoc/>
-        public override string ToString() => ToString(format: null, formatProvider: null);
-
-        /// <inheritdoc />
-        public string ToString(string? format, IFormatProvider? formatProvider)
-        {
-            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
-
-            return new StringBuilder()
-                .Append('<')
-                .Append(X.ToString(format, formatProvider))
-                .Append(separator)
-                .Append(' ')
-                .Append(Y.ToString(format, formatProvider))
-                .Append('>')
-                .ToString();
-        }
+        public override readonly string ToString() => $"{{X={X},Y={Y}}}";
     }
 }

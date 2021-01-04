@@ -7,16 +7,17 @@
 
 using System;
 using System.ComponentModel;
-using System.Globalization;
 using System.Numerics;
-using System.Text;
+using System.Runtime.InteropServices;
 
 namespace Vortice.Mathematics
 {
     /// <summary>
     /// Represents an ordered pair of integer x and y-coordinates that defines a point in a two-dimensional plane.
     /// </summary>
-    public readonly struct Point : IEquatable<Point>, IFormattable
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    public struct Point : IEquatable<Point>
     {
         /// <summary>
         /// Represents a <see cref="Point"/> that has X and Y values set to zero.
@@ -65,12 +66,12 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Gets the x-coordinate of this <see cref="Point"/>.
         /// </summary>
-        public int X { get; }
+        public int X { readonly get; set; }
 
         /// <summary>
         /// Gets the y-coordinate of this <see cref="Point"/>.
         /// </summary>
-        public int Y { get; }
+        public int Y { readonly get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Point"/> is empty.
@@ -335,19 +336,18 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="dx">The amount to offset the x-coordinate.</param>
         /// <param name="dy">The amount to offset the y-coordinate.</param>
-        public Point Offset(int dx, int dy)
+        public void Offset(int dx, int dy)
         {
-            unchecked
-            {
-                return new Point(X + dx, Y + dy);
-            }
+            X += dx;
+            Y += dy;
         }
+
 
         /// <summary>
         /// Translates this <see cref="Point"/> by the specified amount.
         /// </summary>
         /// <param name="point">The <see cref="Point"/> used offset this <see cref="Point"/>.</param>
-        public Point Offset(Point point) => Offset(point.X, point.Y);
+        public void Offset(Point point) => Offset(point.X, point.Y);
 
         /// <inheritdoc/>
         public override bool Equals(object? obj) => obj is Point other && Equals(other);
@@ -371,21 +371,6 @@ namespace Vortice.Mathematics
         }
 
         /// <inheritdoc/>
-        public override string ToString() => ToString(format: null, formatProvider: null);
-
-        /// <inheritdoc />
-        public string ToString(string? format, IFormatProvider? formatProvider)
-        {
-            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
-
-            return new StringBuilder()
-                .Append('<')
-                .Append(X.ToString(format, formatProvider))
-                .Append(separator)
-                .Append(' ')
-                .Append(Y.ToString(format, formatProvider))
-                .Append('>')
-                .ToString();
-        }
+        public override readonly string ToString() => $"{{X={X},Y={Y}}}";
     }
 }

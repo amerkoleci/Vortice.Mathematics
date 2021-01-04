@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{630DF6DF
 		version.json = version.json
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vortice.Mathematics.Tests", "Vortice.Mathematics.Tests\Vortice.Mathematics.Tests.csproj", "{C1983138-9CC7-4889-B413-19B2736BBB68}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{07DB51D4-739F-4EDD-B1AB-B292B0656689}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07DB51D4-739F-4EDD-B1AB-B292B0656689}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07DB51D4-739F-4EDD-B1AB-B292B0656689}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1983138-9CC7-4889-B413-19B2736BBB68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1983138-9CC7-4889-B413-19B2736BBB68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1983138-9CC7-4889-B413-19B2736BBB68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1983138-9CC7-4889-B413-19B2736BBB68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

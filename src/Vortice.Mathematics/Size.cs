@@ -7,15 +7,13 @@
 
 using System;
 using System.ComponentModel;
-using System.Globalization;
-using System.Text;
 
 namespace Vortice.Mathematics
 {
     /// <summary>
     /// Stores an ordered pair of integer numbers describing the width and height of a rectangle.
     /// </summary>
-    public readonly struct Size : IEquatable<Size>, IFormattable
+    public struct Size : IEquatable<Size>
     {
         /// <summary>
         /// Represents a <see cref="Size"/> that has Width and Height values set to zero.
@@ -51,12 +49,12 @@ namespace Vortice.Mathematics
         /// <summary>
         /// Gets or sets the width of this <see cref="Size"/>.
         /// </summary>
-        public int Width { get; }
+        public int Width { readonly get; set; }
 
         /// <summary>
         /// Gets or sets the height of this <see cref="Size"/>.
         /// </summary>
-        public int Height { get; }
+        public int Height { readonly get; set; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Size"/> is empty.
@@ -145,21 +143,6 @@ namespace Vortice.Mathematics
         }
 
         /// <inheritdoc/>
-        public override string ToString() => ToString(format: null, formatProvider: null);
-
-        /// <inheritdoc />
-        public string ToString(string? format, IFormatProvider? formatProvider)
-        {
-            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
-
-            return new StringBuilder()
-                .Append('<')
-                .Append(Width.ToString(format, formatProvider))
-                .Append(separator)
-                .Append(' ')
-                .Append(Height.ToString(format, formatProvider))
-                .Append('>')
-                .ToString();
-        }
+        public override readonly string ToString() => $"{{{nameof(Width)}={Width},{nameof(Height)}={Height}}}";
     }
 }

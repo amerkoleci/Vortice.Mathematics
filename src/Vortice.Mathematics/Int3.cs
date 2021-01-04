@@ -2,19 +2,17 @@
 // Distributed under the MIT license. See the LICENSE file in the project root for more information.
 
 using System;
-using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Vortice.Mathematics
 {
     /// <summary>
-    /// Represents a three dimensional mathematical int vector.
+    /// Represents a three dimensional mathematical integer vector.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public readonly struct Int3 : IEquatable<Int3>, IFormattable
+    public readonly struct Int3 : IEquatable<Int3>
     {
         /// <summary>
         /// A <see cref="Int3"/> with all of its components set to zero.
@@ -113,21 +111,14 @@ namespace Vortice.Mathematics
         public static explicit operator Vector3(Int3 value) => new Vector3(value.X, value.Y, value.Z);
 
         /// <inheritdoc/>
-		public override bool Equals(object? obj) => obj is Int3 value && Equals(ref value);
+		public override bool Equals(object? obj) => obj is Int3 value && Equals(value);
 
         /// <summary>
         /// Determines whether the specified <see cref="Int3"/> is equal to this instance.
         /// </summary>
         /// <param name="other">The <see cref="Int3"/> to compare with this instance.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Int3 other) => Equals(ref other);
-
-        /// <summary>
-		/// Determines whether the specified <see cref="Int3"/> is equal to this instance.
-		/// </summary>
-		/// <param name="other">The <see cref="Int3"/> to compare with this instance.</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref Int3 other)
+        public bool Equals(Int3 other)
         {
             return X == other.X
                 && Y == other.Y
@@ -143,7 +134,7 @@ namespace Vortice.Mathematics
         /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Int3 left, Int3 right) => left.Equals(ref right);
+        public static bool operator ==(Int3 left, Int3 right) => left.Equals(right);
 
         /// <summary>
         /// Compares two <see cref="Int3"/> objects for inequality.
@@ -154,7 +145,7 @@ namespace Vortice.Mathematics
         /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Int3 left, Int3 right) => !left.Equals(ref right);
+        public static bool operator !=(Int3 left, Int3 right) => !left.Equals(right);
 
         /// <inheritdoc/>
 		public override int GetHashCode()
@@ -169,20 +160,6 @@ namespace Vortice.Mathematics
         }
 
         /// <inheritdoc/>
-        public override string ToString() => ToString(format: null, formatProvider: null);
-
-        /// <inheritdoc />
-        public string ToString(string? format, IFormatProvider? formatProvider)
-        {
-            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
-
-            return new StringBuilder()
-                .Append('<')
-                .Append(X.ToString(format, formatProvider)).Append(separator).Append(' ')
-                .Append(Y.ToString(format, formatProvider)).Append(separator).Append(' ')
-                .Append(Z.ToString(format, formatProvider))
-                .Append('>')
-                .ToString();
-        }
+        public override readonly string ToString() => $"{{X={X},Y={Y},Z={Z}}}";
     }
 }

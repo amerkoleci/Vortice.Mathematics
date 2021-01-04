@@ -3,10 +3,8 @@
 
 using System;
 using System.ComponentModel;
-using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Vortice.Mathematics
 {
@@ -14,7 +12,7 @@ namespace Vortice.Mathematics
     /// Stores an ordered pair of integer numbers describing the width, height and depth of a rectangle.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public readonly struct Size3 : IEquatable<Size3>, IFormattable
+    public readonly struct Size3 : IEquatable<Size3>
     {
         /// <summary>
         /// A <see cref="Size3"/> with all of its components set to zero.
@@ -44,7 +42,7 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="size">The width and height component of the extent.</param>
         /// <param name="depth">The depth component of the extent.</param>
-        public Size3(Size size, int depth)
+        public Size3(in Size size, int depth)
         {
             Width = size.Width;
             Height = size.Height;
@@ -126,20 +124,6 @@ namespace Vortice.Mathematics
         }
 
         /// <inheritdoc/>
-        public override string ToString() => ToString(format: null, formatProvider: null);
-
-        /// <inheritdoc />
-        public string ToString(string? format, IFormatProvider? formatProvider)
-        {
-            string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
-
-            return new StringBuilder()
-                .Append('<')
-                .Append(Width.ToString(format, formatProvider)).Append(separator).Append(' ')
-                .Append(Height.ToString(format, formatProvider)).Append(separator).Append(' ')
-                .Append(Depth.ToString(format, formatProvider))
-                .Append('>')
-                .ToString();
-        }
+        public override readonly string ToString() => $"{{{nameof(Width)}={Width},{nameof(Height)}={Height},{nameof(Depth)}={Depth}}}";
     }
 }
