@@ -23,7 +23,7 @@ jobs:
     - name: Install .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.102
+        dotnet-version: '5.0.x'
 
     - name: Version
       uses: aarnott/nbgv@v0.4.0
@@ -31,7 +31,7 @@ jobs:
         setAllVars: true
 
     - name: Pack
-      run: dotnet pack Vortice.Mathematics.sln --configuration Release --output build/packages
+      run: dotnet pack src --configuration Release --output build/packages
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v1
