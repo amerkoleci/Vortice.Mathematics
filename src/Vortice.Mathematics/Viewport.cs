@@ -194,18 +194,22 @@ namespace Vortice.Mathematics
 
         public Vector3 Unproject(Vector3 source, Matrix4x4 projection, Matrix4x4 view, Matrix4x4 world)
         {
+            Matrix4x4 worldViewProjection = Matrix4x4.Multiply(Matrix4x4.Multiply(world, view), projection);
+            return Unproject(source, ref worldViewProjection);
+        }
+
+        public Vector3 Unproject(Vector3 source, ref Matrix4x4 worldViewProjection)
+        {
             Vector3 scale = new Vector3(Width * 0.5f, -Height * 0.5f, MaxDepth - MinDepth);
             scale = Vector3.Divide(Vector3.One, scale);
 
             Vector3 offset = new Vector3(-X, -Y, -MinDepth);
             offset = VectorEx.MultiplyAdd(scale, offset, new Vector3(-1.0f, 1.0f, 0.0f));
 
-            Matrix4x4 transform = Matrix4x4.Multiply(world, view);
-            transform = Matrix4x4.Multiply(transform, projection);
-            Matrix4x4.Invert(transform, out transform);
+            Matrix4x4.Invert(worldViewProjection, out Matrix4x4 invWorldViewProjection);
 
             Vector3 result = VectorEx.MultiplyAdd(source, scale, offset);
-            return Vector3.Transform(result, transform);
+            return Vector3.Transform(result, invWorldViewProjection);
         }
 
         public static RectangleF ComputeDisplayArea(ViewportScaling scaling, int backBufferWidth, int backBufferHeight, int outputWidth, int outputHeight)
@@ -307,7 +311,7 @@ namespace Vortice.Mathematics
         public static bool operator !=(Viewport left, Viewport right) => !left.Equals(right);
 
         /// <inheritdoc/>
-		public override int GetHashCode()
+        public override int GetHashCode()
         {
             var hashCode = new HashCode();
             {
