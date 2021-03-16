@@ -144,7 +144,7 @@ namespace Vortice.Mathematics
         /// Gets or sets the bounds of the viewport.
         /// </summary>
         /// <value>The bounds.</value>
-        public RectangleF Bounds => new RectangleF(X, Y, Width, Height);
+        public RectangleF Bounds => new(X, Y, Width, Height);
 
         /// <summary>
         /// Gets the aspect ratio used by the viewport.
@@ -163,53 +163,51 @@ namespace Vortice.Mathematics
             }
         }
 
-        public Vector3 Project(Vector3 source, Matrix4x4 worldViewProjection)
-        {
-            float halfViewportWidth = Width * 0.5f;
-            float halfViewportHeight = Height * 0.5f;
-
-            Vector3 scale = new Vector3(halfViewportWidth, -halfViewportHeight, MaxDepth - MinDepth);
-            Vector3 offset = new Vector3(X + halfViewportWidth, Y + halfViewportHeight, MinDepth);
-
-            var result = Vector3.Transform(source, worldViewProjection);
-            result = VectorEx.MultiplyAdd(result, scale, offset);
-            return result;
-        }
-
         public Vector3 Project(Vector3 source, Matrix4x4 projection, Matrix4x4 view, Matrix4x4 world)
         {
-            float halfViewportWidth = Width * 0.5f;
-            float halfViewportHeight = Height * 0.5f;
+            Matrix4x4 worldViewProjection = Matrix4x4.Multiply(Matrix4x4.Multiply(world, view), projection);
+            return Project(source, worldViewProjection);
+        }
 
-            Vector3 scale = new Vector3(halfViewportWidth, -halfViewportHeight, MaxDepth - MinDepth);
-            Vector3 offset = new Vector3(X + halfViewportWidth, Y + halfViewportHeight, MinDepth);
+        public Vector3 Project(Vector3 source, Matrix4x4 worldViewProjection)
+        {
+            Vector3 vector = Vector3.Transform(source, worldViewProjection);
+            float a = (source.X * worldViewProjection.M14) + (source.Y * worldViewProjection.M24) + (source.Z * worldViewProjection.M34) + worldViewProjection.M44;
 
-            Matrix4x4 transform = Matrix4x4.Multiply(world, view);
-            transform = Matrix4x4.Multiply(transform, projection);
+            if (!MathHelper.IsOne(a))
+            {
+                vector.X /= a;
+                vector.Y /= a;
+                vector.Z /= a;
+            }
 
-            var result = Vector3.Transform(source, transform);
-            result = VectorEx.MultiplyAdd(result, scale, offset);
-            return result;
+            vector.X = ((vector.X + 1.0f) * 0.5f * Width) + X;
+            vector.Y = ((-vector.Y + 1.0f) * 0.5f * Height) + Y;
+            vector.Z = (vector.Z * (MaxDepth - MinDepth)) + MinDepth;
+            return vector;
         }
 
         public Vector3 Unproject(Vector3 source, Matrix4x4 projection, Matrix4x4 view, Matrix4x4 world)
         {
             Matrix4x4 worldViewProjection = Matrix4x4.Multiply(Matrix4x4.Multiply(world, view), projection);
-            return Unproject(source, ref worldViewProjection);
+            return Unproject(source, worldViewProjection);
         }
 
-        public Vector3 Unproject(Vector3 source, ref Matrix4x4 worldViewProjection)
+        public Vector3 Unproject(Vector3 source, Matrix4x4 worldViewProjection)
         {
-            Vector3 scale = new Vector3(Width * 0.5f, -Height * 0.5f, MaxDepth - MinDepth);
-            scale = Vector3.Divide(Vector3.One, scale);
+            source.X = (((source.X - X) / Width) * 2.0f) - 1.0f;
+            source.Y = -(((source.Y - Y) / Height * 2.0f) - 1.0f);
+            source.Z = (source.Z - MinDepth) / (MaxDepth - MinDepth);
 
-            Vector3 offset = new Vector3(-X, -Y, -MinDepth);
-            offset = VectorEx.MultiplyAdd(scale, offset, new Vector3(-1.0f, 1.0f, 0.0f));
+            float a = (source.X * worldViewProjection.M14) + (source.Y * worldViewProjection.M24) + (source.Z * worldViewProjection.M34) + worldViewProjection.M44;
+            source = Vector3.Transform(source, worldViewProjection);
 
-            Matrix4x4.Invert(worldViewProjection, out Matrix4x4 invWorldViewProjection);
+            if (!MathHelper.IsOne(a))
+            {
+                source /= a;
+            }
 
-            Vector3 result = VectorEx.MultiplyAdd(source, scale, offset);
-            return Vector3.Transform(result, invWorldViewProjection);
+            return source;
         }
 
         public static RectangleF ComputeDisplayArea(ViewportScaling scaling, int backBufferWidth, int backBufferHeight, int outputWidth, int outputHeight)
@@ -254,7 +252,6 @@ namespace Vortice.Mathematics
                     // Output is displayed in the upper left corner of the window area
                     return new RectangleF(Math.Min(backBufferWidth, outputWidth), Math.Min(backBufferHeight, outputHeight));
             }
-
         }
 
         public static RectangleF ComputeTitleSafeArea(int backBufferWidth, int backBufferHeight)
