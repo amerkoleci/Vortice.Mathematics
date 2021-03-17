@@ -163,12 +163,25 @@ namespace Vortice.Mathematics
             }
         }
 
+        /// <summary>
+        /// Projects a 3D vector from object space into screen space.
+        /// </summary>
+        /// <param name="source">The vector to project.</param>
+        /// <param name="projection">The projection matrix.</param>
+        /// <param name="view">The view matrix.</param>
+        /// <param name="world">The world matrix.</param>
         public Vector3 Project(Vector3 source, Matrix4x4 projection, Matrix4x4 view, Matrix4x4 world)
         {
             Matrix4x4 worldViewProjection = Matrix4x4.Multiply(Matrix4x4.Multiply(world, view), projection);
             return Project(source, worldViewProjection);
         }
 
+        /// <summary>
+        /// Projects a 3D vector from object space into screen space.
+        /// </summary>
+        /// <param name="source">The vector to project.</param>
+        /// <param name="worldViewProjection">The World-View-Projection matrix.</param>
+        /// <returns>The unprojected vector. </returns>
         public Vector3 Project(Vector3 source, Matrix4x4 worldViewProjection)
         {
             Vector3 vector = Vector3.Transform(source, worldViewProjection);
@@ -187,20 +200,36 @@ namespace Vortice.Mathematics
             return vector;
         }
 
+        /// <summary>
+        /// Converts a screen space point into a corresponding point in world space.
+        /// </summary>
+        /// <param name="source">The vector to project.</param>
+        /// <param name="projection">The projection matrix.</param>
+        /// <param name="view">The view matrix.</param>
+        /// <param name="world">The world matrix.</param>
+        /// <returns>The unprojected vector. </returns>
         public Vector3 Unproject(Vector3 source, Matrix4x4 projection, Matrix4x4 view, Matrix4x4 world)
         {
             Matrix4x4 worldViewProjection = Matrix4x4.Multiply(Matrix4x4.Multiply(world, view), projection);
             return Unproject(source, worldViewProjection);
         }
 
+        /// <summary>
+        /// Converts a screen space point into a corresponding point in world space.
+        /// </summary>
+        /// <param name="source">The vector to project.</param>
+        /// <param name="worldViewProjection">The World-View-Projection matrix.</param>
+        /// <returns>The unprojected vector. </returns>
         public Vector3 Unproject(Vector3 source, Matrix4x4 worldViewProjection)
         {
+            Matrix4x4.Invert(worldViewProjection, out Matrix4x4 matrix);
+
             source.X = (((source.X - X) / Width) * 2.0f) - 1.0f;
             source.Y = -(((source.Y - Y) / Height * 2.0f) - 1.0f);
             source.Z = (source.Z - MinDepth) / (MaxDepth - MinDepth);
 
-            float a = (source.X * worldViewProjection.M14) + (source.Y * worldViewProjection.M24) + (source.Z * worldViewProjection.M34) + worldViewProjection.M44;
-            source = Vector3.Transform(source, worldViewProjection);
+            float a = (source.X * matrix.M14) + (source.Y * matrix.M24) + (source.Z * matrix.M34) + matrix.M44;
+            source = Vector3.Transform(source, matrix);
 
             if (!MathHelper.IsOne(a))
             {
