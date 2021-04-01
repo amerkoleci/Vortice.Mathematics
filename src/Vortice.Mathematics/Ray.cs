@@ -193,6 +193,71 @@ namespace Vortice.Mathematics
         public static bool operator ==(Ray left, Ray right) => left.Equals(right);
 
         /// <summary>
+        /// This does a ray cast on a triangle to see if there is an intersection.
+        /// This ONLY works on CW wound triangles.
+        /// </summary>
+        /// <param name="v0">Triangle Corner 1</param>
+        /// <param name="v1">Triangle Corner 2</param>
+        /// <param name="v2">Triangle Corner 3</param>
+        /// <param name="pointInTriangle">Intersection point if boolean returns true</param>
+        /// <returns></returns>
+        public bool Intersects( in Vector3 v0, in Vector3 v1, in Vector3 v2, out Vector3 pointInTriangle)
+        {
+            // Code origin can no longer be determined.
+            // was adapted from C++ code.
+
+            pointInTriangle = Vector3.Zero;
+
+            // compute normal
+            Vector3 edgeA = v1 - v0;
+            Vector3 edgeB = v2 - v0;
+
+            Vector3 normal = Vector3.Cross(Direction, edgeB);
+
+            // find determinant
+            float det = Vector3.Dot(edgeA, normal);
+
+            // if perpendicular, exit
+            if (det < MathHelper.ZeroTolerance)
+            {
+                return false;
+            }
+            det = 1.0f / det;
+
+            // calculate distance from vertex0 to ray origin
+            Vector3 s = Position - v0;
+            float u = det * Vector3.Dot(s, normal);
+
+            if (u < -MathHelper.ZeroTolerance || u > 1.0f + MathHelper.ZeroTolerance)
+            {
+                return false;
+            }
+
+            Vector3 r = Vector3.Cross(s, edgeA);
+            float v = det * Vector3.Dot(Direction, r);
+            if (v < -MathHelper.ZeroTolerance || u + v > 1.0f + MathHelper.ZeroTolerance)
+            {
+                return false;
+            }
+
+            // distance from ray to triangle
+            det *= Vector3.Dot(edgeB, r);
+
+            // Vector3 endPosition;
+            // we dont want the point that is behind the ray cast.
+            if (det < 0.0f)
+            {
+                return false;
+            }
+
+            pointInTriangle.X = Position.X + (Direction.X * det);
+            pointInTriangle.Y = Position.Y + (Direction.Y * det);
+            pointInTriangle.Z = Position.Z + (Direction.Z * det);
+
+            return true;
+        }
+
+        /// <summary>
         /// Compares two <see cref="Ray"/> objects for inequality.
         /// </summary>
         /// <param name="left">The <see cref="Ray"/> on the left hand of the operand.</param>
