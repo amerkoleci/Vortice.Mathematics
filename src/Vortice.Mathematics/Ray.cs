@@ -61,6 +61,11 @@ namespace Vortice.Mathematics
         /// </summary>
         public Vector3 Direction { get; }
 
+        /// <summary>
+        /// Checks whether the current <see cref="Ray"/> intersects with a specified <see cref="Vector3"/>.
+        /// </summary>
+        /// <param name="point">Point to test ray intersection</param>
+        /// <returns></returns>
         public bool Intersects(in Vector3 point)
         {
             //Source: RayIntersectsSphere
@@ -91,6 +96,22 @@ namespace Vortice.Mathematics
         /// <returns>Distance value if intersects, null otherwise.</returns>
         public float? Intersects(in BoundingSphere sphere) => sphere.Intersects(this);
 
+
+        /// <summary>
+        /// Checks whether the current <see cref="Ray"/> intersects with a specified <see cref="BoundingBox"/>.
+        /// </summary>
+        /// <param name="box">The <see cref="BoundingBox"/> to check for intersection with the current <see cref="Ray"/>.</param>
+        /// <param name="result">Distance of normalised vector to intersection if >= 0 </param>
+        /// <returns>bool returns true if intersection with plane</returns>
+        public bool Intersects(in BoundingBox box, out float result)
+        {
+            float? rs = box.Intersects(this);
+
+            result = rs == null ? -1 : (float) rs;
+
+            return result >= 0;
+        }
+
         /// <summary>
         /// Checks whether the current <see cref="Ray"/> intersects with a specified <see cref="BoundingBox"/>.
         /// </summary>
@@ -98,6 +119,11 @@ namespace Vortice.Mathematics
         /// <returns>Distance value if intersects, null otherwise.</returns>
         public float? Intersects(in BoundingBox box) => box.Intersects(this);
 
+        /// <summary>
+        /// Checks whether the current <see cref="Ray"/> intersects with a specified <see cref="Plane"/>.
+        /// </summary>
+        /// <param name="plane">The <see cref="Plane"/> to check for intersection with the current <see cref="Ray"/>.</param>
+        /// <returns>Distance value if intersects, null otherwise.</returns>
         public float? Intersects(in Plane plane)
         {
             //Source: Real-Time Collision Detection by Christer Ericson
@@ -124,6 +150,21 @@ namespace Vortice.Mathematics
             }
 
             return distance;
+        }
+
+        /// <summary>
+        /// Checks whether the current <see cref="Ray"/> intersects with a specified <see cref="Plane"/>.
+        /// </summary>
+        /// <param name="plane">The <see cref="Plane"/> to check for intersection with the current <see cref="Ray"/>.</param>
+        /// <param name="result">Distance of normalised vector to intersection if >= 0 </param>
+        /// <returns>bool returns true if intersection with plane</returns>
+        public bool Intersects(in Plane plane, out float result)
+        {
+            float? rs = Intersects(plane);
+
+            result = rs == null ? -1 : (float)rs;
+
+            return result >= 0;
         }
 
         /// <inheritdoc/>
