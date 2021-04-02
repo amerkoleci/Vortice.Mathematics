@@ -61,6 +61,11 @@ namespace Vortice.Mathematics
         /// </summary>
         public Vector3 Direction { get; }
 
+        /// <summary>
+        /// Checks whether the current <see cref="Ray"/> intersects with a specified <see cref="Vector3"/>.
+        /// </summary>
+        /// <param name="point">Point to test ray intersection</param>
+        /// <returns></returns>
         public bool Intersects(in Vector3 point)
         {
             //Source: RayIntersectsSphere
@@ -91,6 +96,22 @@ namespace Vortice.Mathematics
         /// <returns>Distance value if intersects, null otherwise.</returns>
         public float? Intersects(in BoundingSphere sphere) => sphere.Intersects(this);
 
+
+        /// <summary>
+        /// Checks whether the current <see cref="Ray"/> intersects with a specified <see cref="BoundingBox"/>.
+        /// </summary>
+        /// <param name="box">The <see cref="BoundingBox"/> to check for intersection with the current <see cref="Ray"/>.</param>
+        /// <param name="result">Distance of normalised vector to intersection if >= 0 </param>
+        /// <returns>bool returns true if intersection with plane</returns>
+        public bool Intersects(in BoundingBox box, out float result)
+        {
+            float? rs = box.Intersects(this);
+
+            result = rs == null ? -1 : (float) rs;
+
+            return result >= 0;
+        }
+
         /// <summary>
         /// Checks whether the current <see cref="Ray"/> intersects with a specified <see cref="BoundingBox"/>.
         /// </summary>
@@ -98,6 +119,11 @@ namespace Vortice.Mathematics
         /// <returns>Distance value if intersects, null otherwise.</returns>
         public float? Intersects(in BoundingBox box) => box.Intersects(this);
 
+        /// <summary>
+        /// Checks whether the current <see cref="Ray"/> intersects with a specified <see cref="Plane"/>.
+        /// </summary>
+        /// <param name="plane">The <see cref="Plane"/> to check for intersection with the current <see cref="Ray"/>.</param>
+        /// <returns>Distance value if intersects, null otherwise.</returns>
         public float? Intersects(in Plane plane)
         {
             //Source: Real-Time Collision Detection by Christer Ericson
@@ -126,6 +152,21 @@ namespace Vortice.Mathematics
             return distance;
         }
 
+        /// <summary>
+        /// Checks whether the current <see cref="Ray"/> intersects with a specified <see cref="Plane"/>.
+        /// </summary>
+        /// <param name="plane">The <see cref="Plane"/> to check for intersection with the current <see cref="Ray"/>.</param>
+        /// <param name="result">Distance of normalised vector to intersection if >= 0 </param>
+        /// <returns>bool returns true if intersection with plane</returns>
+        public bool Intersects(in Plane plane, out float result)
+        {
+            float? rs = Intersects(plane);
+
+            result = rs == null ? -1 : (float)rs;
+
+            return result >= 0;
+        }
+
         /// <inheritdoc/>
         public override bool Equals(object? obj) => obj is Ray value && Equals(value);
 
@@ -150,6 +191,71 @@ namespace Vortice.Mathematics
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(Ray left, Ray right) => left.Equals(right);
+
+        /// <summary>
+        /// This does a ray cast on a triangle to see if there is an intersection.
+        /// This ONLY works on CW wound triangles.
+        /// </summary>
+        /// <param name="v0">Triangle Corner 1</param>
+        /// <param name="v1">Triangle Corner 2</param>
+        /// <param name="v2">Triangle Corner 3</param>
+        /// <param name="pointInTriangle">Intersection point if boolean returns true</param>
+        /// <returns></returns>
+        public bool Intersects( in Vector3 v0, in Vector3 v1, in Vector3 v2, out Vector3 pointInTriangle)
+        {
+            // Code origin can no longer be determined.
+            // was adapted from C++ code.
+
+            pointInTriangle = Vector3.Zero;
+
+            // compute normal
+            Vector3 edgeA = v1 - v0;
+            Vector3 edgeB = v2 - v0;
+
+            Vector3 normal = Vector3.Cross(Direction, edgeB);
+
+            // find determinant
+            float det = Vector3.Dot(edgeA, normal);
+
+            // if perpendicular, exit
+            if (det < MathHelper.ZeroTolerance)
+            {
+                return false;
+            }
+            det = 1.0f / det;
+
+            // calculate distance from vertex0 to ray origin
+            Vector3 s = Position - v0;
+            float u = det * Vector3.Dot(s, normal);
+
+            if (u < -MathHelper.ZeroTolerance || u > 1.0f + MathHelper.ZeroTolerance)
+            {
+                return false;
+            }
+
+            Vector3 r = Vector3.Cross(s, edgeA);
+            float v = det * Vector3.Dot(Direction, r);
+            if (v < -MathHelper.ZeroTolerance || u + v > 1.0f + MathHelper.ZeroTolerance)
+            {
+                return false;
+            }
+
+            // distance from ray to triangle
+            det *= Vector3.Dot(edgeB, r);
+
+            // Vector3 endPosition;
+            // we dont want the point that is behind the ray cast.
+            if (det < 0.0f)
+            {
+                return false;
+            }
+
+            pointInTriangle.X = Position.X + (Direction.X * det);
+            pointInTriangle.Y = Position.Y + (Direction.Y * det);
+            pointInTriangle.Z = Position.Z + (Direction.Z * det);
+
+            return true;
+        }
 
         /// <summary>
         /// Compares two <see cref="Ray"/> objects for inequality.
