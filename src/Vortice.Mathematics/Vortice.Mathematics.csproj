@@ -7,7 +7,13 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-    <PackageReference Include="Microsoft.Bcl.HashCode " Version="1.1.0" />
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>Vortice.Mathematics.PackedVector, PublicKey=$(VorticePublicKey)</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 
 </Project>
