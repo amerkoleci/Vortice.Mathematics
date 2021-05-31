@@ -24,22 +24,22 @@ namespace Vortice.Mathematics
         /// <summary>
         /// The X unit <see cref="Point3"/> (1, 0, 0).
         /// </summary>
-        public static readonly Point3 UnitX = new Point3(1, 0, 0);
+        public static readonly Point3 UnitX = new(1, 0, 0);
 
         /// <summary>
         /// The Y unit <see cref="Point3"/> (0, 1, 0).
         /// </summary>
-        public static readonly Point3 UnitY = new Point3(0, 1, 0);
+        public static readonly Point3 UnitY = new(0, 1, 0);
 
         /// <summary>
         /// The Z unit <see cref="Point3"/> (0, 0, 1).
         /// </summary>
-        public static readonly Point3 UnitZ = new Point3(0, 0, 1);
+        public static readonly Point3 UnitZ = new(0, 0, 1);
 
         /// <summary>
         /// A <see cref="Point3"/> with all of its components set to one.
         /// </summary>
-        public static readonly Point3 One = new Point3(1, 1, 1);
+        public static readonly Point3 One = new(1, 1, 1);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Point3"/> struct.
@@ -103,7 +103,7 @@ namespace Vortice.Mathematics
         public int Z { readonly get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="Point"/> is empty.
+        /// Gets a value indicating whether this <see cref="System.Drawing.Point"/> is empty.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public readonly bool IsEmpty => this == Empty;
@@ -126,14 +126,14 @@ namespace Vortice.Mathematics
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector3(Point3 value) => new Vector3(value.X, value.Y, value.Z);
+        public static explicit operator Vector3(Point3 value) => new(value.X, value.Y, value.Z);
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="Point3"/> to <see cref="Vector4"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector4(Point3 value) => new Vector4(value.X, value.Y, value.Z, 0);
+        public static explicit operator Vector4(Point3 value) => new(value.X, value.Y, value.Z, 0);
 
         /// <summary>
         /// Compares two <see cref="Point3"/> objects for equality.
