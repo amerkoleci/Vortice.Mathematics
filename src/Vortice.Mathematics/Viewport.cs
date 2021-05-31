@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using static System.Math;
+using System.Drawing;
 
 namespace Vortice.Mathematics
 {
@@ -245,7 +246,7 @@ namespace Vortice.Mathematics
             {
                 case ViewportScaling.Stretch:
                     // Output fills the entire window area
-                    return new RectangleF(outputWidth, outputHeight);
+                    return new RectangleF(0, 0, outputWidth, outputHeight);
 
                 case ViewportScaling.AspectRatioStretch:
                     // Output fills the window area but respects the original aspect ratio, using pillar boxing or letter boxing as required
@@ -279,7 +280,7 @@ namespace Vortice.Mathematics
                 case ViewportScaling.None:
                 default:
                     // Output is displayed in the upper left corner of the window area
-                    return new RectangleF(Math.Min(backBufferWidth, outputWidth), Math.Min(backBufferHeight, outputHeight));
+                    return new RectangleF(0, 0, Min(backBufferWidth, outputWidth), Min(backBufferHeight, outputHeight));
             }
         }
 
