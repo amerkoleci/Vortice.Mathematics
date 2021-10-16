@@ -233,6 +233,10 @@ namespace Vortice.Mathematics
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(Int4 left, Int4 right) => !left.Equals(right);
 
+        public static implicit operator (int x, int y, int z, int w)(Int4 value) => (value.X, value.Y, value.Z, value.W);
+
+        public static explicit operator Int4((int x, int y, int z, int w) value) => new Int4(value.x, value.y, value.z, value.w);
+
         /// <inheritdoc/>
 		public override int GetHashCode()
         {
