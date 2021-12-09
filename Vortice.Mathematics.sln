@@ -1,20 +1,22 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29215.179
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vortice.Mathematics", "Vortice.Mathematics\Vortice.Mathematics.csproj", "{D83792BE-58C1-4F40-B028-02C0449DC2AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vortice.Mathematics", "src\Vortice.Mathematics\Vortice.Mathematics.csproj", "{D83792BE-58C1-4F40-B028-02C0449DC2AB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vortice.Mathematics.PackedVector", "Vortice.Mathematics.PackedVector\Vortice.Mathematics.PackedVector.csproj", "{07DB51D4-739F-4EDD-B1AB-B292B0656689}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vortice.Mathematics.PackedVector", "src\Vortice.Mathematics.PackedVector\Vortice.Mathematics.PackedVector.csproj", "{07DB51D4-739F-4EDD-B1AB-B292B0656689}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{630DF6DF-DE85-4264-A5E8-4CCCC4EBED75}"
 	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
 		global.json = global.json
 		LICENSE = LICENSE
 		README.md = README.md
 		version.json = version.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vortice.Mathematics.Tests", "Vortice.Mathematics.Tests\Vortice.Mathematics.Tests.csproj", "{C1983138-9CC7-4889-B413-19B2736BBB68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vortice.Mathematics.Tests", "src\Vortice.Mathematics.Tests\Vortice.Mathematics.Tests.csproj", "{C1983138-9CC7-4889-B413-19B2736BBB68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
