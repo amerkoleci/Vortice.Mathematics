@@ -1,5 +1,6 @@
-﻿// Copyright (c) Amer Koleci and contributors.
-// Distributed under the MIT license. See the LICENSE file in the project root for more information.
+// Copyright (c) Amer Koleci and contributors.
+// Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
+
 //
 // -----------------------------------------------------------------------------
 // Original code from SlimMath project. http://code.google.com/p/slimmath/
