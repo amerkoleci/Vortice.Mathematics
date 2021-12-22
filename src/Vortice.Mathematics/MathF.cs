@@ -8,10 +8,10 @@ namespace System;
 internal static class MathF
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Max(float val1, float val2) => Math.Max(val1, val2);
+    public static float Abs(float value) => Math.Abs(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Min(float val1, float val2) => Math.Min(val1, val2);
+    public static float Acos(float value) => (float)Math.Acos(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Sqrt(float f) => (float)Math.Sqrt(f);
@@ -21,5 +21,11 @@ internal static class MathF
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Round(float f) => (float)Math.Round(f);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Max(float val1, float val2) => Math.Max(val1, val2);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Min(float val1, float val2) => Math.Min(val1, val2);
 }
 #endif
