@@ -70,4 +70,10 @@ public static class PackHelpers
     {
         return (byte)(value < 0 ? 0 : value > 255 ? 255 : value);
     }
+
+    public static byte ToByte(float component)
+    {
+        int value = (int)(component * 255.0f);
+        return (byte)(value < 0 ? 0 : value > 255 ? 255 : value);
+    }
 }

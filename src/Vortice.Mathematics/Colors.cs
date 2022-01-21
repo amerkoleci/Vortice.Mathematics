@@ -3,7 +3,9 @@
 
 namespace Vortice.Mathematics;
 
-/// <summary><see cref="Colors" /> defines standard colors using names and RGB values from https://www.w3.org/TR/css-color-3 .</summary>
+/// <summary>
+/// <see cref="Colors" /> defines standard colors using names and RGB values from https://www.w3.org/TR/css-color-3 .
+/// </summary>
 public static class Colors
 {
     /// <summary>Gets a color representing <c>AliceBlue</c></summary>

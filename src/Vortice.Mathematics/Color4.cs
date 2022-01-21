@@ -8,6 +8,7 @@ using System.Text;
 
 #if INTRINSICS
 using System.Runtime.Intrinsics;
+using static Vortice.Mathematics.VectorUtilities;
 #endif
 
 namespace Vortice.Mathematics;
@@ -19,7 +20,9 @@ namespace Vortice.Mathematics;
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
 public readonly struct Color4 : IEquatable<Color4>, IFormattable
 {
-    //private readonly Vector128<float> _value;
+#if INTRINSICS
+    private readonly Vector128<float> _value;
+#endif
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Color4"/> struct.
@@ -27,7 +30,11 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="value">The value that will be assigned to all components.</param>
     public Color4(float value)
     {
+#if INTRINSICS
+        _value = Vector128.Create(value, value, value, value);
+#else
         A = R = G = B = value;
+#endif
     }
 
     /// <summary>
@@ -38,10 +45,14 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="blue">The blue component of the color.</param>
     public Color4(float red, float green, float blue)
     {
+#if INTRINSICS
+        _value = Vector128.Create(red, green, blue, 1.0f);
+#else
         R = red;
         G = green;
         B = blue;
         A = 1.0f;
+#endif
     }
 
     /// <summary>
@@ -53,10 +64,14 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="alpha">The alpha component of the color.</param>
     public Color4(float red, float green, float blue, float alpha)
     {
+#if INTRINSICS
+        _value = Vector128.Create(red, green, blue, alpha);
+#else
         R = red;
         G = green;
         B = blue;
         A = alpha;
+#endif
     }
 
     /// <summary>
@@ -65,10 +80,14 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="value">The red, green, blue, and alpha components of the color.</param>
     public Color4(Vector4 value)
     {
+#if INTRINSICS
+        _value = value.AsVector128();
+#else
         R = value.X;
         G = value.Y;
         B = value.Z;
         A = value.W;
+#endif
     }
 
     /// <summary>
@@ -78,10 +97,14 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="alpha">The alpha component of the color.</param>
     public Color4(Vector3 value, float alpha)
     {
+#if INTRINSICS
+        _value = Vector128.Create(value.X, value.Y, value.Z, alpha);
+#else
         R = value.X;
         G = value.Y;
         B = value.Z;
         A = alpha;
+#endif
     }
 
     /// <summary>
@@ -91,10 +114,14 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="alpha">The alpha component of the color.</param>
     public Color4(Color3 value, float alpha)
     {
+#if INTRINSICS
+        _value = Vector128.Create(value.R, value.G, value.B, alpha);
+#else
         R = value.R;
         G = value.G;
         B = value.B;
         A = alpha;
+#endif
     }
 
     /// <summary>
@@ -103,24 +130,74 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="color"><see cref="Color"/> used to initialize the color.</param>
     public Color4(Color color)
     {
+#if INTRINSICS
+        _value = Vector128.Create(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f, color.A / 255.0f);
+#else
         R = color.R / 255.0f;
         G = color.G / 255.0f;
         B = color.B / 255.0f;
         A = color.A / 255.0f;
+#endif
+    }
+
+#if INTRINSICS
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Color" /> struct.
+    /// </summary>
+    /// <param name="value">The value of the vector.</param>
+    public Color4(Vector128<float> value)
+    {
+        _value = value;
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Color4"/> struct.
+    /// Red component of the color.
     /// </summary>
-    /// <param name="color"><see cref="System.Drawing.Color"/> used to initialize the color.</param>
-    public Color4(System.Drawing.Color color)
+    public float R
     {
-        R = color.R / 255.0f;
-        G = color.G / 255.0f;
-        B = color.B / 255.0f;
-        A = color.A / 255.0f;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return _value.GetX();
+        }
     }
 
+    /// <summary>
+    /// Green component of the color.
+    /// </summary>
+    public float G
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return _value.GetY();
+        }
+    }
+
+    /// <summary>
+    /// Blue component of the color.
+    /// </summary>
+    public float B
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return _value.GetZ();
+        }
+    }
+
+    /// <summary>
+    /// Alpha component of the color.
+    /// </summary>
+    public float A
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return _value.GetW();
+        }
+    }
+#else
     /// <summary>
     /// Red component of the color.
     /// </summary>
@@ -141,13 +218,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// </summary>
     public float A { get; }
 
-    public void Deconstruct(out float r, out float g, out float b, out float a)
-    {
-        r = R;
-        g = G;
-        b = B;
-        a = A;
-    }
+#endif
 
     /// <summary>
     /// Converts the color into a packed integer.
@@ -240,39 +311,11 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <returns>The result of the conversion.</returns>
     public static explicit operator Color4(Vector4 value) => new Color4(value.X, value.Y, value.Z, value.W);
 
-    /// <summary>
-    /// Performs an explicit conversion from <see cref="System.Drawing.Color"/> to <see cref="Color4"/>.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static explicit operator Color4(System.Drawing.Color value) => new Color4(value);
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is Color4 other && Equals(other);
 
-    /// <summary>
-    /// Performs an explicit conversion from <see cref="Vector4"/> to <see cref="Color4"/>.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static explicit operator System.Drawing.Color(Color4 value)
-    {
-        value.ToBgra(out byte red, out byte green, out byte blue, out byte alpha);
-        return System.Drawing.Color.FromArgb(alpha, red, green, blue);
-    }
-
-    /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Color4 value && Equals(value);
-
-    /// <summary>
-    /// Determines whether the specified <see cref="Color4"/> is equal to this instance.
-    /// </summary>
-    /// <param name="other">The <see cref="Color4"/> to compare with this instance.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(Color4 other)
-    {
-        return R.Equals(other.R)
-            && G.Equals(other.G)
-            && B.Equals(other.B)
-            && A.Equals(other.A);
-    }
+    /// <inheritdoc />
+    public bool Equals(Color4 other) => this == other;
 
     /// <summary>
     /// Compares two <see cref="Color4"/> objects for equality.
@@ -283,7 +326,14 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator ==(Color4 left, Color4 right) => left.Equals(right);
+    public static bool operator ==(Color4 left, Color4 right)
+    {
+#if INTRINSICS
+        return CompareEqualAll(left._value, right._value);
+#else
+        return left.A == right.A && left.R == right.R && left.G == right.G && left.B == right.B;
+#endif
+    }
 
     /// <summary>
     /// Compares two <see cref="Color4"/> objects for inequality.
@@ -294,20 +344,17 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(Color4 left, Color4 right) => !left.Equals(right);
+    public static bool operator !=(Color4 left, Color4 right)
+    {
+#if INTRINSICS
+        return CompareNotEqualAny(left._value, right._value);
+#else
+        return !left.Equals(right);
+#endif
+    }
 
     /// <inheritdoc/>
-    public override int GetHashCode()
-    {
-        var hashCode = new HashCode();
-        {
-            hashCode.Add(R);
-            hashCode.Add(G);
-            hashCode.Add(B);
-            hashCode.Add(A);
-        }
-        return hashCode.ToHashCode();
-    }
+    public override int GetHashCode() => HashCode.Combine(R, G, B, A);
 
     /// <inheritdoc/>
     public override string ToString() => ToString(format: null, formatProvider: null);
@@ -317,11 +364,17 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     {
         string? separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
 
-        return new StringBuilder()
+        return new StringBuilder(9 + separator.Length * 3)
             .Append('<')
-            .Append(R.ToString(format, formatProvider)).Append(separator).Append(' ')
-            .Append(G.ToString(format, formatProvider)).Append(separator).Append(' ')
-            .Append(B.ToString(format, formatProvider)).Append(separator).Append(' ')
+            .Append(R.ToString(format, formatProvider))
+            .Append(separator)
+            .Append(' ')
+            .Append(G.ToString(format, formatProvider))
+            .Append(separator)
+            .Append(' ')
+            .Append(B.ToString(format, formatProvider))
+            .Append(separator)
+            .Append(' ')
             .Append(A.ToString(format, formatProvider))
             .Append('>')
             .ToString();
