@@ -29,11 +29,11 @@ public partial class ColorTests
         Assert.AreEqual(color.B, 127);
         Assert.AreEqual(color.A, 127);
 
-        color = new(0.65f);
-        Assert.AreEqual(color.R, 166);
-        Assert.AreEqual(color.G, 166);
-        Assert.AreEqual(color.B, 166);
-        Assert.AreEqual(color.A, 166);
+        color = new(0.5f);
+        Assert.AreEqual(color.R, 128);
+        Assert.AreEqual(color.G, 128);
+        Assert.AreEqual(color.B, 128);
+        Assert.AreEqual(color.A, 128);
 
         color = new(127, 0, 234, 255);
         Assert.AreEqual(color.R, 127);

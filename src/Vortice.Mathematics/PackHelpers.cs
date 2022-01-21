@@ -1,10 +1,52 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
+#if NET5_0_OR_GREATER
+using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.Arm;
+using System.Runtime.Intrinsics.X86;
+using static Vortice.Mathematics.VectorUtilities;
+#endif
+
 namespace Vortice.Mathematics;
 
-public static class PackHelpers
+public static unsafe class PackHelpers
 {
+#if NET5_0_OR_GREATER
+    public static Vector128<float> ScaleUByteN4
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return Vector128.Create(255.0f, 255.0f * 256.0f * 0.5f, 255.0f * 256.0f * 256.0f, 255.0f * 256.0f * 256.0f * 256.0f * 0.5f);
+        }
+    }
+
+    public static Vector128<float> UByteMax
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return Vector128.Create(255.0f, 255.0f, 255.0f, 255.0f);
+        }
+    }
+
+    public static Vector128<int> MaskUByteN4
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return Vector128.Create(0xFF, 0xFF << (8 - 1), 0xFF << 16, 0xFF << (24 - 1));
+        }
+    }
+
+    private static byte Shuffle(byte fp3, byte fp2, byte fp1, byte fp0)
+    {
+        return (byte)(((fp3) << 6) | ((fp2) << 4) | ((fp1) << 2) | (fp0));
+    }
+#endif
+
     private static float ClampAndRound(float value, float min, float max)
     {
         if (float.IsNaN(value))
@@ -42,6 +84,58 @@ public static class PackHelpers
         return (float)value / bitmask;
     }
 
+#if NET5_0_OR_GREATER && TODO
+    public static uint PackRGBA(float x, float y, float z, float w)
+    {
+        Vector128<float> vector = Vector128.Create(x, y, z, w);
+        if (Sse41.IsSupported)
+        {
+            // Clamp to bounds
+            Vector128<float> result = Sse.Max(vector, Vector128<float>.Zero);
+            result = Sse.Min(result, One);
+            // Scale by multiplication
+            result = Sse.Multiply(result, ScaleUByteN4);
+            // Convert to int
+            Vector128<int> vResulti = Sse2.ConvertToVector128Int32WithTruncation(result);
+            // Mask off any fraction
+            vResulti = Sse2.Add(vResulti, MaskUByteN4);
+            // Do a horizontal or of 4 entries
+            Vector128<int> vResulti2 = Sse2.Shuffle(vResulti, Shuffle(3, 2, 3, 2));
+            // x = x|z, y = y|w
+            vResulti = Sse2.Or(vResulti, vResulti2);
+            // Move Z to the x position
+            vResulti2 = Sse2.Shuffle(vResulti, Shuffle(1, 1, 1, 1));
+            // Perform a single bit left shift to fix y|w
+            vResulti2 = Sse2.Add(vResulti2, vResulti2);
+            // i = x|y|z|w
+            vResulti = Sse2.Or(vResulti, vResulti2);
+
+            uint resultScalar;
+            Sse.StoreScalar((float*)&resultScalar, Sse2.ConvertToVector128Single(vResulti));
+            return resultScalar;
+        }
+        //else if (AdvSimd.Arm64.IsSupported)
+        //{
+        //    return AdvSimd.Add(left, right);
+        //}
+        else
+        {
+            return SoftwareFallback(vector);
+        }
+
+        static unsafe uint SoftwareFallback(Vector128<float> vector)
+        {
+            var N = Saturate(vector);
+            N = Multiply(N, UByteMax);
+            N = Truncate(N);
+
+            float data;
+            Sse.StoreAligned(&data, N);
+
+            return 0;
+        }
+    }
+#else
     public static uint PackRGBA(float x, float y, float z, float w)
     {
         uint red = PackUNorm(255.0f, x);
@@ -50,6 +144,7 @@ public static class PackHelpers
         uint alpha = PackUNorm(255.0f, w) << 24;
         return red | green | blue | alpha;
     }
+#endif
 
     public static uint PackSigned(uint bitmask, float value)
     {

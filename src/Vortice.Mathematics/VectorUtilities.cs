@@ -531,8 +531,25 @@ public static class VectorUtilities
         else if (AdvSimd.Arm64.IsSupported)
         {
             Vector128<float> result = AdvSimd.Max(vector, Vector128<float>.Zero);
-            result = Sse.Min(result, One);
+            result = AdvSimd.Min(result, One);
             return result;
+        }
+        else
+        {
+            return Clamp(vector, Vector128<float>.Zero, One);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector128<float> Truncate(Vector128<float> vector)
+    {
+        if (Sse41.IsSupported)
+        {
+            return Sse41.RoundToZero(vector);
+        }
+        else if (AdvSimd.Arm64.IsSupported)
+        {
+            return AdvSimd.RoundToZero(vector);
         }
         else
         {
