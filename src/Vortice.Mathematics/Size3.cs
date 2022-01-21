@@ -1,9 +1,7 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -43,7 +41,7 @@ public readonly struct Size3 : IEquatable<Size3>
     /// </summary>
     /// <param name="size">The width and height component of the extent.</param>
     /// <param name="depth">The depth component of the extent.</param>
-    public Size3(in Size size, int depth)
+    public Size3(in SizeI size, int depth)
     {
         Width = size.Width;
         Height = size.Height;

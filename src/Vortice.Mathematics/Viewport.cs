@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using static System.Math;
-using System.Drawing;
 
 namespace Vortice.Mathematics;
 
@@ -86,8 +85,8 @@ public readonly struct Viewport : IEquatable<Viewport>
     /// <summary>
     /// Initializes a new instance of the <see cref="Viewport"/> struct.
     /// </summary>
-    /// <param name="bounds">A <see cref="RectangleF"/> that defines the location and size of the viewport in a render target.</param>
-    public Viewport(RectangleF bounds)
+    /// <param name="bounds">A <see cref="RectangleI"/> that defines the location and size of the viewport in a render target.</param>
+    public Viewport(RectangleI bounds)
     {
         X = bounds.X;
         Y = bounds.Y;
@@ -145,7 +144,7 @@ public readonly struct Viewport : IEquatable<Viewport>
     /// Gets or sets the bounds of the viewport.
     /// </summary>
     /// <value>The bounds.</value>
-    public RectangleF Bounds => new(X, Y, Width, Height);
+    public Rectangle Bounds => new(X, Y, Width, Height);
 
     /// <summary>
     /// Gets the aspect ratio used by the viewport.
@@ -240,13 +239,13 @@ public readonly struct Viewport : IEquatable<Viewport>
         return source;
     }
 
-    public static RectangleF ComputeDisplayArea(ViewportScaling scaling, int backBufferWidth, int backBufferHeight, int outputWidth, int outputHeight)
+    public static Rectangle ComputeDisplayArea(ViewportScaling scaling, int backBufferWidth, int backBufferHeight, int outputWidth, int outputHeight)
     {
         switch (scaling)
         {
             case ViewportScaling.Stretch:
                 // Output fills the entire window area
-                return new RectangleF(0, 0, outputWidth, outputHeight);
+                return new Rectangle(0, 0, outputWidth, outputHeight);
 
             case ViewportScaling.AspectRatioStretch:
                 // Output fills the window area but respects the original aspect ratio, using pillar boxing or letter boxing as required
@@ -269,7 +268,7 @@ public readonly struct Viewport : IEquatable<Viewport>
                     float offsetY = (outputHeight - scaledHeight) * 0.5f;
 
                     // Clip to display window
-                    return new RectangleF(
+                    return new Rectangle(
                         Max(0, offsetX),
                         Max(0, offsetY),
                         Min(outputWidth, scaledWidth),
@@ -280,16 +279,16 @@ public readonly struct Viewport : IEquatable<Viewport>
             case ViewportScaling.None:
             default:
                 // Output is displayed in the upper left corner of the window area
-                return new RectangleF(0, 0, Min(backBufferWidth, outputWidth), Min(backBufferHeight, outputHeight));
+                return new Rectangle(0, 0, Min(backBufferWidth, outputWidth), Min(backBufferHeight, outputHeight));
         }
     }
 
-    public static RectangleF ComputeTitleSafeArea(int backBufferWidth, int backBufferHeight)
+    public static Rectangle ComputeTitleSafeArea(int backBufferWidth, int backBufferHeight)
     {
         float safew = (backBufferWidth + 19.0f) / 20.0f;
         float safeh = (backBufferHeight + 19.0f) / 20.0f;
 
-        return RectangleF.FromLTRB(
+        return Rectangle.FromLTRB(
             safew,
             safeh,
             backBufferWidth - safew + 0.5f,

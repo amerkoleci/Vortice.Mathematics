@@ -1,19 +1,16 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-using System;
-using System.Drawing;
-using System.Numerics;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace Vortice.Mathematics;
 
 /// <summary>
 /// Represents a two dimensional mathematical integer vector.
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
-public readonly struct Int2 : IEquatable<Int2>
+[DebuggerDisplay("X={X}, Y={Y}")]
+public readonly struct Int2 : IEquatable<Int2>, IFormattable
 {
     /// <summary>
     /// A <see cref="Int2"/> with all of its components set to zero.
@@ -82,14 +79,14 @@ public readonly struct Int2 : IEquatable<Int2>
     /// </summary>
     /// <param name="value">The value to convert.</param>
     /// <returns>The result of the conversion.</returns>
-    public static explicit operator Point(Int2 value) => new Point(value.X, value.Y);
+    public static explicit operator Point(Int2 value) => new(value.X, value.Y);
 
     /// <summary>
     /// Performs an explicit conversion from <see cref="Int2" /> to <see cref="Vector2"/>.
     /// </summary>
     /// <param name="value">The value to convert.</param>
     /// <returns>The result of the conversion.</returns>
-    public static explicit operator Vector2(Int2 value) => new Vector2(value.X, value.Y);
+    public static explicit operator Vector2(Int2 value) => new(value.X, value.Y);
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is Int2 value && Equals(value);
@@ -128,16 +125,12 @@ public readonly struct Int2 : IEquatable<Int2>
     public static bool operator !=(Int2 left, Int2 right) => !left.Equals(right);
 
     /// <inheritdoc/>
-    public override int GetHashCode()
-    {
-        var hashCode = new HashCode();
-        {
-            hashCode.Add(X);
-            hashCode.Add(Y);
-        }
-        return hashCode.ToHashCode();
-    }
+    public override int GetHashCode() => HashCode.Combine(X, Y);
 
-    /// <inheritdoc/>
-    public override readonly string ToString() => $"{{X={X},Y={Y}}}";
+    /// <inheritdoc />
+    public override string ToString() => ToString(format: null, formatProvider: null);
+
+    /// <inheritdoc />
+    public string ToString(string? format, IFormatProvider? formatProvider)
+        => $"{nameof(Int2)} {{ {nameof(X)} = {X.ToString(format, formatProvider)}, {nameof(Y)} = {Y.ToString(format, formatProvider)} }}";
 }

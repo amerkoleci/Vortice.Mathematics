@@ -1,3 +1,6 @@
+// Copyright (c) Amer Koleci and contributors.
+// Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
+
 // Copyright © Tanner Gooding and Contributors. Licensed under the MIT License (MIT). See License.md in the repository root for more information.
 
 // This file includes code based on code from https://github.com/microsoft/DirectXMath

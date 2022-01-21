@@ -228,23 +228,6 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// <returns>The result of the conversion.</returns>
     public static explicit operator Color(Color4 value) => new(value.R, value.G, value.B, value.A);
 
-    /// <summary>
-    /// Performs an implicit conversion from <see cref="System.Drawing.Color"/> to <see cref="Color"/>.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static implicit operator Color(System.Drawing.Color value) => new(value.R, value.G, value.B, value.A);
-
-    /// <summary>
-    /// Performs an implicit conversion from <see cref="Color"/> to <see cref="System.Drawing.Color"/>.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static implicit operator System.Drawing.Color(Color value)
-    {
-        return System.Drawing.Color.FromArgb(value.A, value.R, value.G, value.B);
-    }
-
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is Color color && Equals(ref color);
 
@@ -291,10 +274,7 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     public static bool operator !=(Color left, Color right) => !left.Equals(ref right);
 
     /// <inheritdoc/>
-    public override int GetHashCode()
-    {
-        return PackedValue.GetHashCode();
-    }
+    public override int GetHashCode() => PackedValue.GetHashCode();
 
     /// <inheritdoc/>
     public override string ToString()

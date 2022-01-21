@@ -1,9 +1,6 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-using System;
-using System.Drawing;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -108,7 +105,7 @@ public readonly struct Int4 : IEquatable<Int4>
     /// <param name="value">A <see cref="Point"/> containing the values with which to initialize the X and Y components.</param>
     /// <param name="z">Initial value for the Z component of the vector.</param>
     /// <param name="w">Initial value for the W component of the vector.</param>
-    public Int4(Point value, int z, int w)
+    public Int4(PointI value, int z, int w)
     {
         X = value.X;
         Y = value.Y;
