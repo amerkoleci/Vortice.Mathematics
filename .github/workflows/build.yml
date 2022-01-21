@@ -22,16 +22,18 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.100
+        dotnet-version: 6.0.x
 
     - name: Pack
       run: dotnet pack Vortice.Mathematics.sln --configuration Release --output build/packages
 
     - name: Publish to NuGet
       if: github.event_name == 'push'
-      run: dotnet nuget push build\packages\**\*.nupkg -s "https://api.nuget.org/v3/index.json" -k ${{secrets.NUGET_TOKEN}} --skip-duplicate
+      run: dotnet nuget push build/packages/**/*.nupkg -k ${{secrets.NUGET_TOKEN}} --skip-duplicate --source https://api.nuget.org/v3/index.json
           

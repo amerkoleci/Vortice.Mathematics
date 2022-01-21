@@ -65,8 +65,8 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// <param name="y">The Y component.</param>
     public Half2(float x, float y) : this()
     {
-        X = new Half(x);
-        Y = new Half(y);
+        X = (Half)x;
+        Y = (Half)y;
     }
 
     /// <summary>
@@ -76,8 +76,8 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// <param name="y">The Y component.</param>
     public Half2(ushort x, ushort y) : this()
     {
-        X = new Half(x);
-        Y = new Half(y);
+        X = (Half)x;
+        Y = (Half)y;
     }
 
     /// <summary>
@@ -96,8 +96,8 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// <param name="value">Value to initialize X and Y components with.</param>
     public Half2(float value) : this()
     {
-        X = new Half(value);
-        Y = new Half(value);
+        X = (Half)value;
+        Y = (Half)value;
     }
 
     /// <summary>
@@ -106,8 +106,8 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// <param name="vector">The <see cref="Vector4"/> to pack from.</param>
     public Half2(Vector4 vector) : this()
     {
-        X = new Half(vector.X);
-        Y = new Half(vector.Y);
+        X = (Half)vector.X;
+        Y = (Half)vector.Y;
     }
 
     /// <summary>
@@ -115,24 +115,21 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
-    public static implicit operator Half2(Vector2 value) => new Half2(value.X, value.Y);
+    public static implicit operator Half2(Vector2 value) => new(value.X, value.Y);
 
     /// <summary>
     /// Performs an explicit conversion from <see cref="Half2"/> to <see cref="Vector2"/>.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
-    public static implicit operator Vector2(Half2 value) => new Vector2(value.X, value.Y);
+    public static implicit operator Vector2(Half2 value) => value.ToVector2();
 
     /// <summary>
     /// Expands this <see cref="Half2"/> structure to a <see cref="Vector2"/>.
     /// </summary>
     public Vector2 ToVector2()
     {
-        return new Vector2(
-            HalfUtils.ConvertHalfToFloat((ushort)PackedValue),
-            HalfUtils.ConvertHalfToFloat((ushort)(PackedValue >> 16))
-            );
+        return new((float)X, (float)Y);
     }
 
     #region IPackedVector Implementation
@@ -199,12 +196,5 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     {
         Vector2 vector = ToVector2();
         return vector.ToString(format, formatProvider);
-    }
-
-    private static uint Pack(float x, float y)
-    {
-        uint packX = HalfUtils.ConvertFloatToHalf(x);
-        uint packY = (uint)(HalfUtils.ConvertFloatToHalf(y) << 16);
-        return packX | packY;
     }
 }

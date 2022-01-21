@@ -1,20 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net5.0;net6.0;</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net6.0;</TargetFrameworks>
     <Description>High performance cross platform .NET math library</Description>
+    
+    <DefineConstants Condition="'$(TargetFramework)' == 'net5.0' Or '$(TargetFramework)' == 'net6.0'">$(DefineConstants);INTRINSICS</DefineConstants>
+
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-      <_Parameter1>Vortice.Mathematics.PackedVector, PublicKey=$(VorticePublicKey)</_Parameter1>
-    </AssemblyAttribute>
+    <PackageReference Include="Ultz.Bcl.Half" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
