@@ -64,10 +64,6 @@ public struct Point : IEquatable<Point>, IFormattable
     /// </summary>
     public float Y { get; set; }
 
-    public readonly float Length => MathF.Sqrt(X * X + Y * Y);
-
-    public readonly float LengthSquared => X * X + Y * Y;
-
     public void Deconstruct(out float x, out float y)
     {
         x = X;
@@ -84,6 +80,21 @@ public struct Point : IEquatable<Point>, IFormattable
     {
         X += offset.X;
         Y += offset.Y;
+    }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly float Length()
+    {
+        float lengthSquared = LengthSquared();
+        return MathF.Sqrt(lengthSquared);
+    }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly float LengthSquared()
+    {
+        return (X* X) + (Y * Y);
     }
 
     public static float Distance(Point point1, Point point2)
@@ -147,6 +158,13 @@ public struct Point : IEquatable<Point>, IFormattable
     public static Point Lerp(Point value1, Point value2, float amount)
     {
         return (value1 * (1.0f - amount)) + (value2 * amount);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Dot(Point value1, Point value2)
+    {
+        return (value1.X * value2.X)
+             + (value1.Y * value2.Y);
     }
 
     /// <summary>
