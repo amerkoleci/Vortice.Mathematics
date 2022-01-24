@@ -71,8 +71,8 @@ public readonly struct Viewport : IEquatable<Viewport>
     /// <summary>
     /// Initializes a new instance of the <see cref="Viewport"/> struct.
     /// </summary>
-    /// <param name="bounds">A <see cref="Rectangle"/> that defines the location and size of the viewport in a render target.</param>
-    public Viewport(Rectangle bounds)
+    /// <param name="bounds">A <see cref="Rect"/> that defines the location and size of the viewport in a render target.</param>
+    public Viewport(Rect bounds)
     {
         X = bounds.X;
         Y = bounds.Y;
@@ -85,8 +85,8 @@ public readonly struct Viewport : IEquatable<Viewport>
     /// <summary>
     /// Initializes a new instance of the <see cref="Viewport"/> struct.
     /// </summary>
-    /// <param name="bounds">A <see cref="RectangleI"/> that defines the location and size of the viewport in a render target.</param>
-    public Viewport(RectangleI bounds)
+    /// <param name="bounds">A <see cref="RectI"/> that defines the location and size of the viewport in a render target.</param>
+    public Viewport(RectI bounds)
     {
         X = bounds.X;
         Y = bounds.Y;
@@ -144,7 +144,7 @@ public readonly struct Viewport : IEquatable<Viewport>
     /// Gets or sets the bounds of the viewport.
     /// </summary>
     /// <value>The bounds.</value>
-    public Rectangle Bounds => new(X, Y, Width, Height);
+    public Rect Bounds => new(X, Y, Width, Height);
 
     /// <summary>
     /// Gets the aspect ratio used by the viewport.
@@ -239,13 +239,13 @@ public readonly struct Viewport : IEquatable<Viewport>
         return source;
     }
 
-    public static Rectangle ComputeDisplayArea(ViewportScaling scaling, int backBufferWidth, int backBufferHeight, int outputWidth, int outputHeight)
+    public static RectI ComputeDisplayArea(ViewportScaling scaling, int backBufferWidth, int backBufferHeight, int outputWidth, int outputHeight)
     {
         switch (scaling)
         {
             case ViewportScaling.Stretch:
                 // Output fills the entire window area
-                return new Rectangle(0, 0, outputWidth, outputHeight);
+                return new RectI(0, 0, outputWidth, outputHeight);
 
             case ViewportScaling.AspectRatioStretch:
                 // Output fills the window area but respects the original aspect ratio, using pillar boxing or letter boxing as required
@@ -268,31 +268,31 @@ public readonly struct Viewport : IEquatable<Viewport>
                     float offsetY = (outputHeight - scaledHeight) * 0.5f;
 
                     // Clip to display window
-                    return new Rectangle(
-                        Max(0, offsetX),
-                        Max(0, offsetY),
-                        Min(outputWidth, scaledWidth),
-                        Min(outputHeight, scaledHeight)
+                    return new RectI(
+                        (int)Max(0, offsetX),
+                        (int)Max(0, offsetY),
+                        (int)Min(outputWidth, scaledWidth),
+                        (int)Min(outputHeight, scaledHeight)
                         );
                 }
 
             case ViewportScaling.None:
             default:
                 // Output is displayed in the upper left corner of the window area
-                return new Rectangle(0, 0, Min(backBufferWidth, outputWidth), Min(backBufferHeight, outputHeight));
+                return new RectI(0, 0, Min(backBufferWidth, outputWidth), Min(backBufferHeight, outputHeight));
         }
     }
 
-    public static Rectangle ComputeTitleSafeArea(int backBufferWidth, int backBufferHeight)
+    public static RectI ComputeTitleSafeArea(int backBufferWidth, int backBufferHeight)
     {
         float safew = (backBufferWidth + 19.0f) / 20.0f;
         float safeh = (backBufferHeight + 19.0f) / 20.0f;
 
-        return Rectangle.FromLTRB(
-            safew,
-            safeh,
-            backBufferWidth - safew + 0.5f,
-            backBufferHeight - safeh + 0.5f
+        return RectI.FromLTRB(
+            (int)safew,
+            (int)safeh,
+            (int)(backBufferWidth - safew + 0.5f),
+            (int)(backBufferHeight - safeh + 0.5f)
             );
     }
 

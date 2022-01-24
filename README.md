@@ -4,4 +4,4 @@
 [![Build status](https://github.com/amerkoleci/Vortice.Mathematics/workflows/Build/badge.svg)](https://github.com/amerkoleci/Vortice.Mathematics/actions)
 [![NuGet](https://img.shields.io/nuget/v/Vortice.Mathematics.svg)](https://www.nuget.org/packages/Vortice.Mathematics)
 
-**Vortice.Mathematics** is a cross platform .NET math library. Some code and idea is borrowed from [SharpDX.Mathematics](https://github.com/sharpdx/SharpDX/tree/master/Source/SharpDX.Mathematics) and [Xenko.Core.Mathematics](https://github.com/xenko3d/xenko/tree/master/sources/core/Xenko.Core.Mathematics).
+**Vortice.Mathematics** is a cross platform .NET math library. Some code and idea is borrowed from [SharpDX.Mathematics](https://github.com/sharpdx/SharpDX/tree/master/Source/SharpDX.Mathematics), [Xenko.Core.Mathematics](https://github.com/xenko3d/xenko/tree/master/sources/core/Xenko.Core.Mathematics) and [TerraFX](https://github.com/terrafx/terrafx).

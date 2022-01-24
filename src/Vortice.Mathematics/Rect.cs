@@ -8,14 +8,14 @@ using System.Runtime.CompilerServices;
 namespace Vortice.Mathematics;
 
 [DebuggerDisplay("X={X}, Y={Y}, Width={Width}, Height={Height}")]
-public struct Rectangle : IEquatable<Rectangle>, IFormattable
+public struct Rect : IEquatable<Rect>, IFormattable
 {
     /// <summary>
-    /// A <see cref="Rectangle"/> with all of its components set to zero.
+    /// A <see cref="Rect"/> with all of its components set to zero.
     /// </summary>
-    public static readonly Rectangle Empty = default;
+    public static readonly Rect Empty = default;
 
-    public Rectangle(float x, float y, float width, float height)
+    public Rect(float x, float y, float width, float height)
     {
         if (float.IsNaN(width))
             throw new ArgumentException("NaN is not a valid value for width");
@@ -28,17 +28,17 @@ public struct Rectangle : IEquatable<Rectangle>, IFormattable
         Height = height;
     }
 
-    public Rectangle(Point location, Size size)
+    public Rect(Point location, Size size)
         : this(location.X, location.Y, size.Width, size.Height)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of <see cref="Rectangle"/> structure.
+    /// Initializes a new instance of <see cref="Rect"/> structure.
     /// </summary>
     /// <param name="width">The width component of the size.</param>
     /// <param name="height">The height component of the size.</param>
-    public Rectangle(float width, float height)
+    public Rect(float width, float height)
         : this(0.0f, 0.0f, width, height)
     {
     }
@@ -64,7 +64,7 @@ public struct Rectangle : IEquatable<Rectangle>, IFormattable
     public float Height { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether this <see cref="Rectangle"/> is empty.
+    /// Gets a value indicating whether this <see cref="Rect"/> is empty.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public readonly bool IsEmpty => (Width <= 0) || (Height <= 0);
@@ -105,7 +105,7 @@ public struct Rectangle : IEquatable<Rectangle>, IFormattable
 
     public Point Location
     {
-        get => new Point(X, Y);
+        get => new(X, Y);
         set
         {
             X = value.X;
@@ -123,19 +123,9 @@ public struct Rectangle : IEquatable<Rectangle>, IFormattable
         height = Height;
     }
 
-    public static Rectangle FromLTRB(float left, float top, float right, float bottom)
+    public static Rect FromLTRB(float left, float top, float right, float bottom)
     {
-        return new Rectangle(left, top, right - left, bottom - top);
-    }
-
-    public bool Contains(Rectangle rect)
-    {
-        return X <= rect.X && Right >= rect.Right && Y <= rect.Y && Bottom >= rect.Bottom;
-    }
-
-    public bool Contains(Point pt)
-    {
-        return Contains(pt.X, pt.Y);
+        return new Rect(left, top, right - left, bottom - top);
     }
 
     public bool Contains(float x, float y)
@@ -143,44 +133,118 @@ public struct Rectangle : IEquatable<Rectangle>, IFormattable
         return (x >= Left) && (x < Right) && (y >= Top) && (y < Bottom);
     }
 
-    public bool IntersectsWith(Rectangle r)
+    public bool Contains(Point pt)
     {
-        return !((Left >= r.Right) || (Right <= r.Left) || (Top >= r.Bottom) || (Bottom <= r.Top));
+        return Contains(pt.X, pt.Y);
+    }
+
+    public bool Contains(Vector2 vector)
+    {
+        return Contains(vector.X, vector.Y);
+    }
+
+    public bool Contains(Rect rect)
+    {
+        return X <= rect.X && Right >= rect.Right && Y <= rect.Y && Bottom >= rect.Bottom;
+    }
+
+    public void Offset(float offsetX, float offsetY)
+    {
+        X += offsetX;
+        Y += offsetY;
+    }
+
+    public void Offset(Point offset)
+    {
+        X += offset.X;
+        Y += offset.Y;
+    }
+
+    public void Inflate(float horizAmount, float vertAmount)
+    {
+        X -= horizAmount;
+        Y -= vertAmount;
+        Width += horizAmount;
+        Height += vertAmount;
+    }
+
+    public readonly bool IntersectsWith(Rect rect)
+    {
+        return (rect.X < (X + Width)) && (X < (rect.X + rect.Width)) && (rect.Y < (Y + Height)) && (Y < (rect.Y + rect.Height));
+    }
+
+    public static Rect Intersect(Rect ra, Rect rb)
+    {
+        float righta = ra.X + ra.Width;
+        float rightb = rb.X + rb.Width;
+
+        float bottoma = ra.Y + ra.Height;
+        float bottomb = rb.Y + rb.Height;
+
+        float maxX = ra.X > rb.X ? ra.X : rb.X;
+        float maxY = ra.Y > rb.Y ? ra.Y : rb.Y;
+
+        float minRight = righta < rightb ? righta : rightb;
+        float minBottom = bottoma < bottomb ? bottoma : bottomb;
+
+        if ((minRight > maxX) && (minBottom > maxY))
+        {
+            return new(maxX, maxY, minRight - maxX, minBottom - maxY);
+        }
+
+        return default;
+    }
+
+    public static Rect Union(Rect ra, Rect rb)
+    {
+        float righta = ra.X + ra.Width;
+        float rightb = rb.X + rb.Width;
+
+        float bottoma = ra.Y + ra.Height;
+        float bottomb = rb.Y + rb.Height;
+
+        float minX = ra.X < rb.X ? ra.X : rb.X;
+        float minY = ra.Y < rb.Y ? ra.Y : rb.Y;
+
+        float maxRight = righta > rightb ? righta : rightb;
+        float maxBottom = bottoma > bottomb ? bottoma : bottomb;
+
+        return new Rect(minX, minY, maxRight - minX, maxBottom - minY);
     }
 
     /// <summary>
-    /// Compares two <see cref="Rectangle"/> objects for equality.
+    /// Compares two <see cref="Rect"/> objects for equality.
     /// </summary>
-    /// <param name="left">The <see cref="Rectangle"/> on the left hand of the operand.</param>
-    /// <param name="right">The <see cref="Rectangle"/> on the right hand of the operand.</param>
+    /// <param name="left">The <see cref="Rect"/> on the left hand of the operand.</param>
+    /// <param name="right">The <see cref="Rect"/> on the right hand of the operand.</param>
     /// <returns>
     /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator ==(Rectangle left, Rectangle right)
+    public static bool operator ==(Rect left, Rect right)
     {
         return left.X == right.X && left.Y == right.Y && left.Width == right.Width && left.Height == right.Height;
     }
 
     /// <summary>
-    /// Compares two <see cref="Rectangle"/> objects for inequality.
+    /// Compares two <see cref="Rect"/> objects for inequality.
     /// </summary>
-    /// <param name="left">The <see cref="Rectangle"/> on the left hand of the operand.</param>
-    /// <param name="right">The <see cref="Rectangle"/> on the right hand of the operand.</param>
+    /// <param name="left">The <see cref="Rect"/> on the left hand of the operand.</param>
+    /// <param name="right">The <see cref="Rect"/> on the right hand of the operand.</param>
     /// <returns>
     /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(Rectangle left, Rectangle right)
+    public static bool operator !=(Rect left, Rect right)
     {
         return (left.X != right.X) || (left.Y != right.Y) || (left.Width != right.Width) || (left.Height != right.Height);
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Rectangle other && Equals(other);
+    public override bool Equals(object? obj) => obj is Rect other && Equals(other);
 
     /// <inheritdoc/>
-    public bool Equals(Rectangle other)
+    public bool Equals(Rect other)
     {
         return
             X.Equals(other.X) &&
@@ -197,5 +261,5 @@ public struct Rectangle : IEquatable<Rectangle>, IFormattable
 
     /// <inheritdoc />
     public string ToString(string? format, IFormatProvider? formatProvider)
-        => $"{nameof(Rectangle)} {{ {nameof(X)} = {X.ToString(format, formatProvider)}, {{ {nameof(Y)} = {Y.ToString(format, formatProvider)}, {{ {nameof(Width)} = {Width.ToString(format, formatProvider)}, {nameof(Height)} = {Height.ToString(format, formatProvider)} }}";
+        => $"{nameof(Rect)} {{ {nameof(X)} = {X.ToString(format, formatProvider)}, {{ {nameof(Y)} = {Y.ToString(format, formatProvider)}, {{ {nameof(Width)} = {Width.ToString(format, formatProvider)}, {nameof(Height)} = {Height.ToString(format, formatProvider)} }}";
 }

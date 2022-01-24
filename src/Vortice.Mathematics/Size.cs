@@ -3,6 +3,7 @@
 
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 
 namespace Vortice.Mathematics;
@@ -75,6 +76,66 @@ public struct Size : IEquatable<Size>, IFormattable
     {
         width = Width;
         height = Height;
+    }
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Size"/> to <see cref="Point"/>.
+    /// </summary>
+    /// <param name="size">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator Point(Size size)
+    {
+        return new(size.Width, size.Height);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="SizeI"/> to <see cref="Size"/>.
+    /// </summary>
+    /// <param name="size">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static implicit operator Size(SizeI size)
+    {
+        return new(size.Width, size.Height);
+    }
+
+    public static Size operator +(Size size1, Size size2)
+    {
+        return new(size1.Width + size2.Width, size1.Height + size2.Height);
+    }
+
+    public static Size operator -(Size size1, Size size2)
+    {
+        return new Size(size1.Width - size2.Width, size1.Height - size2.Height);
+    }
+
+    public static Size operator *(Size size, float value)
+    {
+        return new Size(size.Width * value, size.Height * value);
+    }
+
+    public static Size operator /(Size size, float value)
+    {
+        return new Size(size.Width / value, size.Height / value);
+    }
+
+    public readonly Point ToPoint() => new(Width, Height);
+
+    public static bool TryParse(string value, out Size size)
+    {
+        if (!string.IsNullOrEmpty(value))
+        {
+            string[] wh = value.Split(',');
+            if (wh.Length == 2
+                && float.TryParse(wh[0], NumberStyles.Number, CultureInfo.InvariantCulture, out float w)
+                && float.TryParse(wh[1], NumberStyles.Number, CultureInfo.InvariantCulture, out float h))
+            {
+                size = new Size(w, h);
+                return true;
+            }
+        }
+
+        size = default;
+        return false;
     }
 
     /// <summary>
