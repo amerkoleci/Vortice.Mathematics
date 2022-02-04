@@ -23,6 +23,9 @@ internal static class MathF
     public static float Round(float f) => (float)Math.Round(f);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Truncate(float f) => (float)Math.Truncate(f);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Max(float val1, float val2) => Math.Max(val1, val2);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

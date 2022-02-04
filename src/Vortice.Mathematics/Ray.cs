@@ -77,7 +77,7 @@ namespace Vortice.Mathematics
             //Same thing as RayIntersectsSphere except that the radius of the sphere (point)
             //is the epsilon for zero.
             float b = Vector3.Dot(m, Direction);
-            float c = Vector3.Dot(m, m) - MathHelper.ZeroTolerance;
+            float c = Vector3.Dot(m, m) - MathHelper.NearZeroEpsilon;
 
             if (c > 0f && b > 0f)
                 return false;
@@ -132,7 +132,7 @@ namespace Vortice.Mathematics
 
             float direction = Vector3.Dot(plane.Normal, Direction);
 
-            if (Math.Abs(direction) < MathHelper.ZeroTolerance)
+            if (Math.Abs(direction) < MathHelper.NearZeroEpsilon)
             {
                 return null;
             }
@@ -142,7 +142,7 @@ namespace Vortice.Mathematics
 
             if (distance < 0f)
             {
-                if (distance < -MathHelper.ZeroTolerance)
+                if (distance < -MathHelper.NearZeroEpsilon)
                 {
                     return null;
                 }
@@ -219,7 +219,7 @@ namespace Vortice.Mathematics
             float det = Vector3.Dot(edgeA, normal);
 
             // if perpendicular, exit
-            if (det < MathHelper.ZeroTolerance)
+            if (det < MathHelper.NearZeroEpsilon)
             {
                 return false;
             }
@@ -229,14 +229,14 @@ namespace Vortice.Mathematics
             Vector3 s = Position - v0;
             float u = det * Vector3.Dot(s, normal);
 
-            if (u < -MathHelper.ZeroTolerance || u > 1.0f + MathHelper.ZeroTolerance)
+            if (u < -MathHelper.NearZeroEpsilon || u > 1.0f + MathHelper.NearZeroEpsilon)
             {
                 return false;
             }
 
             Vector3 r = Vector3.Cross(s, edgeA);
             float v = det * Vector3.Dot(Direction, r);
-            if (v < -MathHelper.ZeroTolerance || u + v > 1.0f + MathHelper.ZeroTolerance)
+            if (v < -MathHelper.NearZeroEpsilon || u + v > 1.0f + MathHelper.NearZeroEpsilon)
             {
                 return false;
             }

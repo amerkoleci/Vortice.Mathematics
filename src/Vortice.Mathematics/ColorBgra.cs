@@ -5,6 +5,13 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Vortice.Mathematics.PackedVector;
 
+#if NET6_0_OR_GREATER
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.Arm;
+using System.Runtime.Intrinsics.X86;
+using static Vortice.Mathematics.VectorUtilities;
+#endif
+
 namespace Vortice.Mathematics;
 
 /// <summary>
@@ -19,7 +26,7 @@ public readonly struct ColorBgra : IPackedVector<uint>, IEquatable<ColorBgra>
     /// <summary>
     /// The blue component of the color.
     /// </summary>
-    [FieldOffset(2)]
+    [FieldOffset(0)]
     public readonly byte B;
 
     /// <summary>
@@ -31,7 +38,7 @@ public readonly struct ColorBgra : IPackedVector<uint>, IEquatable<ColorBgra>
     /// <summary>
     /// The red component of the color.
     /// </summary>
-    [FieldOffset(0)]
+    [FieldOffset(2)]
     public readonly byte R;
 
     /// <summary>
@@ -41,26 +48,37 @@ public readonly struct ColorBgra : IPackedVector<uint>, IEquatable<ColorBgra>
     public readonly byte A;
 
     /// <summary>
-    /// Gets or Sets the current color as a packed value.
+    /// Gets packed value.
     /// </summary>
     public uint PackedValue => _packedValue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ColorBgra"/> struct.
     /// </summary>
-    /// <param name="value">The value that will be assigned to all components.</param>
-    public ColorBgra(byte value) : this()
+    /// <param name="packedValue">The packed value to assign.</param>
+    public ColorBgra(uint packedValue) 
     {
-        A = R = G = B = value;
+        Unsafe.SkipInit(out this);
+
+        _packedValue = packedValue;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ColorBgra"/> struct.
     /// </summary>
     /// <param name="value">The value that will be assigned to all components.</param>
-    public ColorBgra(float value) : this()
+    public ColorBgra(byte value)
+        : this(value, value, value, value)
     {
-        A = R = G = B = PackHelpers.ToByte(value);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ColorBgra"/> struct.
+    /// </summary>
+    /// <param name="value">The value that will be assigned to all components.</param>
+    public ColorBgra(float value)
+        : this(value, value, value, value)
+    {
     }
 
     /// <summary>
@@ -70,8 +88,10 @@ public readonly struct ColorBgra : IPackedVector<uint>, IEquatable<ColorBgra>
     /// <param name="g">The green component of the color.</param>
     /// <param name="b">The blue component of the color.</param>
     /// <param name="a">The alpha component of the color.</param>
-    public ColorBgra(byte r, byte g, byte b, byte a = 255) : this()
+    public ColorBgra(byte r, byte g, byte b, byte a = 255) 
     {
+        Unsafe.SkipInit(out this);
+
         R = r;
         G = g;
         B = b;
@@ -85,12 +105,44 @@ public readonly struct ColorBgra : IPackedVector<uint>, IEquatable<ColorBgra>
     /// <param name="green">Green component.</param>
     /// <param name="blue">Blue component.</param>
     /// <param name="alpha">Alpha component.</param>
-    public ColorBgra(float red, float green, float blue, float alpha = 1.0f) : this()
+    public ColorBgra(float red, float green, float blue, float alpha = 1.0f) 
     {
-        R = PackHelpers.ToByte(red);
-        G = PackHelpers.ToByte(green);
-        B = PackHelpers.ToByte(blue);
-        A = PackHelpers.ToByte(alpha);
+        Unsafe.SkipInit(out this);
+
+#if NET6_0_OR_GREATER && TODO
+        unsafe
+        {
+            if (Sse2.IsSupported)
+            {
+                // Set <0 to 0
+                Vector128<float> result = Sse.Max(Vector128.Create(red, green, blue, alpha), Vector128<float>.Zero);
+                // Set>1 to 1
+                result = Sse.Min(result, One);
+                // Convert to 0-255
+                result = Sse.Multiply(result, UByteMax);
+                // Shuffle RGBA to ARGB
+                result = Sse.Shuffle(result, result, Shuffle(3, 0, 1, 2));
+
+                // Convert to int
+                Vector128<int> vInt = Sse2.ConvertToVector128Int32(result);
+                // Mash to shorts
+                Vector128<short> vShort = Sse2.PackSignedSaturate(vInt, vInt);
+                // Mash to bytes
+                Vector128<byte> vByte = Sse2.PackUnsignedSaturate(vShort, vShort);
+
+                vInt = Vector128.Create(vByte.ToScalar(), vByte.GetElement(1), vByte.GetElement(2), vByte.GetElement(3));
+
+                uint packedValue = default;
+                Sse.StoreScalar((float*)&packedValue, Sse2.ConvertToVector128Single(vInt));
+                _packedValue = packedValue;
+            }
+        }
+#endif
+
+        Vector4 N = Vector4Utilities.Saturate(new Vector4(red, green, blue, alpha));
+        N = Vector4.Multiply(N, Vector4Utilities.UByteMax);
+        N = Vector4Utilities.Round(N);
+        _packedValue = ((uint)N.W << 24) | ((uint)N.X << 16) | ((uint)N.Y << 8) | (uint)N.Z;
     }
 
     /// <summary>

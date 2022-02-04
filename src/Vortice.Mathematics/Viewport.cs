@@ -1,12 +1,10 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-using System;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
-using static System.Math;
+using static Vortice.Mathematics.MathHelper;
 
 namespace Vortice.Mathematics;
 
@@ -306,12 +304,12 @@ public readonly struct Viewport : IEquatable<Viewport>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Equals(Viewport other)
     {
-        return MathHelper.NearEqual(X, other.X)
-            && MathHelper.NearEqual(Y, other.Y)
-            && MathHelper.NearEqual(Width, other.Width)
-            && MathHelper.NearEqual(Height, other.Height)
-            && MathHelper.NearEqual(MinDepth, other.MinDepth)
-            && MathHelper.NearEqual(MaxDepth, other.MaxDepth);
+        return CompareEqual(X, other.X, NearZeroEpsilon)
+            && CompareEqual(Y, other.Y, NearZeroEpsilon)
+            && CompareEqual(Width, other.Width, NearZeroEpsilon)
+            && CompareEqual(Height, other.Height, NearZeroEpsilon)
+            && CompareEqual(MinDepth, other.MinDepth, NearZeroEpsilon)
+            && CompareEqual(MaxDepth, other.MaxDepth, NearZeroEpsilon);
     }
 
     /// <summary>

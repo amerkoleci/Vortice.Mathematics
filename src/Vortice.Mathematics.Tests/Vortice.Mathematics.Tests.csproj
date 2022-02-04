@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Vortice.Mathematics.PackedVector\Vortice.Mathematics.PackedVector.csproj" />
+    <ProjectReference Include="..\Vortice.Mathematics\Vortice.Mathematics.csproj" />
   </ItemGroup>
 
 </Project>

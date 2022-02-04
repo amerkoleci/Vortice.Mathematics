@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
 using System.Runtime.Intrinsics;
 using static Vortice.Mathematics.VectorUtilities;
 #endif
@@ -20,7 +20,7 @@ namespace Vortice.Mathematics;
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
 public readonly struct Color4 : IEquatable<Color4>, IFormattable
 {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
     private readonly Vector128<float> _value;
 #endif
 
@@ -30,7 +30,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="value">The value that will be assigned to all components.</param>
     public Color4(float value)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         _value = Vector128.Create(value, value, value, value);
 #else
         A = R = G = B = value;
@@ -45,7 +45,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="blue">The blue component of the color.</param>
     public Color4(float red, float green, float blue)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         _value = Vector128.Create(red, green, blue, 1.0f);
 #else
         R = red;
@@ -64,7 +64,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="alpha">The alpha component of the color.</param>
     public Color4(float red, float green, float blue, float alpha)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         _value = Vector128.Create(red, green, blue, alpha);
 #else
         R = red;
@@ -80,7 +80,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="value">The red, green, blue, and alpha components of the color.</param>
     public Color4(Vector4 value)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         _value = value.AsVector128();
 #else
         R = value.X;
@@ -97,7 +97,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="alpha">The alpha component of the color.</param>
     public Color4(Vector3 value, float alpha)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         _value = Vector128.Create(value.X, value.Y, value.Z, alpha);
 #else
         R = value.X;
@@ -114,7 +114,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="alpha">The alpha component of the color.</param>
     public Color4(Color3 value, float alpha)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         _value = Vector128.Create(value.R, value.G, value.B, alpha);
 #else
         R = value.R;
@@ -130,7 +130,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="color"><see cref="Color"/> used to initialize the color.</param>
     public Color4(Color color)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         _value = Vector128.Create(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f, color.A / 255.0f);
 #else
         R = color.R / 255.0f;
@@ -140,7 +140,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
 #endif
     }
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Initializes a new instance of the <see cref="Color" /> struct.
     /// </summary>
@@ -328,7 +328,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator ==(Color4 left, Color4 right)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         return CompareEqualAll(left._value, right._value);
 #else
         return left.A == right.A && left.R == right.R && left.G == right.G && left.B == right.B;
@@ -346,7 +346,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator !=(Color4 left, Color4 right)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         return CompareNotEqualAny(left._value, right._value);
 #else
         return !left.Equals(right);

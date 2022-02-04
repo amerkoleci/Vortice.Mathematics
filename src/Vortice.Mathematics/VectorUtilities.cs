@@ -6,38 +6,21 @@
 // This file includes code based on code from https://github.com/microsoft/DirectXMath
 // The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
+using static Vortice.Mathematics.MathHelper;
 
 namespace Vortice.Mathematics;
 
-/// <summary>Provides a set of methods to supplement or replace <see cref="Vector128" /> and <see cref="Vector128{T}" />.</summary>
+/// <summary>
+/// Provides a set of methods to supplement or replace <see cref="Vector128" /> and <see cref="Vector128{T}" />.
+/// </summary>
 public static class VectorUtilities
 {
-    /// <summary>Gets a value used to represent all bits set.</summary>
-    public static float AllBitsSet
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return BitConverter.UInt32BitsToSingle(0xFFFFFFFF);
-        }
-    }
-
-    /// <summary>Gets a value used to determine if a value is near zero.</summary>
-    public static float NearZeroEpsilon
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return 4.7683716E-07f; // 2^-21: 0x35000000
-        }
-    }
-
     /// <summary>Gets a vector where the x-component is one and all other components are zero.</summary>
     public static Vector128<float> UnitX
     {
@@ -88,6 +71,38 @@ public static class VectorUtilities
         }
     }
 
+    public static Vector128<float> UByteMax
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return Vector128.Create(255.0f, 255.0f, 255.0f, 255.0f);
+        }
+    }
+
+    public static Vector128<float> ScaleUByteN4
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return Vector128.Create(255.0f, 255.0f * 256.0f * 0.5f, 255.0f * 256.0f * 256.0f, 255.0f * 256.0f * 256.0f * 256.0f * 0.5f);
+        }
+    }
+
+    public static Vector128<int> MaskUByteN4
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return Vector128.Create(0xFF, 0xFF << (8 - 1), 0xFF << 16, 0xFF << (24 - 1));
+        }
+    }
+
+    public static byte Shuffle(byte fp3, byte fp2, byte fp1, byte fp0)
+    {
+        return (byte)(((fp3) << 6) | ((fp2) << 4) | ((fp1) << 2) | (fp0));
+    }
+
     /// <summary>Gets the x-component of the vector.</summary>
     /// <param name="self">The vector.</param>
     /// <returns>The x-component of <paramref name="self" />.</returns>
@@ -111,6 +126,73 @@ public static class VectorUtilities
     /// <returns>The w-component of <paramref name="self" />.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float GetW(this Vector128<float> self) => self.GetElement(3);
+
+    /// <summary>Compares two vectors to determine which elements equivalent.</summary>
+    /// <param name="left">The vector to compare with <paramref name="right" />.</param>
+    /// <param name="right">The vector to compare with <paramref name="left" />.</param>
+    /// <returns>A vector that contains the element-wise comparison of <paramref name="left" /> and <paramref name="right" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector128<float> CompareEqual(Vector128<float> left, Vector128<float> right)
+    {
+        if (Sse41.IsSupported)
+        {
+            return Sse.CompareEqual(left, right);
+        }
+        else if (AdvSimd.Arm64.IsSupported)
+        {
+            return AdvSimd.CompareEqual(left, right);
+        }
+        else
+        {
+            return SoftwareFallback(left, right);
+        }
+
+        static Vector128<float> SoftwareFallback(Vector128<float> left, Vector128<float> right)
+        {
+            return Vector128.Create(
+                (left.GetX() == right.GetX()) ? AllBitsSet : 0.0f,
+                (left.GetY() == right.GetY()) ? AllBitsSet : 0.0f,
+                (left.GetZ() == right.GetZ()) ? AllBitsSet : 0.0f,
+                (left.GetW() == right.GetW()) ? AllBitsSet : 0.0f
+            );
+        }
+    }
+
+    /// <summary>Compares two vectors to determine approximate equality.</summary>
+    /// <param name="left">The vector to compare with <paramref name="right" />.</param>
+    /// <param name="right">The vector to compare with <paramref name="left" />.</param>
+    /// <param name="epsilon">The maximum (inclusive) difference between <paramref name="left" /> and <paramref name="right" /> for which they should be considered equivalent.</param>
+    /// <returns>A vector that contains the element-wise approximate comparison of <paramref name="left" /> and <paramref name="right" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector128<float> CompareEqual(Vector128<float> left, Vector128<float> right, Vector128<float> epsilon)
+    {
+        if (Sse41.IsSupported)
+        {
+            var result = Sse.Subtract(left, right);
+            result = Sse.And(result, Vector128.Create(0x7FFFFFFF).AsSingle());
+            return Sse.CompareLessThanOrEqual(result, epsilon);
+        }
+        else if (AdvSimd.Arm64.IsSupported)
+        {
+            var result = AdvSimd.Subtract(left, right);
+            result = AdvSimd.Abs(result);
+            return AdvSimd.CompareLessThanOrEqual(result, epsilon);
+        }
+        else
+        {
+            return SoftwareFallback(left, right, epsilon);
+        }
+
+        static Vector128<float> SoftwareFallback(Vector128<float> left, Vector128<float> right, Vector128<float> epsilon)
+        {
+            return Vector128.Create(
+                (MathF.Abs(left.GetX() - right.GetX()) <= epsilon.GetX()) ? AllBitsSet : 0.0f,
+                (MathF.Abs(left.GetY() - right.GetY()) <= epsilon.GetY()) ? AllBitsSet : 0.0f,
+                (MathF.Abs(left.GetZ() - right.GetZ()) <= epsilon.GetZ()) ? AllBitsSet : 0.0f,
+                (MathF.Abs(left.GetW() - right.GetW()) <= epsilon.GetW()) ? AllBitsSet : 0.0f
+            );
+        }
+    }
 
     /// <summary>Compares two vectors to determine equality.</summary>
     /// <param name="left">The vector to compare with <paramref name="right" />.</param>
@@ -140,6 +222,42 @@ public static class VectorUtilities
                 && (left.GetY() == right.GetY())
                 && (left.GetZ() == right.GetZ())
                 && (left.GetW() == right.GetW());
+        }
+    }
+
+    /// <summary>Compares two vectors to determine if all elements are approximately equal.</summary>
+    /// <param name="left">The vector to compare with <paramref name="right" />.</param>
+    /// <param name="right">The vector to compare with <paramref name="left" />.</param>
+    /// <param name="epsilon">he maximum (inclusive) difference between <paramref name="left" /> and <paramref name="right" /> for which they should be considered equivalent.</param>
+    /// <returns><c>true</c> if <paramref name="left" /> and <paramref name="right" /> differ by no more than <paramref name="epsilon" />; otherwise, <c>false</c>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool CompareEqualAll(Vector128<float> left, Vector128<float> right, Vector128<float> epsilon)
+    {
+        if (Sse41.IsSupported)
+        {
+            Vector128<float> result = Sse.Subtract(left, right);
+            result = Sse.And(result, Vector128.Create(0x7FFFFFFF).AsSingle());
+            result = Sse.CompareNotLessThanOrEqual(result, epsilon);
+            return Sse.MoveMask(result) == 0x00;
+        }
+        else if (AdvSimd.Arm64.IsSupported)
+        {
+            Vector128<float> result = AdvSimd.Subtract(left, right);
+            result = AdvSimd.Abs(result);
+            result = AdvSimd.CompareLessThanOrEqual(result, epsilon);
+            return AdvSimd.Arm64.MinAcross(result).ToScalar() != 0;
+        }
+        else
+        {
+            return SoftwareFallback(left, right, epsilon);
+        }
+
+        static bool SoftwareFallback(Vector128<float> left, Vector128<float> right, Vector128<float> epsilon)
+        {
+            return (MathF.Abs(left.GetX() - right.GetX()) <= epsilon.GetX())
+                && (MathF.Abs(left.GetY() - right.GetY()) <= epsilon.GetY())
+                && (MathF.Abs(left.GetZ() - right.GetZ()) <= epsilon.GetZ())
+                && (MathF.Abs(left.GetW() - right.GetW()) <= epsilon.GetW());
         }
     }
 

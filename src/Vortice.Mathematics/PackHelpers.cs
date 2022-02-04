@@ -1,7 +1,7 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.Arm;
@@ -13,40 +13,6 @@ namespace Vortice.Mathematics;
 
 public static unsafe class PackHelpers
 {
-#if NET5_0_OR_GREATER
-    public static Vector128<float> ScaleUByteN4
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return Vector128.Create(255.0f, 255.0f * 256.0f * 0.5f, 255.0f * 256.0f * 256.0f, 255.0f * 256.0f * 256.0f * 256.0f * 0.5f);
-        }
-    }
-
-    public static Vector128<float> UByteMax
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return Vector128.Create(255.0f, 255.0f, 255.0f, 255.0f);
-        }
-    }
-
-    public static Vector128<int> MaskUByteN4
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return Vector128.Create(0xFF, 0xFF << (8 - 1), 0xFF << 16, 0xFF << (24 - 1));
-        }
-    }
-
-    private static byte Shuffle(byte fp3, byte fp2, byte fp1, byte fp0)
-    {
-        return (byte)(((fp3) << 6) | ((fp2) << 4) | ((fp1) << 2) | (fp0));
-    }
-#endif
-
     private static float ClampAndRound(float value, float min, float max)
     {
         if (float.IsNaN(value))
@@ -84,7 +50,7 @@ public static unsafe class PackHelpers
         return (float)value / bitmask;
     }
 
-#if NET5_0_OR_GREATER && TODO
+#if NET6_0_OR_GREATER && TODO
     public static uint PackRGBA(float x, float y, float z, float w)
     {
         Vector128<float> vector = Vector128.Create(x, y, z, w);

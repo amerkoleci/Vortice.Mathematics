@@ -6,7 +6,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
@@ -19,10 +19,30 @@ namespace Vortice.Mathematics;
 /// </summary>
 public static class MathHelper
 {
-    /// <summary>
-    /// The value for which all absolute numbers smaller than are considered equal to zero.
-    /// </summary>
-    public const float ZeroTolerance = 1e-6f; // Value a 8x higher than 1.19209290E-07F
+
+    /// <summary>Gets a value used to represent all bits set.</summary>
+    public static float AllBitsSet
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+#if NET6_0_OR_GREATER
+            return BitConverter.UInt32BitsToSingle(0xFFFFFFFF);
+#else
+            return UInt32BitsToSingle(0xFFFFFFFF);
+#endif
+        }
+    }
+
+    /// <summary>Gets a value used to determine if a value is near zero.</summary>
+    public static float NearZeroEpsilon
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return 4.7683716E-07f; // 2^-21: 0x35000000
+        }
+    }
 
     /// <summary>
     /// Represents the mathematical constant e.
@@ -97,7 +117,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Max(double left, double right)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         if (Sse41.IsSupported)
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
@@ -166,7 +186,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Max(float left, float right)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         if (Sse41.IsSupported)
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
@@ -236,7 +256,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Min(double left, double right)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         if (Sse41.IsSupported)
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
@@ -306,7 +326,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Min(float left, float right)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         if (Sse41.IsSupported)
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
@@ -374,47 +394,35 @@ public static class MathHelper
         return (-epsilon <= diff) && (diff <= epsilon);
     }
 
-    /// <summary>
-    /// Checks if a and b are almost equals, taking into account the magnitude of floating point numbers (unlike <see cref="WithinEpsilon"/> method). See Remarks.
-    /// See remarks.
-    /// </summary>
-    /// <param name="a">The left value to compare.</param>
-    /// <param name="b">The right value to compare.</param>
-    /// <returns><c>true</c> if a almost equal to b, <c>false</c> otherwise</returns>
-    /// <remarks>
-    /// The code is using the technique described by Bruce Dawson in 
-    /// <a href="http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/">Comparing Floating point numbers 2012 edition</a>. 
-    /// </remarks>
-    public static unsafe bool NearEqual(float a, float b)
-    {
-        // Check if the numbers are really close -- needed
-        // when comparing numbers near zero.
-        if (IsZero(a - b))
-            return true;
+    /// <summary>Compares two 32-bit floats to determine approximate equality.</summary>
+    /// <param name="left">The float to compare with <paramref name="right" />.</param>
+    /// <param name="right">The float to compare with <paramref name="left" />.</param>
+    /// <returns><c>true</c> if <paramref name="left" /> and <paramref name="right" /> differ by no more than <see cref="NearZeroEpsilon"/>; otherwise, <c>false</c>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool CompareEqual(float left, float right) => MathF.Abs(left - right) <= NearZeroEpsilon;
 
-        // Original from Bruce Dawson: http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
-        int aInt = *(int*)&a;
-        int bInt = *(int*)&b;
+    /// <summary>Compares two 64-bit floats to determine approximate equality.</summary>
+    /// <param name="left">The float to compare with <paramref name="right" />.</param>
+    /// <param name="right">The float to compare with <paramref name="left" />.</param>
+    /// <param name="epsilon">The maximum (inclusive) difference between <paramref name="left" /> and <paramref name="right" /> for which they should be considered equivalent.</param>
+    /// <returns><c>true</c> if <paramref name="left" /> and <paramref name="right" /> differ by no more than <paramref name="epsilon" />; otherwise, <c>false</c>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool CompareEqual(double left, double right, double epsilon) => Math.Abs(left - right) <= epsilon;
 
-        // Different signs means they do not match.
-        if ((aInt < 0) != (bInt < 0))
-            return false;
-
-        // Find the difference in ULPs.
-        int ulp = Math.Abs(aInt - bInt);
-
-        // Choose of maxUlp = 4
-        // according to http://code.google.com/p/googletest/source/browse/trunk/include/gtest/internal/gtest-internal.h
-        const int maxUlp = 4;
-        return ulp <= maxUlp;
-    }
+    /// <summary>Compares two 32-bit floats to determine approximate equality.</summary>
+    /// <param name="left">The float to compare with <paramref name="right" />.</param>
+    /// <param name="right">The float to compare with <paramref name="left" />.</param>
+    /// <param name="epsilon">The maximum (inclusive) difference between <paramref name="left" /> and <paramref name="right" /> for which they should be considered equivalent.</param>
+    /// <returns><c>true</c> if <paramref name="left" /> and <paramref name="right" /> differ by no more than <paramref name="epsilon" />; otherwise, <c>false</c>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool CompareEqual(float left, float right, float epsilon) => MathF.Abs(left - right) <= epsilon;
 
     /// <summary>
     /// Determines whether the specified value is close to zero (0.0f).
     /// </summary>
     /// <param name="a">The floating value.</param>
     /// <returns><c>true</c> if the specified value is close to zero (0.0f); otherwise, <c>false</c>.</returns>
-    public static bool IsZero(float a) => Math.Abs(a) < ZeroTolerance;
+    public static bool IsZero(float a) => MathF.Abs(a) < NearZeroEpsilon;
 
     /// <summary>
     /// Determines whether the specified value is close to one (1.0f).
@@ -535,7 +543,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint AlignUp(uint address, uint alignment)
     {
-        Debug.Assert( IsPow2(alignment));
+        Debug.Assert(IsPow2(alignment));
         return (address + (alignment - 1)) & ~(alignment - 1);
     }
 
@@ -547,7 +555,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong AlignUp(ulong address, ulong alignment)
     {
-        Debug.Assert( IsPow2(alignment));
+        Debug.Assert(IsPow2(alignment));
         return (address + (alignment - 1)) & ~(alignment - 1);
     }
 
@@ -562,4 +570,19 @@ public static class MathHelper
         Debug.Assert(IsPow2(alignment));
         return (address + (alignment - 1)) & ~(alignment - 1);
     }
+
+#if !NET6_0_OR_GREATER
+    /// <summary>
+    /// Converts the specified 32-bit signed integer to a single-precision floating point number.
+    /// </summary>
+    /// <param name="value">The number to convert.</param>
+    /// <returns>A single-precision floating point number whose bits are identical to <paramref name="value"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static unsafe float Int32BitsToSingle(int value)
+    {
+        return *((float*)&value);
+    }
+
+    public static unsafe float UInt32BitsToSingle(uint value) => Int32BitsToSingle((int)value);
+#endif
 }

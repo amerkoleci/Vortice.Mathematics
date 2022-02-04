@@ -4,8 +4,6 @@ VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vortice.Mathematics", "src\Vortice.Mathematics\Vortice.Mathematics.csproj", "{D83792BE-58C1-4F40-B028-02C0449DC2AB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vortice.Mathematics.PackedVector", "src\Vortice.Mathematics.PackedVector\Vortice.Mathematics.PackedVector.csproj", "{07DB51D4-739F-4EDD-B1AB-B292B0656689}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{630DF6DF-DE85-4264-A5E8-4CCCC4EBED75}"
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.props = Directory.Build.props
@@ -28,10 +26,6 @@ Global
 		{D83792BE-58C1-4F40-B028-02C0449DC2AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D83792BE-58C1-4F40-B028-02C0449DC2AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D83792BE-58C1-4F40-B028-02C0449DC2AB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{07DB51D4-739F-4EDD-B1AB-B292B0656689}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{07DB51D4-739F-4EDD-B1AB-B292B0656689}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{07DB51D4-739F-4EDD-B1AB-B292B0656689}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{07DB51D4-739F-4EDD-B1AB-B292B0656689}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C1983138-9CC7-4889-B413-19B2736BBB68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C1983138-9CC7-4889-B413-19B2736BBB68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1983138-9CC7-4889-B413-19B2736BBB68}.Release|Any CPU.ActiveCfg = Release|Any CPU

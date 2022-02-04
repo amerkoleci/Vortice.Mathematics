@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-using System;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Vortice.Mathematics.PackedVector;
@@ -50,10 +48,21 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// <summary>
     /// Initializes a new instance of the <see cref="Color"/> struct.
     /// </summary>
-    /// <param name="value">The value that will be assigned to all components.</param>
-    public Color(byte value) : this()
+    /// <param name="packedValue">The packed value to assign.</param>
+    public Color(uint packedValue)
     {
-        A = R = G = B = value;
+        Unsafe.SkipInit(out this);
+
+        _packedValue = packedValue;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Color"/> struct.
+    /// </summary>
+    /// <param name="value">The value that will be assigned to all components.</param>
+    public Color(byte value)
+        : this(value, value, value, value)
+    {
     }
 
     /// <summary>
@@ -72,8 +81,10 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// <param name="g">The green component of the color.</param>
     /// <param name="b">The blue component of the color.</param>
     /// <param name="a">The alpha component of the color.</param>
-    public Color(byte r, byte g, byte b, byte a) : this()
+    public Color(byte r, byte g, byte b, byte a) 
     {
+        Unsafe.SkipInit(out this);
+
         R = r;
         G = g;
         B = b;

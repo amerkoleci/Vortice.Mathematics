@@ -12,7 +12,7 @@
     <PackageTags>3D Engine Graphics gamedev vortice Direct3D DirectX Vulkan OpenGL Metal Core Standard Game</PackageTags>
     <Company>Amer Koleci</Company>
     <Authors>Amer Koleci</Authors>
-    <Copyright>Copyright © 2019-2021 Amer Koleci and contributors.</Copyright>
+    <Copyright>Copyright © 2019-2022 Amer Koleci and contributors.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/amerkoleci/Vortice.Mathematics</PackageProjectUrl>
