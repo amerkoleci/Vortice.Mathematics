@@ -283,7 +283,7 @@ public readonly struct Half : IComparable, IFormattable, IComparable<Half>, IEqu
         return 1;
     }
 
-    public override bool Equals(object? obj) => obj is Half && Equals((Half)obj);
+    public override bool Equals(object? obj) => obj is Half half && Equals(half);
 
     public bool Equals(Half other) => this == other || IsNaN(this) && IsNaN(other);
 

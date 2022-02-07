@@ -13,7 +13,7 @@ namespace Vortice.Mathematics.PackedVector;
 /// </summary>
 /// <remarks>Equivalent of XMSHORTN2.</remarks>
 [StructLayout(LayoutKind.Explicit)]
-public readonly struct NormalizedShort2 : IPackedVector<uint>, IEquatable<NormalizedShort2>
+public readonly struct ShortN2 : IPackedVector<uint>, IEquatable<ShortN2>
 {
     [FieldOffset(0)]
     private readonly uint _packedValue;
@@ -31,10 +31,10 @@ public readonly struct NormalizedShort2 : IPackedVector<uint>, IEquatable<Normal
     public readonly short Y;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="NormalizedShort2"/> struct.
+    /// Initializes a new instance of the <see cref="ShortN2"/> struct.
     /// </summary>
     /// <param name="packedValue">The packed value to assign.</param>
-    public NormalizedShort2(uint packedValue)
+    public ShortN2(uint packedValue)
     {
         Unsafe.SkipInit(out this);
 
@@ -42,11 +42,11 @@ public readonly struct NormalizedShort2 : IPackedVector<uint>, IEquatable<Normal
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="NormalizedShort2"/> struct.
+    /// Initializes a new instance of the <see cref="ShortN2"/> struct.
     /// </summary>
     /// <param name="x">The x value.</param>
     /// <param name="y">The y value.</param>
-    public NormalizedShort2(short x, short y)
+    public ShortN2(short x, short y)
     {
         Unsafe.SkipInit(out this);
 
@@ -55,11 +55,11 @@ public readonly struct NormalizedShort2 : IPackedVector<uint>, IEquatable<Normal
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="NormalizedShort2"/> struct.
+    /// Initializes a new instance of the <see cref="ShortN2"/> struct.
     /// </summary>
     /// <param name="x">The x value.</param>
     /// <param name="y">The y value.</param>
-    public NormalizedShort2(float x, float y)
+    public ShortN2(float x, float y)
     {
         Unsafe.SkipInit(out this);
 
@@ -72,19 +72,19 @@ public readonly struct NormalizedShort2 : IPackedVector<uint>, IEquatable<Normal
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="NormalizedShort2"/> struct.
+    /// Initializes a new instance of the <see cref="ShortN2"/> struct.
     /// </summary>
     /// <param name="vector">The <see cref="Vector2"/> containing X and Y value.</param>
-    public NormalizedShort2(Vector2 vector)
+    public ShortN2(Vector2 vector)
         : this(vector.X, vector.Y)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="NormalizedShort2"/> struct.
+    /// Initializes a new instance of the <see cref="ShortN2"/> struct.
     /// </summary>
     /// <param name="vector">The <see cref="Vector4"/> containing X and Y value.</param>
-    public NormalizedShort2(Vector4 vector)
+    public ShortN2(Vector4 vector)
         : this(vector.X, vector.Y)
     {
     }
@@ -109,32 +109,32 @@ public readonly struct NormalizedShort2 : IPackedVector<uint>, IEquatable<Normal
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is NormalizedShort2 other && Equals(other);
+    public override bool Equals(object? obj) => obj is ShortN2 other && Equals(other);
 
     /// <inheritdoc/>
-    public bool Equals(NormalizedShort2 other) => PackedValue.Equals(other.PackedValue);
+    public bool Equals(ShortN2 other) => PackedValue.Equals(other.PackedValue);
 
     /// <summary>
-    /// Compares two <see cref="NormalizedShort2"/> objects for equality.
+    /// Compares two <see cref="ShortN2"/> objects for equality.
     /// </summary>
-    /// <param name="left">The <see cref="NormalizedShort2"/> on the left hand of the operand.</param>
-    /// <param name="right">The <see cref="NormalizedShort2"/> on the right hand of the operand.</param>
+    /// <param name="left">The <see cref="ShortN2"/> on the left hand of the operand.</param>
+    /// <param name="right">The <see cref="ShortN2"/> on the right hand of the operand.</param>
     /// <returns>
     /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator ==(NormalizedShort2 left, NormalizedShort2 right) => left.Equals(right);
+    public static bool operator ==(ShortN2 left, ShortN2 right) => left.Equals(right);
 
     /// <summary>
-    /// Compares two <see cref="NormalizedShort2"/> objects for inequality.
+    /// Compares two <see cref="ShortN2"/> objects for inequality.
     /// </summary>
-    /// <param name="left">The <see cref="NormalizedShort2"/> on the left hand of the operand.</param>
-    /// <param name="right">The <see cref="NormalizedShort2"/> on the right hand of the operand.</param>
+    /// <param name="left">The <see cref="ShortN2"/> on the left hand of the operand.</param>
+    /// <param name="right">The <see cref="ShortN2"/> on the right hand of the operand.</param>
     /// <returns>
     /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(NormalizedShort2 left, NormalizedShort2 right) => !left.Equals(right);
+    public static bool operator !=(ShortN2 left, ShortN2 right) => !left.Equals(right);
 
     /// <inheritdoc/>
     public override int GetHashCode() => PackedValue.GetHashCode();

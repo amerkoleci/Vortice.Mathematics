@@ -1,37 +1,23 @@
-// Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// Copyright (c) Amer Koleci and contributors.
+// Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
+
+// This file includes code based on code from https://github.com/microsoft/DirectXMath
+// The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Vortice.Mathematics.PackedVector;
 
-namespace Vortice.Mathematics;
+namespace Vortice.Mathematics.PackedVector;
 
 /// <summary>
 /// Packed vector type containing two 16-bit floating-point values.
 /// </summary>
+/// <remarks>Equivalent of XMHALF2.</remarks>
 [StructLayout(LayoutKind.Explicit)]
 public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormattable
 {
     [FieldOffset(0)]
-    public readonly uint PackedValue;
+    private readonly uint _packedValue;
 
     /// <summary>
     /// Gets or sets the X component of the vector.
@@ -46,12 +32,25 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     public readonly Half Y;
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="Half2"/> struct.
+    /// </summary>
+    /// <param name="packedValue">The packed value to assign.</param>
+    public Half2(uint packedValue)
+    {
+        Unsafe.SkipInit(out this);
+
+        _packedValue = packedValue;
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Half2"/> structure.
     /// </summary>
     /// <param name="x">The X component.</param>
     /// <param name="y">The Y component.</param>
-    public Half2(Half x, Half y) : this()
+    public Half2(Half x, Half y)
     {
+        Unsafe.SkipInit(out this);
+
         X = x;
         Y = y;
     }
@@ -61,8 +60,10 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// </summary>
     /// <param name="x">The X component.</param>
     /// <param name="y">The Y component.</param>
-    public Half2(float x, float y) : this()
+    public Half2(float x, float y)
     {
+        Unsafe.SkipInit(out this);
+
         X = (Half)x;
         Y = (Half)y;
     }
@@ -72,8 +73,10 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// </summary>
     /// <param name="x">The X component.</param>
     /// <param name="y">The Y component.</param>
-    public Half2(ushort x, ushort y) : this()
+    public Half2(ushort x, ushort y)
     {
+        Unsafe.SkipInit(out this);
+
         X = (Half)x;
         Y = (Half)y;
     }
@@ -82,8 +85,10 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// Initializes a new instance of the <see cref="Half2" /> structure.
     /// </summary>
     /// <param name="value">The value to set for both the X and Y components.</param>
-    public Half2(Half value) : this()
+    public Half2(Half value)
     {
+        Unsafe.SkipInit(out this);
+
         X = value;
         Y = value;
     }
@@ -92,8 +97,10 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// Initializes a new instance of the <see cref="Half2" /> structure.
     /// </summary>
     /// <param name="value">Value to initialize X and Y components with.</param>
-    public Half2(float value) : this()
+    public Half2(float value)
     {
+        Unsafe.SkipInit(out this);
+
         X = (Half)value;
         Y = (Half)value;
     }
@@ -102,11 +109,18 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// Initializes a new instance of the <see cref="Half2"/> structure.
     /// </summary>
     /// <param name="vector">The <see cref="Vector4"/> to pack from.</param>
-    public Half2(Vector4 vector) : this()
+    public Half2(Vector4 vector)
     {
+        Unsafe.SkipInit(out this);
+
         X = (Half)vector.X;
         Y = (Half)vector.Y;
     }
+
+    /// <summary>
+    /// Gets the packed value.
+    /// </summary>
+    public uint PackedValue => _packedValue;
 
     /// <summary>
     /// Performs an explicit conversion from <see cref="Vector2"/> to <see cref="Half2"/>.
@@ -141,25 +155,14 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     #endregion IPackedVector Implementation
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Half2 value && Equals(ref value);
+    public override bool Equals(object? obj) => obj is Half2 value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Half2"/> is equal to this instance.
     /// </summary>
     /// <param name="other">The <see cref="Half2"/> to compare with this instance.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(Half2 other) => Equals(ref other);
-
-    /// <summary>
-    /// Determines whether the specified <see cref="Half2"/> is equal to this instance.
-    /// </summary>
-    /// <param name="other">The <see cref="Half2"/> to compare with this instance.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(ref Half2 other)
-    {
-        return X == other.X
-            && Y == other.Y;
-    }
+    public bool Equals(Half2 other) => X == other.X && Y == other.Y;
 
     /// <summary>
     /// Compares two <see cref="Half2"/> objects for equality.
@@ -170,7 +173,7 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator ==(Half2 left, Half2 right) => left.Equals(ref right);
+    public static bool operator ==(Half2 left, Half2 right) => left.Equals(right);
 
     /// <summary>
     /// Compares two <see cref="Half2"/> objects for inequality.
@@ -181,10 +184,10 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(Half2 left, Half2 right) => !left.Equals(ref right);
+    public static bool operator !=(Half2 left, Half2 right) => !left.Equals(right);
 
     /// <inheritdoc/>
-    public override int GetHashCode() => PackedValue.GetHashCode();
+    public override int GetHashCode() => HashCode.Combine(X, Y);
 
     /// <inheritdoc />
     public override string ToString() => ToString(format: null, formatProvider: null);
