@@ -79,24 +79,20 @@ public struct Size : IEquatable<Size>, IFormattable
     }
 
     /// <summary>
-    /// Performs an explicit conversion from <see cref="Size"/> to <see cref="Point"/>.
+    /// Performs an explicit conversion from <see cref="Size"/> to <see cref="Vector2"/>.
     /// </summary>
     /// <param name="size">The value.</param>
     /// <returns>The result of the conversion.</returns>
-    public static explicit operator Point(Size size)
-    {
-        return new(size.Width, size.Height);
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator Vector2(Size size) => new(size.Width, size.Height);
 
     /// <summary>
     /// Performs an implicit conversion from <see cref="SizeI"/> to <see cref="Size"/>.
     /// </summary>
     /// <param name="size">The value.</param>
     /// <returns>The result of the conversion.</returns>
-    public static implicit operator Size(SizeI size)
-    {
-        return new(size.Width, size.Height);
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static implicit operator Size(SizeI size) => new(size.Width, size.Height);
 
     public static Size operator +(Size size1, Size size2)
     {
@@ -118,7 +114,7 @@ public struct Size : IEquatable<Size>, IFormattable
         return new Size(size.Width / value, size.Height / value);
     }
 
-    public readonly Point ToPoint() => new(Width, Height);
+    public readonly Vector2 ToVector2() => new(Width, Height);
 
     public static bool TryParse(string value, out Size size)
     {

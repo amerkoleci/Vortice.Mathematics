@@ -436,6 +436,7 @@ public static class MathHelper
     /// </summary>
     /// <param name="radians">The angle in radians.</param>
     /// <returns>The converted value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float ToDegrees(float radians) => radians * (180.0f / Pi);
 
     /// <summary>
@@ -443,25 +444,71 @@ public static class MathHelper
     /// </summary>
     /// <param name="degree">Converts degrees to radians.</param>
     /// <returns>The converted value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float ToRadians(float degree) => degree * (Pi / 180.0f);
 
-    /// <summary>
-    /// Clamps the specified value.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <param name="min">The min.</param>
-    /// <param name="max">The max.</param>
-    /// <returns>The result of clamping a value between min and max</returns>
-    public static float Clamp(float value, float min, float max) => value < min ? min : value > max ? max : value;
+    /// <summary>Clamps a 32-bit float to be between a minimum and maximum value.</summary>
+    /// <param name="value">The value to restrict.</param>
+    /// <param name="min">The minimum value (inclusive).</param>
+    /// <param name="max">The maximum value (inclusive).</param>
+    /// <returns><paramref name="value" /> clamped to be between <paramref name="min" /> and <paramref name="max" />.</returns>
+    /// <remarks>This method does not account for <paramref name="min" /> being greater than <paramref name="max" />.</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Clamp(float value, float min, float max)
+    {
+        Debug.Assert(min <= max);
 
-    /// <summary>
-    /// Clamps the specified value.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <param name="min">The min.</param>
-    /// <param name="max">The max.</param>
-    /// <returns>The result of clamping a value between min and max</returns>
-    public static int Clamp(int value, int min, int max) => value < min ? min : value > max ? max : value;
+        // The compare order here is important.
+        // It ensures we match HLSL behavior for the scenario where min is larger than max.
+
+        float result = value;
+        result = Max(result, min);
+        result = Min(result, max);
+        return result;
+    }
+
+    /// <summary>Clamps a 64-bit float to be between a minimum and maximum value.</summary>
+    /// <param name="value">The value to restrict.</param>
+    /// <param name="min">The minimum value (inclusive).</param>
+    /// <param name="max">The maximum value (inclusive).</param>
+    /// <returns><paramref name="value" /> clamped to be between <paramref name="min" /> and <paramref name="max" />.</returns>
+    /// <remarks>This method does not account for <paramref name="min" /> being greater than <paramref name="max" />.</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static double Clamp(double value, double min, double max)
+    {
+        Debug.Assert(min <= max);
+        // The compare order here is important.
+        // It ensures we match HLSL behavior for the scenario where min is larger than max.
+
+        double result = value;
+
+        result = Max(result, min);
+        result = Min(result, max);
+
+        return result;
+    }
+
+    /// <summary>Clamps a 32-bit signed integer to be between a minimum and maximum value.</summary>
+    /// <param name="value">The value to restrict.</param>
+    /// <param name="min">The minimum value (inclusive).</param>
+    /// <param name="max">The maximum value (inclusive).</param>
+    /// <returns><paramref name="value" /> clamped to be between <paramref name="min" /> and <paramref name="max" />.</returns>
+    /// <remarks>This method does not account for <paramref name="min" /> being greater than <paramref name="max" />.</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int Clamp(int value, int min, int max)
+    {
+        Debug.Assert(min <= max);
+
+        // The compare order here is important.
+        // It ensures we match HLSL behavior for the scenario where min is larger than max.
+
+        var result = value;
+
+        result = Max(result, min);
+        result = Min(result, max);
+
+        return result;
+    }
 
     /// <summary>
     /// Linearly interpolates between two values.
@@ -491,7 +538,7 @@ public static class MathHelper
 #if NET6_0_OR_GREATER
         return BitOperations.IsPow2(value);
 #else
-        return unchecked((value & (value - 1)) == 0) && (value != 0);
+        return (value & (value - 1)) == 0 && value != 0;
 #endif
     }
 
@@ -502,9 +549,9 @@ public static class MathHelper
     public static bool IsPow2(ulong value)
     {
 #if NET6_0_OR_GREATER
-            return BitOperations.IsPow2(value);
+        return BitOperations.IsPow2(value);
 #else
-        return unchecked((value & (value - 1)) == 0) && (value != 0);
+        return (value & (value - 1)) == 0 && value != 0;
 #endif
     }
 
@@ -514,25 +561,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsPow2(nuint value)
     {
-#if NET6_0_OR_GREATER
-            if (Unsafe.SizeOf<nuint>() == 8)
-            {
-                return BitOperations.IsPow2(value);
-            }
-            else
-            {
-                return BitOperations.IsPow2((uint)value);
-            }
-#else
-        if (Unsafe.SizeOf<nuint>() == 8)
-        {
-            return IsPow2((ulong)value);
-        }
-        else
-        {
-            return IsPow2((uint)value);
-        }
-#endif
+        return (value & (value - 1)) == 0 && value != 0;
     }
 
     // <summary>Rounds a given address up to the nearest alignment.</summary>
@@ -544,6 +573,7 @@ public static class MathHelper
     public static uint AlignUp(uint address, uint alignment)
     {
         Debug.Assert(IsPow2(alignment));
+
         return (address + (alignment - 1)) & ~(alignment - 1);
     }
 
@@ -556,6 +586,7 @@ public static class MathHelper
     public static ulong AlignUp(ulong address, ulong alignment)
     {
         Debug.Assert(IsPow2(alignment));
+
         return (address + (alignment - 1)) & ~(alignment - 1);
     }
 
@@ -568,6 +599,7 @@ public static class MathHelper
     public static nuint AlignUp(nuint address, nuint alignment)
     {
         Debug.Assert(IsPow2(alignment));
+
         return (address + (alignment - 1)) & ~(alignment - 1);
     }
 

@@ -23,7 +23,7 @@ public struct RectI : IEquatable<RectI>, IFormattable
         Height = height;
     }
 
-    public RectI(PointI location, SizeI size)
+    public RectI(Int2 location, SizeI size)
         : this(location.X, location.Y, size.Width, size.Height)
     {
     }
@@ -98,7 +98,7 @@ public struct RectI : IEquatable<RectI>, IFormattable
         }
     }
 
-    public PointI Location
+    public Int2 Location
     {
         get => new(X, Y);
         set
@@ -108,7 +108,7 @@ public struct RectI : IEquatable<RectI>, IFormattable
         }
     }
 
-    public PointI Center => new(X + Width / 2, Y + Height / 2);
+    public Int2 Center => new(X + Width / 2, Y + Height / 2);
 
     public void Deconstruct(out int x, out int y, out int width, out int height)
     {
@@ -128,7 +128,7 @@ public struct RectI : IEquatable<RectI>, IFormattable
         return (x >= Left) && (x < Right) && (y >= Top) && (y < Bottom);
     }
 
-    public bool Contains(PointI point)
+    public bool Contains(Int2 point)
     {
         return Contains(point.X, point.Y);
     }

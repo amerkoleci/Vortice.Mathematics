@@ -64,7 +64,7 @@ public readonly struct Size3 : IEquatable<Size3>
     public int Depth { get; }
 
     /// <summary>
-    /// Gets a value indicating whether this <see cref="Point"/> is empty.
+    /// Gets a value indicating whether this <see cref="Size3"/> is empty.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public readonly bool IsEmpty => this == Empty;

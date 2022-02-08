@@ -28,7 +28,7 @@ public struct Rect : IEquatable<Rect>, IFormattable
         Height = height;
     }
 
-    public Rect(Point location, Size size)
+    public Rect(in Vector2 location, Size size)
         : this(location.X, location.Y, size.Width, size.Height)
     {
     }
@@ -103,7 +103,7 @@ public struct Rect : IEquatable<Rect>, IFormattable
         }
     }
 
-    public Point Location
+    public Vector2 Location
     {
         get => new(X, Y);
         set
@@ -113,7 +113,7 @@ public struct Rect : IEquatable<Rect>, IFormattable
         }
     }
 
-    public Point Center => new(X + Width / 2, Y + Height / 2);
+    public Vector2 Center => new(X + Width / 2, Y + Height / 2);
 
     public void Deconstruct(out float x, out float y, out float width, out float height)
     {
@@ -133,17 +133,12 @@ public struct Rect : IEquatable<Rect>, IFormattable
         return (x >= Left) && (x < Right) && (y >= Top) && (y < Bottom);
     }
 
-    public bool Contains(Point pt)
-    {
-        return Contains(pt.X, pt.Y);
-    }
-
-    public bool Contains(Vector2 vector)
+    public bool Contains(in Vector2 vector)
     {
         return Contains(vector.X, vector.Y);
     }
 
-    public bool Contains(Rect rect)
+    public bool Contains(in Rect rect)
     {
         return X <= rect.X && Right >= rect.Right && Y <= rect.Y && Bottom >= rect.Bottom;
     }
@@ -154,7 +149,7 @@ public struct Rect : IEquatable<Rect>, IFormattable
         Y += offsetY;
     }
 
-    public void Offset(Point offset)
+    public void Offset(Vector2 offset)
     {
         X += offset.X;
         Y += offset.Y;

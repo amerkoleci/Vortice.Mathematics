@@ -459,11 +459,11 @@ public static class VectorUtilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector128<float> Max(Vector128<float> left, Vector128<float> right)
     {
-        if (Sse41.IsSupported)
+        if (Sse.IsSupported)
         {
             return Sse.Max(left, right);
         }
-        else if (AdvSimd.Arm64.IsSupported)
+        else if (AdvSimd.IsSupported)
         {
             return AdvSimd.Max(left, right);
         }
