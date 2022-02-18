@@ -8,6 +8,7 @@
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using static Vortice.Mathematics.MathHelper;
 
 namespace Vortice.Mathematics;
 
@@ -39,6 +40,16 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     {
         _min = min;
         _max = max;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BoundingBox"/> struct.
+    /// </summary>
+    /// <param name="sphere">The <see cref="BoundingSphere"/> to initialize from.</param>
+    public BoundingBox(in BoundingSphere sphere)
+    {
+        _min = new Vector3(sphere.Center.X - sphere.Radius, sphere.Center.Y - sphere.Radius, sphere.Center.Z - sphere.Radius);
+        _max = new Vector3(sphere.Center.X + sphere.Radius, sphere.Center.Y + sphere.Radius, sphere.Center.Z + sphere.Radius);
     }
 
     /// <summary>
@@ -78,12 +89,17 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     /// <summary>
     /// Gets the center of this bouding box.
     /// </summary>
-    public Vector3 Center => (Min + Max) / 2;
+    public Vector3 Center => (_min + _max) / 2;
 
     /// <summary>
     /// Gets the extent of this bouding box.
     /// </summary>
-    public Vector3 Extent => (Max - Min) / 2;
+    public Vector3 Extent => (_max - _min) / 2;
+
+    /// <summary>
+    /// Gets size  of this bouding box.
+    /// </summary>
+    public Vector3 Size => _max - _min;
 
     /// <summary>
     /// Gets or sets the width of the bounding box.
@@ -123,11 +139,11 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
 
     public static BoundingBox CreateFromPoints(Vector3[] points)
     {
-        if (points == null)
-        {
-            throw new ArgumentNullException(nameof(points));
-        }
+        return CreateFromPoints(points.AsSpan());
+    }
 
+    public static BoundingBox CreateFromPoints(Span<Vector3> points)
+    {
         Vector3 min = new Vector3(float.MaxValue);
         Vector3 max = new Vector3(float.MinValue);
 
@@ -140,20 +156,44 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
         return new BoundingBox(min, max);
     }
 
-    public static BoundingBox CreateFromSphere(in BoundingSphere sphere)
-    {
-        return new BoundingBox(
-            new Vector3(sphere.Center.X - sphere.Radius, sphere.Center.Y - sphere.Radius, sphere.Center.Z - sphere.Radius),
-            new Vector3(sphere.Center.X + sphere.Radius, sphere.Center.Y + sphere.Radius, sphere.Center.Z + sphere.Radius)
-            );
-    }
-
     public static BoundingBox CreateMerged(in BoundingBox original, in BoundingBox additional)
     {
         return new BoundingBox(
             Vector3.Min(original.Min, additional.Min),
             Vector3.Max(original.Max, additional.Max)
         );
+    }
+
+    /// <summary>
+    /// Transforms given <see cref="BoundingBox"/> using a given <see cref="Matrix4x4"/>.
+    /// </summary>
+    /// <param name="box">The source <see cref="BoundingBox"/>.</param>
+    /// <param name="transform">A transformation matrix that might include translation, rotation, or uniform scaling.</param>
+    /// <returns>The transformed BoundingBox.</returns>
+    public static BoundingBox Transform(in BoundingBox box, in Matrix4x4 transform)
+    {
+        Transform(box, transform, out BoundingBox result);
+        return result;
+    }
+
+    /// <summary>
+    /// Transforms given <see cref="BoundingBox"/> using a given <see cref="Matrix4x4"/>.
+    /// </summary>
+    /// <param name="box">The source <see cref="BoundingBox"/>.</param>
+    /// <param name="transform">A transformation matrix that might include translation, rotation, or uniform scaling.</param>
+    /// <param name="result">The transformed BoundingBox.</param>
+    public static void Transform(in BoundingBox box, in Matrix4x4 transform, out BoundingBox result)
+    {
+        Vector3 newCenter = Vector3.Transform(box.Center, transform);
+        Vector3 oldEdge = box.Size * 0.5f;
+
+        Vector3 newEdge = new(
+            Abs(transform.M11) * oldEdge.X + Abs(transform.M12) * oldEdge.Y + Abs(transform.M13) * oldEdge.Z,
+            Abs(transform.M21) * oldEdge.X + Abs(transform.M22) * oldEdge.Y + Abs(transform.M23) * oldEdge.Z,
+            Abs(transform.M31) * oldEdge.X + Abs(transform.M32) * oldEdge.Y + Abs(transform.M33) * oldEdge.Z
+        );
+
+        result = new(newCenter - newEdge, newCenter + newEdge);
     }
 
     /// <summary>
