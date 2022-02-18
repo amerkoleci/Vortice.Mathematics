@@ -384,7 +384,7 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
         return distance;
     }
 
-    public PlaneIntersectionType Intersects(ref Plane plane)
+    public PlaneIntersectionType Intersects(in Plane plane)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 161
