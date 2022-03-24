@@ -46,21 +46,6 @@ public struct Int4 : IEquatable<Int4>, IFormattable
     /// <summary>
     /// Initializes a new instance of the <see cref="Int4" /> struct.
     /// </summary>
-    /// <param name="x">Initial value for the X component of the vector.</param>
-    /// <param name="y">Initial value for the Y component of the vector.</param>
-    /// <param name="z">Initial value for the Z component of the vector.</param>
-    /// <param name="w">Initial value for the W component of the vector.</param>
-    public Int4(int x, int y, int z, int w)
-    {
-        X = x;
-        Y = y;
-        Z = z;
-        W = w;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Int4" /> struct.
-    /// </summary>
     /// <param name="value">A <see cref="Int2"/> containing the values with which to initialize the X and Y components.</param>
     /// <param name="z">Initial value for the Z component of the vector.</param>
     /// <param name="w">Initial value for the W component of the vector.</param>
@@ -82,6 +67,21 @@ public struct Int4 : IEquatable<Int4>, IFormattable
         X = value.X;
         Y = value.Y;
         Z = value.Z;
+        W = w;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Int4" /> struct.
+    /// </summary>
+    /// <param name="x">Initial value for the X component of the vector.</param>
+    /// <param name="y">Initial value for the Y component of the vector.</param>
+    /// <param name="z">Initial value for the Z component of the vector.</param>
+    /// <param name="w">Initial value for the W component of the vector.</param>
+    public Int4(int x, int y, int z, int w)
+    {
+        X = x;
+        Y = y;
+        Z = z;
         W = w;
     }
 

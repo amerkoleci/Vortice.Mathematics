@@ -42,7 +42,7 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     /// <summary>
     /// An empty bounding sphere (Center = 0 and Radius = 0).
     /// </summary>
-    public static readonly BoundingSphere Empty = new BoundingSphere();
+    public static readonly BoundingSphere Empty = new();
 
     private Vector3 _center;
     private float _radius;
@@ -64,15 +64,9 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     public Vector3 Center
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return _center;
-        }
+        get => _center;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set
-        {
-            _center = value;
-        }
+        set => _center = value;
     }
 
     /// <summary>
@@ -81,15 +75,9 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     public float Radius
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return _radius;
-        }
+        get => _radius;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set
-        {
-            _radius = value;
-        }
+        set => _radius = value;
     }
 
     /// <summary>
@@ -167,7 +155,9 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     public ContainmentType Contains(in Vector3 point)
     {
         if (Vector3.DistanceSquared(point, Center) <= Radius * Radius)
+        {
             return ContainmentType.Contains;
+        }
 
         return ContainmentType.Disjoint;
     }

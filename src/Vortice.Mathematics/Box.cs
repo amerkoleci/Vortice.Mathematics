@@ -90,20 +90,20 @@ public struct Box : IEquatable<Box>, IFormattable
     /// <summary>
     /// The width of the box (equals to Right - Left).
     /// </summary>
-    public int Width => unchecked(Right - Left);
+    public readonly int Width => Right - Left;
 
     /// <summary>
-    /// The height of the box (equals to Top - Bottom).
+    /// The height of the box (equals to Bottom - Top).
     /// </summary>
-    public int Height => unchecked(Top - Bottom);
+    public readonly int Height => Bottom - Top;
 
     /// <summary>
-    /// The depth of the box (equals to Front - Back).
+    /// The depth of the box (equals to Back - Front).
     /// </summary>
-    public int Depth => unchecked(Front - Back);
+    public readonly int Depth => Back - Front;
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Box value && Equals( value);
+    public override bool Equals(object? obj) => obj is Box value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Box"/> is equal to this instance.
