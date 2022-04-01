@@ -11,7 +11,19 @@ internal static class MathF
     public static float Abs(float value) => Math.Abs(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Asin(float value) => (float)Math.Asin(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Acos(float value) => (float)Math.Acos(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Sin(float value) => (float)Math.Sin(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Cos(float value) => (float)Math.Cos(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Tan(float f) => (float)Math.Tan(f);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Sqrt(float f) => (float)Math.Sqrt(f);

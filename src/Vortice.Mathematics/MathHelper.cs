@@ -87,6 +87,18 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Abs(float value) => MathF.Abs(value);
 
+    /// <summary>Computes the arc-sine for a given 64-bit float.</summary>
+    /// <param name="value">The float, in radians, for which to compute the arc-sine.</param>
+    /// <returns>The arc-sine of <paramref name="value" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static double Asin(double value) => Math.Asin(value);
+
+    /// <summary>Computes the arc-sine for a given 32-bit float.</summary>
+    /// <param name="value">The float, in radians, for which to compute the arc-sine.</param>
+    /// <returns>The arc-sine of <paramref name="value" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Asin(float value) => MathF.Asin(value);
+
     /// <summary>
     /// Computes the arc-cosine for a given 64-bit float.
     /// </summary>
@@ -94,6 +106,67 @@ public static class MathHelper
     /// <returns>The arc-cosine of <paramref name="value" />.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Acos(double value) => Math.Acos(value);
+
+    /// <summary>Computes the sine for a given 64-bit float.</summary>
+    /// <param name="value">The float, in radians, for which to compute the sine.</param>
+    /// <returns>The sine of <paramref name="value" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static double Sin(double value) => Math.Sin(value);
+
+    /// <summary>Computes the sine for a given 32-bit float.</summary>
+    /// <param name="value">The float, in radians, for which to compute the sine.</param>
+    /// <returns>The sine of <paramref name="value" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Sin(float value) => MathF.Sin(value);
+
+    /// <summary>Computes the cosine for a given 64-bit float.</summary>
+    /// <param name="value">The float, in radians, for which to compute the cosine.</param>
+    /// <returns>The cosine of <paramref name="value" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static double Cos(double value) => Math.Cos(value);
+
+    /// <summary>Computes the cosine for a given 32-bit float.</summary>
+    /// <param name="value">The float, in radians, for which to compute the cosine.</param>
+    /// <returns>The cosine of <paramref name="value" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Cos(float value) => MathF.Cos(value);
+
+
+    /// <summary>Computes the sine and cosine for a given 64-bit float.</summary>
+    /// <param name="value">The float, in radians, for which to compute the sine and cosine.</param>
+    /// <returns>The sine and cosine of <paramref name="value" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static (double Sin, double Cos) SinCos(double value) => (Sin(value), Cos(value));
+
+    /// <summary>Computes the sine and cosine for a given 32-bit float.</summary>
+    /// <param name="value">The float, in radians, for which to compute the sine and cosine.</param>
+    /// <returns>The sine and cosine of <paramref name="value" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static (float Sin, float Cos) SinCos(float value) => (Sin(value), Cos(value));
+
+    /// <summary>Computes the square root of a given 64-bit float.</summary>
+    /// <param name="value">The float for which to compute the square root.</param>
+    /// <returns>The square root of <paramref name="value" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static double Sqrt(double value) => Math.Sqrt(value);
+
+    /// <summary>Computes the square root of a given 32-bit float.</summary>
+    /// <param name="value">The float for which to compute the square root.</param>
+    /// <returns>The square root of <paramref name="value" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Sqrt(float value) => MathF.Sqrt(value);
+
+    /// <summary>Computes the tangent for a given 64-bit float.</summary>
+    /// <param name="value">The float, in radians, for which to compute the tangent.</param>
+    /// <returns>The tangent of <paramref name="value" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static double Tan(double value) => Math.Tan(value);
+
+    /// <summary>Computes the tangent for a given 32-bit float.</summary>
+    /// <param name="value">The float, in radians, for which to compute the tangent.</param>
+    /// <returns>The tangent of <paramref name="value" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Tan(float value) => MathF.Tan(value);
 
     /// <summary>
     /// Computes the arc-cosine for a given 32-bit float.
