@@ -22,17 +22,17 @@ public static class NumericsExtensions
         float yz = rotation.Y * rotation.Z;
         float xw = rotation.X * rotation.W;
 
-        rotationEuler.Y = (float)Math.Asin(2.0f * (yw - zx));
-        double test = Math.Cos(rotationEuler.Y);
+        rotationEuler.Y = MathHelper.Asin(2.0f * (yw - zx));
+        double test = MathHelper.Cos(rotationEuler.Y);
 
         if (test > 1e-6f)
         {
-            rotationEuler.Z = (float)Math.Atan2(2.0f * (xy + zw), 1.0f - (2.0f * (yy + zz)));
-            rotationEuler.X = (float)Math.Atan2(2.0f * (yz + xw), 1.0f - (2.0f * (yy + xx)));
+            rotationEuler.Z = MathHelper.Atan2(2.0f * (xy + zw), 1.0f - (2.0f * (yy + zz)));
+            rotationEuler.X = MathHelper.Atan2(2.0f * (yz + xw), 1.0f - (2.0f * (yy + xx)));
         }
         else
         {
-            rotationEuler.Z = (float)Math.Atan2(2.0f * (zw - xy), 2.0f * (zx + yw));
+            rotationEuler.Z = MathHelper.Atan2(2.0f * (zw - xy), 2.0f * (zx + yw));
             rotationEuler.X = 0.0f;
         }
 
@@ -43,17 +43,17 @@ public static class NumericsExtensions
     {
         Quaternion rotation;
 
-        var halfAngles = value * 0.5f;
+        Vector3 halfAngles = value * 0.5f;
 
-        var fSinX = (float)Math.Sin(halfAngles.X);
-        var fCosX = (float)Math.Cos(halfAngles.X);
-        var fSinY = (float)Math.Sin(halfAngles.Y);
-        var fCosY = (float)Math.Cos(halfAngles.Y);
-        var fSinZ = (float)Math.Sin(halfAngles.Z);
-        var fCosZ = (float)Math.Cos(halfAngles.Z);
+        float fSinX = MathHelper.Sin(halfAngles.X);
+        float fCosX = MathHelper.Cos(halfAngles.X);
+        float fSinY = MathHelper.Sin(halfAngles.Y);
+        float fCosY = MathHelper.Cos(halfAngles.Y);
+        float fSinZ = MathHelper.Sin(halfAngles.Z);
+        float fCosZ = MathHelper.Cos(halfAngles.Z);
 
-        var fCosXY = fCosX * fCosY;
-        var fSinXY = fSinX * fSinY;
+        float fCosXY = fCosX * fCosY;
+        float fSinXY = fSinX * fSinY;
 
         rotation.X = fSinX * fCosY * fCosZ - fSinZ * fSinY * fCosX;
         rotation.Y = fSinY * fCosX * fCosZ + fSinZ * fSinX * fCosY;

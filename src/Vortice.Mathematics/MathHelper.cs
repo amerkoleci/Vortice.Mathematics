@@ -107,6 +107,32 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Acos(double value) => Math.Acos(value);
 
+    /// <summary>
+    /// Computes the arc-cosine for a given 32-bit float.
+    /// </summary>
+    /// <param name="value">The float, in radians, for which to compute the arc-cosine.</param>
+    /// <returns>The arc-cosine of <paramref name="value" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Acos(float value) => MathF.Acos(value);
+
+    /// <summary>Computes the arc-tangent for a given 64-bit float.</summary>
+    /// <param name="value">The float, in radians, for which to compute the arc-tangent.</param>
+    /// <returns>The arc-tangent of <paramref name="value" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static double Atan(double value) => Math.Atan(value);
+
+    /// <summary>Computes the arc-tangent for a given 32-bit float.</summary>
+    /// <param name="value">The float, in radians, for which to compute the arc-tangent.</param>
+    /// <returns>The arc-tangent of <paramref name="value" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Atan(float value) => MathF.Atan(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static double Atan2(double y, double x) => Math.Atan2(y, x);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Atan2(float y, float x) => MathF.Atan2(y, x);
+
     /// <summary>Computes the sine for a given 64-bit float.</summary>
     /// <param name="value">The float, in radians, for which to compute the sine.</param>
     /// <returns>The sine of <paramref name="value" />.</returns>
@@ -167,14 +193,6 @@ public static class MathHelper
     /// <returns>The tangent of <paramref name="value" />.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Tan(float value) => MathF.Tan(value);
-
-    /// <summary>
-    /// Computes the arc-cosine for a given 32-bit float.
-    /// </summary>
-    /// <param name="value">The float, in radians, for which to compute the arc-cosine.</param>
-    /// <returns>The arc-cosine of <paramref name="value" />.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Acos(float value) => MathF.Acos(value);
 
     /// <summary>Computes the maximum of two 32-bit signed integers.</summary>
     /// <param name="left">The integer to compare with <paramref name="right" />.</param>

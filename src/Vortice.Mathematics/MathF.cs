@@ -17,6 +17,12 @@ internal static class MathF
     public static float Acos(float value) => (float)Math.Acos(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Atan(float value) => (float)Math.Atan(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Atan2(float y, float x) => (float)Math.Atan2(y, x);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Sin(float value) => (float)Math.Sin(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
