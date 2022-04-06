@@ -20,7 +20,7 @@ public static class Vector2Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            return new Vector2(-1.0f, -1.0f);
+            return new Vector2(-1.0f);
         }
     }
 
@@ -29,7 +29,7 @@ public static class Vector2Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            return new Vector2(0.5f, 0.5f);
+            return new Vector2(0.5f);
         }
     }
 
@@ -38,7 +38,7 @@ public static class Vector2Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            return new Vector2(-32767.0f, -32767.0f);
+            return new Vector2(-32767.0f);
         }
     }
 
@@ -47,7 +47,7 @@ public static class Vector2Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            return new Vector2(32767.0f, 32767.0f);
+            return new Vector2(32767.0f);
         }
     }
 
@@ -56,7 +56,7 @@ public static class Vector2Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            return new Vector2(65535.0f, 65535.0f);
+            return new Vector2(65535.0f);
         }
     }
 
@@ -65,7 +65,7 @@ public static class Vector2Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            return new Vector2(255.0f, 255.0f);
+            return new Vector2(255.0f);
         }
     }
 
@@ -74,7 +74,7 @@ public static class Vector2Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            return new Vector2(-127.0f, -127.0f);
+            return new Vector2(-127.0f);
         }
     }
 
@@ -83,7 +83,7 @@ public static class Vector2Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            return new Vector2(127.0f, 127.0f);
+            return new Vector2(127.0f);
         }
     }
 
