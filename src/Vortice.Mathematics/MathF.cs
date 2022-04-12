@@ -1,7 +1,7 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-#if NETSTANDARD2_0
+#if !NET5_0_OR_GREATER
 using System.Runtime.CompilerServices;
 namespace System;
 

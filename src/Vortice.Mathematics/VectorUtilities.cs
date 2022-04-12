@@ -6,7 +6,7 @@
 // This file includes code based on code from https://github.com/microsoft/DirectXMath
 // The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
 
-#if NET6_0_OR_GREATER
+#if NET5_0_OR_GREATER
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
@@ -168,13 +168,13 @@ public static class VectorUtilities
     {
         if (Sse41.IsSupported)
         {
-            var result = Sse.Subtract(left, right);
+            Vector128<float> result = Sse.Subtract(left, right);
             result = Sse.And(result, Vector128.Create(0x7FFFFFFF).AsSingle());
             return Sse.CompareLessThanOrEqual(result, epsilon);
         }
         else if (AdvSimd.Arm64.IsSupported)
         {
-            var result = AdvSimd.Subtract(left, right);
+            Vector128<float> result = AdvSimd.Subtract(left, right);
             result = AdvSimd.Abs(result);
             return AdvSimd.CompareLessThanOrEqual(result, epsilon);
         }
@@ -428,12 +428,12 @@ public static class VectorUtilities
     {
         if (Sse41.IsSupported)
         {
-            var result = Sse.Multiply(left, right);
+            Vector128<float> result = Sse.Multiply(left, right);
             return Sse.Add(addend, result);
         }
         else if (AdvSimd.Arm64.IsSupported)
         {
-            var result = AdvSimd.Multiply(left, right);
+            Vector128<float> result = AdvSimd.Multiply(left, right);
             return AdvSimd.Add(addend, result);
         }
         else

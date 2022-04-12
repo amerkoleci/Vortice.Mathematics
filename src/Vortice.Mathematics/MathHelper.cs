@@ -3,10 +3,9 @@
 // Copyright © Tanner Gooding and Contributors. Licensed under the MIT License (MIT). See License.md in the repository root for more information.
 // Based on: https://github.com/terrafx/terrafx/blob/main/sources/Core/Utilities/MathUtilities.cs
 
-using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-#if NET6_0_OR_GREATER
+#if NET5_0_OR_GREATER
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
@@ -208,7 +207,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Max(double left, double right)
     {
-#if NET6_0_OR_GREATER
+#if NET5_0_OR_GREATER
         if (Sse41.IsSupported)
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
@@ -277,7 +276,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Max(float left, float right)
     {
-#if NET6_0_OR_GREATER
+#if NET5_0_OR_GREATER
         if (Sse41.IsSupported)
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
@@ -347,7 +346,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Min(double left, double right)
     {
-#if NET6_0_OR_GREATER
+#if NET5_0_OR_GREATER
         if (Sse41.IsSupported)
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
@@ -417,7 +416,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Min(float left, float right)
     {
-#if NET6_0_OR_GREATER
+#if NET5_0_OR_GREATER
         if (Sse41.IsSupported)
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
@@ -653,6 +652,42 @@ public static class MathHelper
     public static bool IsPow2(nuint value)
     {
         return (value & (value - 1)) == 0 && value != 0;
+    }
+
+    // <summary>Rounds a given address down to the nearest alignment.</summary>
+    /// <param name="address">The address to be aligned.</param>
+    /// <param name="alignment">The target alignment, which should be a power of two.</param>
+    /// <returns><paramref name="address" /> rounded down to the specified <paramref name="alignment" />.</returns>
+    /// <remarks>This method does not account for an <paramref name="alignment" /> which is not a <c>power of two</c>.</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint AlignDown(uint address, uint alignment)
+    {
+        Debug.Assert(IsPow2(alignment));
+        return address & ~(alignment - 1);
+    }
+
+    /// <summary>Rounds a given address down to the nearest alignment.</summary>
+    /// <param name="address">The address to be aligned.</param>
+    /// <param name="alignment">The target alignment, which should be a power of two.</param>
+    /// <returns><paramref name="address" /> rounded down to the specified <paramref name="alignment" />.</returns>
+    /// <remarks>This method does not account for an <paramref name="alignment" /> which is not a <c>power of two</c>.</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong AlignDown(ulong address, ulong alignment)
+    {
+        Debug.Assert(IsPow2(alignment));
+        return address & ~(alignment - 1);
+    }
+
+    /// <summary>Rounds a given address down to the nearest alignment.</summary>
+    /// <param name="address">The address to be aligned.</param>
+    /// <param name="alignment">The target alignment, which should be a power of two.</param>
+    /// <returns><paramref name="address" /> rounded down to the specified <paramref name="alignment" />.</returns>
+    /// <remarks>This method does not account for an <paramref name="alignment" /> which is not a <c>power of two</c>.</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static nuint AlignDown(nuint address, nuint alignment)
+    {
+        Debug.Assert(IsPow2(alignment));
+        return address & ~(alignment - 1);
     }
 
     // <summary>Rounds a given address up to the nearest alignment.</summary>

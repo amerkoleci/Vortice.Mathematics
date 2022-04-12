@@ -1,7 +1,7 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-#if NET6_0_OR_GREATER
+#if NET5_0_OR_GREATER
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.Arm;
@@ -50,7 +50,7 @@ public static unsafe class PackHelpers
         return (float)value / bitmask;
     }
 
-#if NET6_0_OR_GREATER && TODO
+#if NET5_0_OR_GREATER && TODO
     public static uint PackRGBA(float x, float y, float z, float w)
     {
         Vector128<float> vector = Vector128.Create(x, y, z, w);
