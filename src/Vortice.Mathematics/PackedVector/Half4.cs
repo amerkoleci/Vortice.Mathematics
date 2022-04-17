@@ -2,7 +2,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
 // This file includes code based on code from https://github.com/microsoft/DirectXMath
-// The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
+// The original code is Copyright Â© Microsoft. All rights reserved. Licensed under the MIT License (MIT).
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -34,13 +34,13 @@ public readonly struct Half4 : IPackedVector<ulong>, IEquatable<Half4>, IFormatt
     /// <summary>
     /// Gets or sets the Z component of the vector.
     /// </summary>
-    [FieldOffset(2)]
+    [FieldOffset(4)]
     public readonly Half Z;
 
     /// <summary>
     /// Gets or sets the W component of the vector.
     /// </summary>
-    [FieldOffset(2)]
+    [FieldOffset(6)]
     public readonly Half W;
 
     /// <summary>
