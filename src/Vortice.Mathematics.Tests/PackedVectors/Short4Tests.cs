@@ -1,16 +1,15 @@
 // Copyright © Amer Koleci and Contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Vortice.Mathematics.PackedVector;
 
 namespace Vortice.Mathematics.Tests.PackedVectors;
 
-[TestClass]
-[TestCategory("Short4")]
+[TestFixture(TestOf = typeof(Short4))]
 public partial class Short4Tests
 {
-    [TestMethod]
+    [TestCase]
     public void DefaultChecks()
     {
         Short4 vector = new();
@@ -21,7 +20,7 @@ public partial class Short4Tests
         Assert.AreEqual(vector.PackedValue, 0u);
     }
 
-    [TestMethod]
+    [TestCase]
     public void CreationTests()
     {
         Short4 vector = new(250, 450, 320, 240);

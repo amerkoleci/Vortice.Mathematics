@@ -1,15 +1,14 @@
 // Copyright © Amer Koleci and Contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace Vortice.Mathematics.Tests;
 
-[TestClass]
-[TestCategory("Color4")]
+[TestFixture(TestOf = typeof(Color4))]
 public partial class Color4Tests
 {
-    [TestMethod]
+    [TestCase]
     public void DefaultChecks()
     {
         Color4 color = new();
@@ -19,7 +18,7 @@ public partial class Color4Tests
         Assert.AreEqual(color.A, 0.0f);
     }
 
-    [TestMethod]
+    [TestCase]
     public void CreationTests()
     {
         Color4 color = new(0.5f);

@@ -21,6 +21,11 @@ namespace Vortice.Mathematics;
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
 public struct Color4 : IEquatable<Color4>, IFormattable
 {
+    /// <summary>
+    /// The size of the <see cref="Color" /> type, in bytes.
+    /// </summary>
+    public static unsafe readonly int SizeInBytes = sizeof(Color);
+
 #if NET5_0_OR_GREATER
     private Vector128<float> _value;
 #endif
@@ -245,7 +250,57 @@ public struct Color4 : IEquatable<Color4>, IFormattable
     /// Converts the color into a packed integer.
     /// </summary>
     /// <returns>A packed integer containing all four color components.</returns>
+    public int ToBgra()
+    {
+        uint a = (uint)(A * 255.0f) & 255;
+        uint r = (uint)(R * 255.0f) & 255;
+        uint g = (uint)(G * 255.0f) & 255;
+        uint b = (uint)(B * 255.0f) & 255;
+
+        uint value = b;
+        value |= g << 8;
+        value |= r << 16;
+        value |= a << 24;
+
+        return (int)value;
+    }
+
+    /// <summary>
+    /// Converts the color into a packed integer.
+    /// </summary>
+    /// <returns>A packed integer containing all four color components.</returns>
     public void ToBgra(out byte r, out byte g, out byte b, out byte a)
+    {
+        b = (byte)(B * 255.0f);
+        g = (byte)(G * 255.0f);
+        r = (byte)(R * 255.0f);
+        a = (byte)(A * 255.0f);
+    }
+
+    /// <summary>
+    /// Converts the color into a packed integer.
+    /// </summary>
+    /// <returns>A packed integer containing all four color components.</returns>
+    public int ToRgba()
+    {
+        uint r = (uint)(R * 255.0f) & 255;
+        uint g = (uint)(G * 255.0f) & 255;
+        uint b = (uint)(B * 255.0f) & 255;
+        uint a = (uint)(A * 255.0f) & 255;
+
+        uint value = r;
+        value |= g << 8;
+        value |= b << 16;
+        value |= a << 24;
+
+        return (int)value;
+    }
+
+    /// <summary>
+    /// Converts the color into a packed integer.
+    /// </summary>
+    /// <returns>A packed integer containing all four color components.</returns>
+    public void ToRgba(out byte r, out byte g, out byte b, out byte a)
     {
         r = (byte)(R * 255.0f);
         g = (byte)(G * 255.0f);
@@ -274,19 +329,31 @@ public struct Color4 : IEquatable<Color4>, IFormattable
     }
 
     /// <summary>
-    /// Lerps between color source and destination by a supplied amount
+    /// Restricts a value to be within a specified range.
     /// </summary>
-    /// <param name="start"><see cref="Color4"/> is the initial color</param>
-    /// <param name="end"><see cref="Color4"/> is the target color</param>
-    /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-    public static Color4 Lerp(in Color4 start, in Color4 end, float amount)
+    /// <param name="value">The value to clamp.</param>
+    /// <param name="min">The minimum value.</param>
+    /// <param name="max">The maximum value.</param>
+    /// <returns>The clamped value.</returns>
+    public static Color4 Clamp(in Color4 value, in Color4 min, in Color4 max)
     {
-        return new Color4(
-            MathHelper.Lerp(start.R, end.R, amount),
-            MathHelper.Lerp(start.G, end.G, amount),
-            MathHelper.Lerp(start.B, end.B, amount),
-            MathHelper.Lerp(start.A, end.A, amount)
-            );
+        float alpha = value.A;
+        alpha = (alpha > max.A) ? max.A : alpha;
+        alpha = (alpha < min.A) ? min.A : alpha;
+
+        float red = value.R;
+        red = (red > max.R) ? max.R : red;
+        red = (red < min.R) ? min.R : red;
+
+        float green = value.G;
+        green = (green > max.G) ? max.G : green;
+        green = (green < min.G) ? min.G : green;
+
+        float blue = value.B;
+        blue = (blue > max.B) ? max.B : blue;
+        blue = (blue < min.B) ? min.B : blue;
+
+        return new Color4(red, green, blue, alpha);
     }
 
     /// <summary>
@@ -295,15 +362,92 @@ public struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="start"><see cref="Color4"/> is the initial color</param>
     /// <param name="end"><see cref="Color4"/> is the target color</param>
     /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-    /// <param name="result">return <see cref="Color4"/> of the lerp value</param>
-    public static void Lerp(in Color4 start, in Color4 end, float amount, out Color4 result)
+    public static Color4 Lerp(in Color4 start, in Color4 end, float amount)
     {
-        result = new Color4(
+        return new(
             MathHelper.Lerp(start.R, end.R, amount),
             MathHelper.Lerp(start.G, end.G, amount),
             MathHelper.Lerp(start.B, end.B, amount),
             MathHelper.Lerp(start.A, end.A, amount)
             );
+    }
+
+    /// <summary>
+    /// Performs a cubic interpolation between two colors.
+    /// </summary>
+    /// <param name="start">Start color.</param>
+    /// <param name="end">End color.</param>
+    /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+    /// <returns>When the method completes, contains the cubic interpolation of the two colors.</returns>
+    public static Color4 SmoothStep(in Color4 start, in Color4 end, float amount)
+    {
+        amount = MathHelper.SmoothStep(amount);
+        return Lerp(start, end, amount);
+    }
+
+    /// <summary>
+    /// Returns a color containing the smallest components of the specified colors.
+    /// </summary>
+    /// <param name="left">The first source color.</param>
+    /// <param name="right">The second source color.</param>
+    /// <returns>When the method completes, contains an new color composed of the largest components of the source colors.</returns>
+    public static Color4 Max(in Color4 left, in Color4 right)
+    {
+        return new(
+            (left.R > right.R) ? left.R : right.G,
+            (left.G > right.G) ? left.G : right.G,
+            (left.B > right.B) ? left.B : right.B,
+            (left.A > right.A) ? left.A : right.A
+            );
+    }
+
+    /// <summary>
+    /// Returns a color containing the smallest components of the specified colors.
+    /// </summary>
+    /// <param name="left">The first source color.</param>
+    /// <param name="right">The second source color.</param>
+    /// <returns>When the method completes, contains an new color composed of the smallest components of the source colors.</returns>
+    public static Color4 Min(in Color4 left, in Color4 right)
+    {
+        return new(
+            (left.R < right.R) ? left.R : right.R,
+            (left.G < right.G) ? left.G : right.G,
+            (left.B < right.B) ? left.B : right.B,
+            (left.A < right.A) ? left.A : right.A
+            );
+    }
+
+    /// <summary>
+    /// Computes the premultiplied value of the provided color.
+    /// </summary>
+    /// <param name="value">The non-premultiplied value.</param>
+    /// <returns>The premultiplied result.</returns>
+    public static Color4 Premultiply(in Color4 value)
+    {
+        return new(
+            value.R * value.A,
+            value.G * value.A,
+            value.B * value.A,
+            value.A
+            );
+    }
+
+    /// <summary>
+    /// Converts this color from linear space to sRGB space.
+    /// </summary>
+    /// <returns>A <see cref="Color4"/> in sRGB space.</returns>
+    public Color4 ToSRgb()
+    {
+        return new(MathHelper.LinearToSRgb(R), MathHelper.LinearToSRgb(G), MathHelper.LinearToSRgb(B), A);
+    }
+
+    /// <summary>
+    /// Converts this color from sRGB space to linear space.
+    /// </summary>
+    /// <returns>A Color in linear space.</returns>
+    public Color4 ToLinear()
+    {
+        return new(MathHelper.SRgbToLinear(R), MathHelper.SRgbToLinear(G), MathHelper.SRgbToLinear(B), A);
     }
 
     public void Deconstruct(out float red, out float green, out float blue, out float alpha)
@@ -417,47 +561,6 @@ public struct Color4 : IEquatable<Color4>, IFormattable
 #endif
     }
 
-    /// <summary>Computes the product of a color and a float.</summary>
-    /// <param name="left">The vector to multiply by <paramref name="right" />.</param>
-    /// <param name="right">The float which is used to multiply <paramref name="left" />.</param>
-    /// <returns>The product of <paramref name="left" /> multipled by <paramref name="right" />.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Color4 operator *(float left, Color4 right)
-    {
-        return Multiply(left, right);
-    }
-
-    /// <summary>Computes the product of a color and a float.</summary>
-    /// <param name="left">The vector to multiply by <paramref name="right" />.</param>
-    /// <param name="right">The float which is used to multiply <paramref name="left" />.</param>
-    /// <returns>The product of <paramref name="left" /> multipled by <paramref name="right" />.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Color4 operator *(Color4 left, float right)
-    {
-#if NET5_0_OR_GREATER
-        Vector128<float> result = VectorUtilities.Multiply(left._value, right);
-        return new Color4(result);
-#else
-        return new Color4(left.R * right, left.G * right, left.B * right, left.A * right);
-#endif
-    }
-
-    /// <summary>Computes the product of two colors.</summary>
-    /// <param name="left">The color to multiply by <paramref name="right" />.</param>
-    /// <param name="right">The color which is used to multiply <paramref name="left" />.</param>
-    /// <returns>The product of <paramref name="left" /> multipled by <paramref name="right" />.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Color4 operator *(Color4 left, Color4 right)
-    {
-#if NET5_0_OR_GREATER
-        Vector128<float> result = VectorUtilities.Multiply(left._value, right._value);
-        return new Color4(result);
-#else
-        return new Color4(left.R * right.R, left.G * right.G, left.B * right.B, left.A * right.A);
-#endif
-    }
-
-
     /// <summary>
     /// Converts the color to <see cref="Vector3"/>.
     /// </summary>
@@ -503,6 +606,85 @@ public struct Color4 : IEquatable<Color4>, IFormattable
 
     /// <inheritdoc />
     public bool Equals(Color4 other) => this == other;
+
+    /// <summary>
+    /// Adds two colors.
+    /// </summary>
+    /// <param name="left">The first color to add.</param>
+    /// <param name="right">The second color to add.</param>
+    /// <returns>The sum of the two colors.</returns>
+    public static Color4 operator +(Color4 left, Color4 right)
+    {
+        return new(left.R + right.R, left.G + right.G, left.B + right.B, left.A + right.A);
+    }
+
+    /// <summary>
+    /// Assert a color (return it unchanged).
+    /// </summary>
+    /// <param name="value">The color to assert (unchanged).</param>
+    /// <returns>The asserted (unchanged) color.</returns>
+    public static Color4 operator +(Color4 value) => value;
+
+    /// <summary>
+    /// Subtracts two colors.
+    /// </summary>
+    /// <param name="left">The first color to subtract.</param>
+    /// <param name="right">The second color to subtract.</param>
+    /// <returns>The difference of the two colors.</returns>
+    public static Color4 operator -(Color4 left, Color4 right)
+    {
+        return new Color4(left.R - right.R, left.G - right.G, left.B - right.B, left.A - right.A);
+    }
+
+    /// <summary>
+    /// Negates a color.
+    /// </summary>
+    /// <param name="value">The color to negate.</param>
+    /// <returns>A negated color.</returns>
+    public static Color4 operator -(Color4 value)
+    {
+        return new Color4(-value.R, -value.G, -value.B, -value.A);
+    }
+
+    /// <summary>Computes the product of a color and a float.</summary>
+    /// <param name="left">The vector to multiply by <paramref name="right" />.</param>
+    /// <param name="right">The float which is used to multiply <paramref name="left" />.</param>
+    /// <returns>The product of <paramref name="left" /> multipled by <paramref name="right" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color4 operator *(float left, Color4 right)
+    {
+        return Multiply(left, right);
+    }
+
+    /// <summary>Computes the product of a color and a float.</summary>
+    /// <param name="left">The vector to multiply by <paramref name="right" />.</param>
+    /// <param name="right">The float which is used to multiply <paramref name="left" />.</param>
+    /// <returns>The product of <paramref name="left" /> multipled by <paramref name="right" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color4 operator *(Color4 left, float right)
+    {
+#if NET5_0_OR_GREATER
+        Vector128<float> result = VectorUtilities.Multiply(left._value, right);
+        return new Color4(result);
+#else
+        return new Color4(left.R * right, left.G * right, left.B * right, left.A * right);
+#endif
+    }
+
+    /// <summary>Computes the product of two colors.</summary>
+    /// <param name="left">The color to multiply by <paramref name="right" />.</param>
+    /// <param name="right">The color which is used to multiply <paramref name="left" />.</param>
+    /// <returns>The product of <paramref name="left" /> multipled by <paramref name="right" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color4 operator *(Color4 left, Color4 right)
+    {
+#if NET5_0_OR_GREATER
+        Vector128<float> result = VectorUtilities.Multiply(left._value, right._value);
+        return new Color4(result);
+#else
+        return new Color4(left.R * right.R, left.G * right.G, left.B * right.B, left.A * right.A);
+#endif
+    }
 
     /// <summary>
     /// Compares two <see cref="Color4"/> objects for equality.

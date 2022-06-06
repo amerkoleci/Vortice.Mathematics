@@ -601,6 +601,18 @@ public static class MathHelper
     }
 
     /// <summary>
+    /// Performs smooth (cubic Hermite) interpolation between 0 and 1.
+    /// </summary>
+    /// <remarks>
+    /// See https://en.wikipedia.org/wiki/Smoothstep
+    /// </remarks>
+    /// <param name="amount">Value between 0 and 1 indicating interpolation amount.</param>
+    public static float SmoothStep(float amount)
+    {
+        return (amount <= 0) ? 0 : (amount >= 1) ? 1 : amount * amount * (3 - (2 * amount));
+    }
+
+    /// <summary>
     /// Linearly interpolates between two values.
     /// </summary>
     /// <param name="value1">Source value1.</param>
@@ -743,4 +755,34 @@ public static class MathHelper
 
     public static unsafe float UInt32BitsToSingle(uint value) => Int32BitsToSingle((int)value);
 #endif
+
+    /// <summary>
+    /// Converts a float value from sRGB to linear.
+    /// </summary>
+    /// <param name="sRgbValue">The sRGB value.</param>
+    /// <returns>A linear value.</returns>
+    public static float SRgbToLinear(float sRgbValue)
+    {
+        if (sRgbValue < 0.04045f)
+        {
+            return sRgbValue / 12.92f;
+        }
+
+        return MathF.Pow((sRgbValue + 0.055f) / 1.055f, 2.4f);
+    }
+
+    /// <summary>
+    /// Converts a float value from linear to sRGB.
+    /// </summary>
+    /// <param name="linearValue">The linear value.</param>
+    /// <returns>The encoded sRGB value.</returns>
+    public static float LinearToSRgb(float linearValue)
+    {
+        if (linearValue < 0.0031308f)
+        {
+            return linearValue * 12.92f;
+        }
+
+        return 1.055f * MathF.Pow(linearValue, 1.0f / 2.4f) - 0.055f;
+    }
 }

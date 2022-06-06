@@ -1,20 +1,13 @@
 <Project>
-  <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.5.73-alpha">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+  <!-- Settings that are only set for executables -->
+  <PropertyGroup Condition="'$(OutputType)' != 'Library' AND '$(UseWindowsForms)' != 'true'">
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
 
   <!-- Settings that are only set for libraries -->
   <PropertyGroup Condition="'$(OutputType)' == 'Library'">
-    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
-    <IsTrimmable>true</IsTrimmable>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <IsTrimmable>false</IsTrimmable>
   </PropertyGroup>
   
 </Project>

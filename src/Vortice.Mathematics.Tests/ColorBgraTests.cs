@@ -1,15 +1,14 @@
 // Copyright © Amer Koleci and Contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace Vortice.Mathematics.Tests;
 
-[TestClass]
-[TestCategory("ColorBgra")]
+[TestFixture(TestOf = typeof(ColorBgra))]
 public partial class ColorBgraTests
 {
-    [TestMethod]
+    [TestCase]
     public void DefaultChecks()
     {
         ColorBgra color = new ColorBgra();
@@ -20,7 +19,7 @@ public partial class ColorBgraTests
         Assert.AreEqual(color.PackedValue, 0u);
     }
 
-    [TestMethod]
+    [TestCase]
     public void CreationTests()
     {
         ColorBgra color = new(127);

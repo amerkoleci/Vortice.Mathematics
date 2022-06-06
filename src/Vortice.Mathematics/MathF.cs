@@ -48,5 +48,8 @@ internal static class MathF
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Min(float val1, float val2) => Math.Min(val1, val2);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Pow(float x, float y) => (float)Math.Pow(x, y);
 }
 #endif

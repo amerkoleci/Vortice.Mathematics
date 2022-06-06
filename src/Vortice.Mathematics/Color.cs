@@ -81,7 +81,7 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// <param name="g">The green component of the color.</param>
     /// <param name="b">The blue component of the color.</param>
     /// <param name="a">The alpha component of the color.</param>
-    public Color(byte r, byte g, byte b, byte a) 
+    public Color(byte r, byte g, byte b, byte a)
     {
         Unsafe.SkipInit(out this);
 
@@ -212,6 +212,33 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     }
 
     /// <summary>
+    /// Converts the color into a packed integer.
+    /// </summary>
+    /// <returns>A packed integer containing all four color components.</returns>
+    public int ToBgra()
+    {
+        int value = B;
+        value |= G << 8;
+        value |= R << 16;
+        value |= A << 24;
+
+        return value;
+    }
+
+    /// <summary>
+    /// Converts the color into a packed integer.
+    /// </summary>
+    /// <returns>A packed integer containing all four color components.</returns>
+    public int ToRgba()
+    {
+        int value = R;
+        value |= G << 8;
+        value |= B << 16;
+        value |= A << 24;
+        return value;
+    }
+
+    /// <summary>
     /// Performs an implicit conversion from <see cref="Color"/> to <see cref="Color4"/>.
     /// </summary>
     /// <param name="value">The value.</param>
@@ -223,21 +250,42 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
-    public static explicit operator Color(Vector3 value) => new Color(value.X, value.Y, value.Z, 1.0f);
+    public static explicit operator Color(in Vector3 value) => new(value.X, value.Y, value.Z, 1.0f);
 
     /// <summary>
     /// Performs an explicit conversion from <see cref="Vector4"/> to <see cref="Color"/>.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
-    public static explicit operator Color(Vector4 value) => new Color(value.X, value.Y, value.Z, value.W);
+    public static explicit operator Color(in Vector4 value) => new(value.X, value.Y, value.Z, value.W);
 
     /// <summary>
     /// Performs an explicit conversion from <see cref="Color4"/> to <see cref="Color"/>.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
-    public static explicit operator Color(Color4 value) => new(value.R, value.G, value.B, value.A);
+    public static explicit operator Color(in Color4 value) => new(value.R, value.G, value.B, value.A);
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Color"/> to <see cref="int"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator int(in Color value) => value.ToRgba();
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="int"/> to <see cref="Color"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator Color(int value) => new Color(value);
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="int"/> to <see cref="Color"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static implicit operator Color(uint value) => new Color(value);
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is Color color && Equals(ref color);
