@@ -146,7 +146,6 @@ public readonly struct Matrix4x3 : IEquatable<Matrix4x3>, IFormattable
             || (left.M41 != right.M41) || (left.M42 != right.M42) || (left.M43 != right.M43);
     }
 
-
     /// <inheritdoc/>
     public override bool Equals(object? obj) => (obj is Matrix4x3 other) && Equals(other);
 

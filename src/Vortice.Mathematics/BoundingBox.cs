@@ -58,15 +58,9 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     public Vector3 Min
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return _min;
-        }
+        get { return _min; }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set
-        {
-            _max = value;
-        }
+        set { _min = value; }
     }
 
     /// <summary>
@@ -75,15 +69,9 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     public Vector3 Max
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return _max;
-        }
+        get { return _max; }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set
-        {
-            _max = value;
-        }
+        set { _max = value; }
     }
 
     /// <summary>

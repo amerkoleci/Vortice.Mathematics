@@ -5,7 +5,7 @@
 
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
@@ -207,7 +207,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Max(double left, double right)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         if (Sse41.IsSupported)
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
@@ -276,7 +276,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Max(float left, float right)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         if (Sse41.IsSupported)
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
@@ -346,7 +346,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Min(double left, double right)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         if (Sse41.IsSupported)
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
@@ -416,7 +416,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Min(float left, float right)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         if (Sse41.IsSupported)
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account

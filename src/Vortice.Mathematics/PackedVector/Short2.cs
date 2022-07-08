@@ -9,6 +9,12 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static Vortice.Mathematics.Vector2Utilities;
 
+#if NET6_0_OR_GREATER
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.Arm;
+using System.Runtime.Intrinsics.X86;
+#endif
+
 namespace Vortice.Mathematics.PackedVector;
 
 /// <summary>
@@ -66,11 +72,46 @@ public readonly struct Short2 : IPackedVector<uint>, IEquatable<Short2>
     {
         Unsafe.SkipInit(out this);
 
-        Vector2 vector = Vector2.Clamp(new Vector2(x, y), ShortMin, ShortMax);
-        vector = Round(vector);
+#if NET6_0_OR_GREATER
+        /*if (AdvSimd.Arm64.IsSupported)
+        {
+            Vector128<float> vector = Vector128.Create(x, y, 0.0f, 0.0f);
+            Vector128<float> vResult = AdvSimd.Max(vector, AdvSimd.DuplicateToVector128(-32767.0f));
+            vResult = AdvSimd.Min(vResult, AdvSimd.DuplicateToVector128(32767.0f));
+            Vector128<int> vInt32 = AdvSimd.ConvertToInt32RoundToZero(vResult);
+            Vector64<short> vInt16 = AdvSimd.ExtractNarrowingSaturateLower(vInt32);
+            //AdvSimd.StoreSelectedScalar()
+            //vst1_lane_u32(&pDestination->v, vreinterpret_u32_s16(vInt16), 0);
+        }
+        else*/
+        if (Sse41.IsSupported)
+        {
+            // Bounds check
+            unsafe
+            {
+                Vector128<float> vector = Vector128.Create(x, y, 0.0f, 0.0f);
+                Vector128<float> vResult = Sse.Max(vector, VectorUtilities.ShortMin);
+                vResult = Sse.Min(vResult, VectorUtilities.ShortMax);
+                // Convert to int with rounding
+                Vector128<int> vInt = Sse2.ConvertToVector128Int32(vResult);
+                // Pack the ints into shorts
+                vInt = Sse41.ConvertToVector128Int32(Sse2.PackSignedSaturate(vInt, vInt));
+                vResult = Sse2.ConvertToVector128Single(vInt);
+                //Sse.StoreScalar((float*)&X, vResult);
+                Vector2 scalarVector = vResult.AsVector2();
+                X = (short)scalarVector.X;
+                Y = (short)scalarVector.Y;
+            }
+        }
+        else
+#endif
+        {
+            Vector2 vector = Vector2.Clamp(new Vector2(x, y), ShortMin, ShortMax);
+            vector = Round(vector);
 
-        X = (short)vector.X;
-        Y = (short)vector.Y;
+            X = (short)vector.X;
+            Y = (short)vector.Y;
+        }
     }
 
     /// <summary>

@@ -6,7 +6,7 @@
 // This file includes code based on code from https://github.com/microsoft/DirectXMath
 // The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
@@ -19,7 +19,7 @@ namespace Vortice.Mathematics;
 /// <summary>
 /// Provides a set of methods to supplement or replace <see cref="Vector128" /> and <see cref="Vector128{T}" />.
 /// </summary>
-public static class VectorUtilities
+public static unsafe class VectorUtilities
 {
     /// <summary>Gets a vector where the x-component is one and all other components are zero.</summary>
     public static Vector128<float> UnitX
@@ -98,6 +98,24 @@ public static class VectorUtilities
         }
     }
 
+    public static Vector128<float> ShortMin
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return Vector128.Create(-32767.0f, -32767.0f, -32767.0f, -32767.0f);
+        }
+    }
+
+    public static Vector128<float> ShortMax
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return Vector128.Create(32767.0f, 32767.0f, 32767.0f, 32767.0f);
+        }
+    }
+
     public static byte Shuffle(byte fp3, byte fp2, byte fp1, byte fp0)
     {
         return (byte)(((fp3) << 6) | ((fp2) << 4) | ((fp1) << 2) | (fp0));
@@ -134,13 +152,13 @@ public static class VectorUtilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector128<float> CompareEqual(Vector128<float> left, Vector128<float> right)
     {
-        if (Sse41.IsSupported)
-        {
-            return Sse.CompareEqual(left, right);
-        }
-        else if (AdvSimd.Arm64.IsSupported)
+        if (AdvSimd.Arm64.IsSupported)
         {
             return AdvSimd.CompareEqual(left, right);
+        }
+        else if (Sse.IsSupported)
+        {
+            return Sse.CompareEqual(left, right);
         }
         else
         {
@@ -166,7 +184,7 @@ public static class VectorUtilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector128<float> CompareEqual(Vector128<float> left, Vector128<float> right, Vector128<float> epsilon)
     {
-        if (Sse41.IsSupported)
+        if (Sse.IsSupported)
         {
             Vector128<float> result = Sse.Subtract(left, right);
             result = Sse.And(result, Vector128.Create(0x7FFFFFFF).AsSingle());
@@ -201,7 +219,7 @@ public static class VectorUtilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool CompareEqualAll(Vector128<float> left, Vector128<float> right)
     {
-        if (Sse41.IsSupported)
+        if (Sse.IsSupported)
         {
             Vector128<float> result = Sse.CompareNotEqual(left, right);
             return Sse.MoveMask(result) == 0x00;
@@ -619,7 +637,7 @@ public static class VectorUtilities
     {
         Debug.Assert(LessThanOrEqual(min, max));
 
-        if (Sse41.IsSupported)
+        if (Sse.IsSupported)
         {
             Vector128<float> result = Sse.Max(min, vector);
             result = Sse.Min(max, result);
@@ -643,7 +661,7 @@ public static class VectorUtilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector128<float> Saturate(Vector128<float> vector)
     {
-        if (Sse41.IsSupported)
+        if (Sse.IsSupported)
         {
             Vector128<float> result = Sse.Max(vector, Vector128<float>.Zero);
             result = Sse.Min(result, One);
@@ -664,7 +682,7 @@ public static class VectorUtilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector128<float> Truncate(Vector128<float> vector)
     {
-        if (Sse41.IsSupported)
+        if (Sse.IsSupported)
         {
             return Sse41.RoundToZero(vector);
         }

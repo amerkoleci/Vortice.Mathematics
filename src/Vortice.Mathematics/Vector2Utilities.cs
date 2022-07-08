@@ -2,7 +2,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
 using System.Runtime.CompilerServices;
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
 using System.Runtime.Intrinsics;
 #endif
 
@@ -147,7 +147,7 @@ public static class Vector2Utilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 CompareEqual(in Vector2 left, in Vector2 right)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         Vector128<float> result = VectorUtilities.CompareEqual(left.AsVector128(), right.AsVector128());
         return result.AsVector2();
 #else
@@ -165,7 +165,7 @@ public static class Vector2Utilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool CompareEqualAll(in Vector2 left, in Vector2 right)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         return VectorUtilities.CompareEqualAll(left.AsVector128(), right.AsVector128());
 #else
         return left == right;
@@ -176,7 +176,7 @@ public static class Vector2Utilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool CompareEqualAll(in Vector2 left, in Vector2 right, in Vector2 epsilon)
     {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         return VectorUtilities.CompareEqualAll(left.AsVector128(), right.AsVector128(), epsilon.AsVector128());
 #else
         return (MathF.Abs(left.X - right.X) <= epsilon.X)
