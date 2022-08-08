@@ -757,32 +757,34 @@ public static class MathHelper
 #endif
 
     /// <summary>
-    /// Converts a float value from sRGB to linear.
+    /// Converts a float value from gamma to linear space.
     /// </summary>
-    /// <param name="sRgbValue">The sRGB value.</param>
+    /// <param name="value">The gamma value.</param>
     /// <returns>A linear value.</returns>
-    public static float SRgbToLinear(float sRgbValue)
+    public static float GammaToLinear(float value)
     {
-        if (sRgbValue < 0.04045f)
-        {
-            return sRgbValue / 12.92f;
-        }
-
-        return MathF.Pow((sRgbValue + 0.055f) / 1.055f, 2.4f);
+        if (value <= 0.04045f)
+            return value / 12.92f;
+        else if (value < 1.0f)
+            return MathF.Pow((value + 0.055f) / 1.055f, 2.4f);
+        else
+            return MathF.Pow(value, 2.2f);
     }
 
     /// <summary>
-    /// Converts a float value from linear to sRGB.
+    /// Converts a float value from linear to gamma.
     /// </summary>
-    /// <param name="linearValue">The linear value.</param>
-    /// <returns>The encoded sRGB value.</returns>
-    public static float LinearToSRgb(float linearValue)
+    /// <param name="value">The linear value.</param>
+    /// <returns>The encoded gamma value.</returns>
+    public static float LinearToGamma(float value)
     {
-        if (linearValue < 0.0031308f)
-        {
-            return linearValue * 12.92f;
-        }
-
-        return 1.055f * MathF.Pow(linearValue, 1.0f / 2.4f) - 0.055f;
+        if (value <= 0.0f)
+            return 0.0f;
+        else if (value <= 0.0031308f)
+            return 12.92f * value;
+        else if (value < 1.0f)
+            return 1.055f * MathF.Pow(value, 0.4166667f) - 0.055f;
+        else
+            return MathF.Pow(value, 0.45454545f);
     }
 }

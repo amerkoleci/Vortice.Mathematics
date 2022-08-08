@@ -73,7 +73,7 @@ public struct UInt2 : IEquatable<UInt2>, IFormattable
     public static UInt2 UnitX
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => new UInt2(1, 0);
+        get => new(1, 0);
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ public struct UInt2 : IEquatable<UInt2>, IFormattable
     public static UInt2 UnitY
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => new UInt2(0, 1);
+        get => new(0, 1);
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public struct UInt2 : IEquatable<UInt2>, IFormattable
     public static UInt2 One
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => new UInt2(1, 1);
+        get => new(1, 1);
     }
 
     public uint this[int index]

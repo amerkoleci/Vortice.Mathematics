@@ -23,7 +23,7 @@ public struct RectI : IEquatable<RectI>, IFormattable
         Height = height;
     }
 
-    public RectI(Int2 location, SizeI size)
+    public RectI(in Int2 location, in SizeI size)
         : this(location.X, location.Y, size.Width, size.Height)
     {
     }
@@ -90,7 +90,7 @@ public struct RectI : IEquatable<RectI>, IFormattable
 
     public SizeI Size
     {
-        get => new(Width, Height);
+        readonly get => new(Width, Height);
         set
         {
             Width = value.Width;
@@ -100,7 +100,7 @@ public struct RectI : IEquatable<RectI>, IFormattable
 
     public Int2 Location
     {
-        get => new(X, Y);
+        readonly get => new(X, Y);
         set
         {
             X = value.X;
@@ -108,7 +108,7 @@ public struct RectI : IEquatable<RectI>, IFormattable
         }
     }
 
-    public Int2 Center => new(X + Width / 2, Y + Height / 2);
+    public readonly Int2 Center => new(X + Width / 2, Y + Height / 2);
 
     public void Deconstruct(out int x, out int y, out int width, out int height)
     {
@@ -245,5 +245,5 @@ public struct RectI : IEquatable<RectI>, IFormattable
 
     /// <inheritdoc />
     public string ToString(string? format, IFormatProvider? formatProvider)
-        => $"{nameof(RectI)} {{ {nameof(X)} = {X.ToString(format, formatProvider)}, {{ {nameof(Y)} = {Y.ToString(format, formatProvider)}, {{ {nameof(Width)} = {Width.ToString(format, formatProvider)}, {nameof(Height)} = {Height.ToString(format, formatProvider)} }}";
+        => $"{{X={X.ToString(format, formatProvider)},Y={Y.ToString(format, formatProvider)},Width={Width.ToString(format, formatProvider)},Height={Height.ToString(format, formatProvider)}}}";
 }

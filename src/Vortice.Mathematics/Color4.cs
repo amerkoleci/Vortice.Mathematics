@@ -21,11 +21,6 @@ namespace Vortice.Mathematics;
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
 public struct Color4 : IEquatable<Color4>, IFormattable
 {
-    /// <summary>
-    /// The size of the <see cref="Color" /> type, in bytes.
-    /// </summary>
-    public static unsafe readonly int SizeInBytes = sizeof(Color);
-
 #if NET6_0_OR_GREATER
     private Vector128<float> _value;
 #endif
@@ -127,6 +122,25 @@ public struct Color4 : IEquatable<Color4>, IFormattable
         G = value.G;
         B = value.B;
         A = alpha;
+#endif
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Color4"/> struct.
+    /// </summary>
+    /// <param name="r">Red component.</param>
+    /// <param name="g">Green component.</param>
+    /// <param name="b">Blue component.</param>
+    /// <param name="a">Alpha component.</param>
+    public Color4(byte r, byte g, byte b, byte a = 255)
+    {
+#if NET6_0_OR_GREATER
+        _value = Vector128.Create(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+#else
+        R = r / 255.0f;
+        G = g / 255.0f;
+        B = b / 255.0f;
+        A = a / 255.0f;
 #endif
     }
 
@@ -244,6 +258,21 @@ public struct Color4 : IEquatable<Color4>, IFormattable
         readonly get => GetElement(this, index);
         set => this = WithElement(this, index, value);
     }
+
+    /// <summary>
+    /// Return sum of RGB components.
+    /// </summary>
+    public readonly float SumRGB => R + G + B;
+
+    /// <summary>
+    /// Return average value of the RGB channels.
+    /// </summary>
+    public readonly float Average => (R + G + B) / 3.0f;
+
+    /// <summary>
+    /// Return the 'grayscale' representation of RGB values, as used by JPEG and PAL/NTSC among others.
+    /// </summary>
+    public readonly float Luma => R * 0.299f + G * 0.587f + B * 0.114f;
 
     /// <summary>
     /// Converts the color into a packed integer.
@@ -432,21 +461,184 @@ public struct Color4 : IEquatable<Color4>, IFormattable
     }
 
     /// <summary>
-    /// Converts this color from linear space to sRGB space.
+    /// Return the colorfulness relative to the brightness of a similarly illuminated white.
     /// </summary>
-    /// <returns>A <see cref="Color4"/> in sRGB space.</returns>
-    public Color4 ToSRgb()
+    /// <returns></returns>
+    public float Chroma()
     {
-        return new(MathHelper.LinearToSRgb(R), MathHelper.LinearToSRgb(G), MathHelper.LinearToSRgb(B), A);
+        Bounds(out float min, out float max, true);
+
+        return max - min;
     }
 
     /// <summary>
-    /// Converts this color from sRGB space to linear space.
+    /// Return hue mapped to range [0, 1.0).
+    /// </summary>
+    /// <returns></returns>
+    public float Hue()
+    {
+        Bounds(out float min, out float max, true);
+        return Hue(min, max);
+    }
+
+    /// Return saturation as defined for HSL.
+    public float SaturationHSL()
+    {
+        Bounds(out float min, out float max, true);
+        return SaturationHSL(min, max);
+    }
+
+    /// Return saturation as defined for HSV.
+    public float SaturationHSV()
+    {
+        Bounds(out float min, out float max, true);
+        return SaturationHSV(min, max);
+    }
+
+    /// <summary>
+    /// Converts this color from gamma space to linear space.
     /// </summary>
     /// <returns>A Color in linear space.</returns>
-    public Color4 ToLinear()
+    public Color4 GammaToLinear()
     {
-        return new(MathHelper.SRgbToLinear(R), MathHelper.SRgbToLinear(G), MathHelper.SRgbToLinear(B), A);
+        return new(
+            MathHelper.GammaToLinear(R),
+            MathHelper.GammaToLinear(G),
+            MathHelper.GammaToLinear(B),
+            A);
+    }
+
+    /// <summary>
+    /// Converts this color from linear space to sRGB space.
+    /// </summary>
+    /// <returns>A <see cref="Color4"/> in sRGB space.</returns>
+    public Color4 LinearToGamma()
+    {
+        return new(
+            MathHelper.LinearToGamma(R),
+            MathHelper.LinearToGamma(G),
+            MathHelper.LinearToGamma(B),
+            A);
+    }
+
+    /// <summary>
+    /// Stores the values of least and greatest RGB component at specified pointer addresses, optionally clipping those values to [0, 1] range.
+    /// </summary>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <param name="clipped"></param>
+    public void Bounds(out float min, out float max, bool clipped = false)
+    {
+        if (R > G)
+        {
+            if (B > B) // r > g > b
+            {
+                max = R;
+                min = B;
+            }
+            else // r > g && g <= b
+            {
+                max = R > B ? R : B;
+                min = G;
+            }
+        }
+        else
+        {
+            if (B > G) // r <= g < b
+            {
+                max = B;
+                min = R;
+            }
+            else // r <= g && b <= g
+            {
+                max = G;
+                min = R < B ? R : B;
+            }
+        }
+
+        if (clipped)
+        {
+            max = max > 1.0f ? 1.0f : (max < 0.0f ? 0.0f : max);
+            min = min > 1.0f ? 1.0f : (min < 0.0f ? 0.0f : min);
+        }
+    }
+
+    /// <summary>
+    /// Return HSV color-space representation as a Vector3;
+    /// the RGB values are clipped before conversion but not changed in the process.
+    /// </summary>
+    /// <returns></returns>
+    public Vector3 ToHSV()
+    {
+        Bounds(out float min, out float max, true);
+
+        float h = Hue(min, max);
+        float s = SaturationHSV(min, max);
+        float v = max;
+
+        return new Vector3(h, s, v);
+    }
+
+    /// <summary>
+    /// /// Return hue value given greatest and least RGB component, value-wise.
+    /// </summary>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
+    private float Hue(float min, float max)
+    {
+        float chroma = max - min;
+
+        // If chroma equals zero, hue is undefined
+        if (chroma <= MathHelper.NearZeroEpsilon)
+            return 0.0f;
+
+        // Calculate and return hue
+        if (MathHelper.CompareEqual(G, max))
+            return (B + 2.0f * chroma - R) / (6.0f * chroma);
+        else if (MathHelper.CompareEqual(B, max))
+            return (4.0f * chroma - G + R) / (6.0f * chroma);
+        else
+        {
+            float r = (G - B) / (6.0f * chroma);
+            return (r < 0.0f) ? 1.0f + r : ((r >= 1.0f) ? r - 1.0f : r);
+        }
+    }
+
+    /// <summary>
+    /// Return saturation (HSV) given greatest and least RGB component, value-wise.
+    /// </summary>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
+    private float SaturationHSV(float min, float max)
+    {
+        // Avoid div-by-zero: result undefined
+        if (max <= MathHelper.NearZeroEpsilon)
+            return 0.0f;
+
+        // Saturation equals chroma:value ratio
+        return 1.0f - (min / max);
+    }
+
+    /// <summary>
+    /// Return saturation (HSL) given greatest and least RGB component, value-wise.
+    /// </summary>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
+    private float SaturationHSL(float min, float max)
+    {
+        // Avoid div-by-zero: result undefined
+        if (max <= MathHelper.NearZeroEpsilon || min >= 1.0f - MathHelper.NearZeroEpsilon)
+            return 0.0f;
+
+        // Chroma = max - min, lightness = (max + min) * 0.5
+        float hl = (max + min);
+        if (hl <= 1.0f)
+            return (max - min) / hl;
+        else
+            return (min - max) / (hl - 2.0f);
     }
 
     public void Deconstruct(out float red, out float green, out float blue, out float alpha)

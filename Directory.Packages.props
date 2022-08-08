@@ -16,7 +16,7 @@
   <!-- Package versions for package references across all projects -->
   <ItemGroup>
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
-    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.5.107" />
+    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.5.109" />
 
     <!-- Netstandard 2.0 deps -->
     <PackageVersion Include="System.Memory" Version="4.5.5" />
