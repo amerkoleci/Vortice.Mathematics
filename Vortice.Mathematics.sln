@@ -8,7 +8,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{630DF6DF
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
-		Directory.Packages.props = Directory.Packages.props
 		global.json = global.json
 		LICENSE = LICENSE
 		NuGet.config = NuGet.config
