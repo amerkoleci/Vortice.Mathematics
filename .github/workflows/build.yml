@@ -12,20 +12,22 @@ on:
       - '*.md'
       - 'LICENSE'
 
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: false
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
+      uses: actions/checkout@v3
 
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v1
+    - name: Setup .NET 7 SDK
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.100
 
     - name: Pack
       run: dotnet pack Vortice.Mathematics.sln --configuration Release --output build/packages

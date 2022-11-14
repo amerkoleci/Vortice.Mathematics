@@ -11,17 +11,17 @@ namespace Vortice.Mathematics;
 /// Vector type containing two 64 bit floating point components.
 /// </summary>
 [DebuggerDisplay("X={X}, Y={Y}")]
-public struct Double2 : IEquatable<Double2>, IFormattable
+public readonly struct Double2 : IEquatable<Double2>, IFormattable
 {
     /// <summary>
     /// The X component of the vector.
     /// </summary>
-    public double X;
+    public readonly double X;
 
     /// <summary>
     /// The Y component of the vector.
     /// </summary>
-    public double Y;
+    public readonly double Y;
 
     internal const int Count = 2;
 
@@ -94,11 +94,7 @@ public struct Double2 : IEquatable<Double2>, IFormattable
         get => new(1, 1);
     }
 
-    public double this[int index]
-    {
-        get => GetElement(this, index);
-        set => this = WithElement(this, index, value);
-    }
+    public readonly double this[int index] => GetElement(this, index);
 
     public void Deconstruct(out double x, out double y)
     {
@@ -243,30 +239,5 @@ public struct Double2 : IEquatable<Double2>, IFormattable
         Debug.Assert(index is >= 0 and < Count);
 
         return Unsafe.Add(ref Unsafe.As<Double2, double>(ref vector), index);
-    }
-
-    /// <summary>Sets the element at the specified index.</summary>
-    /// <param name="vector">The vector of the element to get.</param>
-    /// <param name="index">The index of the element to set.</param>
-    /// <param name="value">The value of the element to set.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> was less than zero or greater than the number of elements.</exception>
-    internal static Double2 WithElement(Double2 vector, int index, double value)
-    {
-        if ((uint)index >= Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index));
-        }
-
-        Double2 result = vector;
-        SetElementUnsafe(ref result, index, value);
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void SetElementUnsafe(ref Double2 vector, int index, double value)
-    {
-        Debug.Assert(index is >= 0 and < Count);
-
-        Unsafe.Add(ref Unsafe.As<Double2, double>(ref vector), index) = value;
     }
 }

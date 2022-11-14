@@ -17,12 +17,10 @@ namespace Vortice.Mathematics;
 /// <summary>
 /// Represents a floating-point RGBA color.
 /// </summary>
-[Serializable]
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
-public struct Color4 : IEquatable<Color4>, IFormattable
+public readonly struct Color4 : IEquatable<Color4>, IFormattable
 {
 #if NET6_0_OR_GREATER
-    private Vector128<float> _value;
+    private readonly Vector128<float> _value;
 #endif
 
     /// <summary>
@@ -253,11 +251,7 @@ public struct Color4 : IEquatable<Color4>, IFormattable
     public float A { get; }
 #endif
 
-    public float this[int index]
-    {
-        readonly get => GetElement(this, index);
-        set => this = WithElement(this, index, value);
-    }
+    public readonly float this[int index] => GetElement(this, index);
 
     /// <summary>
     /// Return sum of RGB components.
@@ -958,30 +952,5 @@ public struct Color4 : IEquatable<Color4>, IFormattable
         Debug.Assert(index is >= 0 and < Count);
 
         return Unsafe.Add(ref Unsafe.As<Color4, float>(ref vector), index);
-    }
-
-    /// <summary>Sets the element at the specified index.</summary>
-    /// <param name="vector">The vector of the element to get.</param>
-    /// <param name="index">The index of the element to set.</param>
-    /// <param name="value">The value of the element to set.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> was less than zero or greater than the number of elements.</exception>
-    internal static Color4 WithElement(Color4 vector, int index, float value)
-    {
-        if ((uint)index >= Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index));
-        }
-
-        Color4 result = vector;
-        SetElementUnsafe(ref result, index, value);
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void SetElementUnsafe(ref Color4 vector, int index, float value)
-    {
-        Debug.Assert(index is >= 0 and < Count);
-
-        Unsafe.Add(ref Unsafe.As<Color4, float>(ref vector), index) = value;
     }
 }

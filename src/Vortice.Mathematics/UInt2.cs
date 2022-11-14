@@ -11,17 +11,17 @@ namespace Vortice.Mathematics;
 /// Vector type containing two 32 bit unsigned integer components.
 /// </summary>
 [DebuggerDisplay("X={X}, Y={Y}")]
-public struct UInt2 : IEquatable<UInt2>, IFormattable
+public readonly struct UInt2 : IEquatable<UInt2>, IFormattable
 {
     /// <summary>
     /// The X component of the vector.
     /// </summary>
-    public uint X;
+    public readonly uint X;
 
     /// <summary>
     /// The Y component of the vector.
     /// </summary>
-    public uint Y;
+    public readonly uint Y;
 
     internal const int Count = 2;
 
@@ -94,11 +94,7 @@ public struct UInt2 : IEquatable<UInt2>, IFormattable
         get => new(1, 1);
     }
 
-    public uint this[int index]
-    {
-        get => GetElement(this, index);
-        set => this = WithElement(this, index, value);
-    }
+    public readonly uint this[int index] => GetElement(this, index);
 
     public void Deconstruct(out uint x, out uint y)
     {
@@ -222,29 +218,5 @@ public struct UInt2 : IEquatable<UInt2>, IFormattable
     {
         Debug.Assert(index is >= 0 and < Count);
         return Unsafe.Add(ref Unsafe.As<UInt2, uint>(ref vector), index);
-    }
-
-    /// <summary>Sets the element at the specified index.</summary>
-    /// <param name="vector">The vector of the element to get.</param>
-    /// <param name="index">The index of the element to set.</param>
-    /// <param name="value">The value of the element to set.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> was less than zero or greater than the number of elements.</exception>
-    internal static UInt2 WithElement(UInt2 vector, int index, uint value)
-    {
-        if ((uint)index >= Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index));
-        }
-
-        UInt2 result = vector;
-        SetElementUnsafe(ref result, index, value);
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void SetElementUnsafe(ref UInt2 vector, int index, uint value)
-    {
-        Debug.Assert(index is >= 0 and < Count);
-        Unsafe.Add(ref Unsafe.As<UInt2, uint>(ref vector), index) = value;
     }
 }

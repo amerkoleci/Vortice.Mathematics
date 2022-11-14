@@ -1,7 +1,6 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text;

@@ -11,22 +11,22 @@ namespace Vortice.Mathematics;
 /// Vector type containing three 64 bit floating point components.
 /// </summary>
 [DebuggerDisplay("X={X}, Y={Y}, Z={Z}")]
-public struct Double3 : IEquatable<Double3>, IFormattable
+public readonly struct Double3 : IEquatable<Double3>, IFormattable
 {
     /// <summary>
     /// The X component of the vector.
     /// </summary>
-    public double X;
+    public readonly double X;
 
     /// <summary>
     /// The Y component of the vector.
     /// </summary>
-    public double Y;
+    public readonly double Y;
 
     /// <summary>
     /// The Z component of the vector.
     /// </summary>
-    public double Z;
+    public readonly double Z;
 
     internal const int Count = 3;
 
@@ -122,11 +122,7 @@ public struct Double3 : IEquatable<Double3>, IFormattable
         get => new(1, 1, 1);
     }
 
-    public double this[int index]
-    {
-        get => GetElement(this, index);
-        set => this = WithElement(this, index, value);
-    }
+    public readonly double this[int index] => GetElement(this, index);
 
     public void Deconstruct(out double x, out double y, out double z)
     {
@@ -271,30 +267,5 @@ public struct Double3 : IEquatable<Double3>, IFormattable
         Debug.Assert(index is >= 0 and < Count);
 
         return Unsafe.Add(ref Unsafe.As<Double3, double>(ref vector), index);
-    }
-
-    /// <summary>Sets the element at the specified index.</summary>
-    /// <param name="vector">The vector of the element to get.</param>
-    /// <param name="index">The index of the element to set.</param>
-    /// <param name="value">The value of the element to set.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> was less than zero or greater than the number of elements.</exception>
-    internal static Double3 WithElement(Double3 vector, int index, double value)
-    {
-        if ((uint)index >= Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index));
-        }
-
-        Double3 result = vector;
-        SetElementUnsafe(ref result, index, value);
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void SetElementUnsafe(ref Double3 vector, int index, double value)
-    {
-        Debug.Assert(index is >= 0 and < Count);
-
-        Unsafe.Add(ref Unsafe.As<Double3, double>(ref vector), index) = value;
     }
 }

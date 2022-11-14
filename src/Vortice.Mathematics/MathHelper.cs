@@ -18,7 +18,6 @@ namespace Vortice.Mathematics;
 /// </summary>
 public static class MathHelper
 {
-
     /// <summary>Gets a value used to represent all bits set.</summary>
     public static float AllBitsSet
     {

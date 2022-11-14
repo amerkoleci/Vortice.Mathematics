@@ -36,16 +36,12 @@ namespace Vortice.Mathematics;
 /// <summary>
 /// Defines an sphere in three dimensional space.
 /// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
-public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
+public readonly struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
 {
     /// <summary>
     /// An empty bounding sphere (Center = 0 and Radius = 0).
     /// </summary>
     public static readonly BoundingSphere Empty = new();
-
-    private Vector3 _center;
-    private float _radius;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BoundingSphere"/> struct.
@@ -54,31 +50,19 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     /// <param name="radius">The radius of the sphere.</param>
     public BoundingSphere(Vector3 center, float radius)
     {
-        _center = center;
-        _radius = radius;
+        Center = center;
+        Radius = radius;
     }
 
     /// <summary>
     /// The center point of the sphere.
     /// </summary>
-    public Vector3 Center
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => _center;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => _center = value;
-    }
+    public Vector3 Center { get; }
 
     /// <summary>
     /// The radious of the sphere.
     /// </summary>
-    public float Radius
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => _radius;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => _radius = value;
-    }
+    public float Radius { get; }
 
     /// <summary>
     /// Creates a <see cref="BoundingBox"/> from the sum of 2 <see cref="BoundingBox"/>es.
@@ -114,11 +98,10 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     /// <returns>The created <see cref="BoundingSphere"/>.</returns>
     public static BoundingSphere CreateFromBoundingBox(in BoundingBox box)
     {
-        Unsafe.SkipInit(out BoundingSphere result);
-
-        result._center = Vector3.Lerp(box.Min, box.Max, 0.5f);
-        result._radius = Vector3.Distance(box.Min, box.Max) * 0.5f;
-        return result;
+        return new(
+            Vector3.Lerp(box.Min, box.Max, 0.5f),
+            Vector3.Distance(box.Min, box.Max) * 0.5f
+            );
     }
 
     /// <summary>

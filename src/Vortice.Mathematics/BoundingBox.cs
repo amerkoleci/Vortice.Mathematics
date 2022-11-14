@@ -16,15 +16,12 @@ namespace Vortice.Mathematics;
 /// Defines an axis-aligned box-shaped 3D volume.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
-public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
+public readonly struct BoundingBox : IEquatable<BoundingBox>, IFormattable
 {
     /// <summary>
     /// Specifies the total number of corners (8) in the BoundingBox.
     /// </summary>
     public const int CornerCount = 8;
-
-    private Vector3 _min;
-    private Vector3 _max;
 
     /// <summary>
     /// A <see cref="BoundingBox"/> which represents an empty space.
@@ -38,8 +35,8 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     /// <param name="max">The maximum vertex of the bounding box.</param>
     public BoundingBox(Vector3 min, Vector3 max)
     {
-        _min = min;
-        _max = max;
+        Min = min;
+        Max = max;
     }
 
     /// <summary>
@@ -48,46 +45,34 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     /// <param name="sphere">The <see cref="BoundingSphere"/> to initialize from.</param>
     public BoundingBox(in BoundingSphere sphere)
     {
-        _min = new Vector3(sphere.Center.X - sphere.Radius, sphere.Center.Y - sphere.Radius, sphere.Center.Z - sphere.Radius);
-        _max = new Vector3(sphere.Center.X + sphere.Radius, sphere.Center.Y + sphere.Radius, sphere.Center.Z + sphere.Radius);
+        Min = new Vector3(sphere.Center.X - sphere.Radius, sphere.Center.Y - sphere.Radius, sphere.Center.Z - sphere.Radius);
+        Max = new Vector3(sphere.Center.X + sphere.Radius, sphere.Center.Y + sphere.Radius, sphere.Center.Z + sphere.Radius);
     }
 
     /// <summary>
     /// The minimum point of the box.
     /// </summary>
-    public Vector3 Min
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get { return _min; }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set { _min = value; }
-    }
+    public Vector3 Min { get; }
 
     /// <summary>
     /// The maximum point of the box.
     /// </summary>
-    public Vector3 Max
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get { return _max; }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set { _max = value; }
-    }
+    public Vector3 Max { get; }
 
     /// <summary>
     /// Gets the center of this bouding box.
     /// </summary>
-    public Vector3 Center => (_min + _max) / 2;
+    public Vector3 Center => (Min + Max) / 2;
 
     /// <summary>
     /// Gets the extent of this bouding box.
     /// </summary>
-    public Vector3 Extent => (_max - _min) / 2;
+    public Vector3 Extent => (Max - Min) / 2;
 
     /// <summary>
     /// Gets size  of this bouding box.
     /// </summary>
-    public Vector3 Size => _max - _min;
+    public Vector3 Size => Max - Min;
 
     /// <summary>
     /// Gets or sets the width of the bounding box.
@@ -477,12 +462,12 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     public static bool operator !=(BoundingBox left, BoundingBox right) => !left.Equals(right);
 
     /// <inheritdoc/>
-    public override int GetHashCode() => HashCode.Combine(_min, _max);
+    public override int GetHashCode() => HashCode.Combine(Min, Max);
 
     /// <inheritdoc />
     public override string ToString() => ToString(format: null, formatProvider: null);
 
     /// <inheritdoc />
     public string ToString(string? format, IFormatProvider? formatProvider)
-    => $"{nameof(BoundingBox)} {{ {nameof(Min)} = {_min.ToString(format, formatProvider)}, {nameof(Max)} = {_max.ToString(format, formatProvider)} }}";
+    => $"{nameof(BoundingBox)} {{ {nameof(Min)} = {Min.ToString(format, formatProvider)}, {nameof(Max)} = {Max.ToString(format, formatProvider)} }}";
 }
