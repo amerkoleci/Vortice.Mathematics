@@ -114,6 +114,56 @@ public readonly struct Matrix5x4 : IEquatable<Matrix5x4>, IFormattable
     public readonly float M54;
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="Matrix5x4"/> struct.
+    /// </summary>
+    /// <param name="value">The value that will be assigned to all components.</param>
+    public Matrix5x4(float value)
+    {
+        M11 = M12 = M13 = M14 =
+        M21 = M22 = M23 = M24 =
+        M31 = M32 = M33 = M34 =
+        M41 = M42 = M43 = M44 =
+        M51 = M52 = M53 = M54 = value;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Matrix5x4"/> struct.
+    /// </summary>
+    /// <param name="m11">The value to assign at row 1 column 1 of the Matrix.</param>
+    /// <param name="m12">The value to assign at row 1 column 2 of the Matrix.</param>
+    /// <param name="m13">The value to assign at row 1 column 3 of the Matrix.</param>
+    /// <param name="m14">The value to assign at row 1 column 4 of the Matrix.</param>
+    /// <param name="m21">The value to assign at row 2 column 1 of the Matrix.</param>
+    /// <param name="m22">The value to assign at row 2 column 2 of the Matrix.</param>
+    /// <param name="m23">The value to assign at row 2 column 3 of the Matrix.</param>
+    /// <param name="m24">The value to assign at row 2 column 4 of the Matrix.</param>
+    /// <param name="m31">The value to assign at row 3 column 1 of the Matrix.</param>
+    /// <param name="m32">The value to assign at row 3 column 2 of the Matrix.</param>
+    /// <param name="m33">The value to assign at row 3 column 3 of the Matrix.</param>
+    /// <param name="m34">The value to assign at row 3 column 4 of the Matrix.</param>
+    /// <param name="m41">The value to assign at row 4 column 1 of the Matrix.</param>
+    /// <param name="m42">The value to assign at row 4 column 2 of the Matrix.</param>
+    /// <param name="m43">The value to assign at row 4 column 3 of the Matrix.</param>
+    /// <param name="m44">The value to assign at row 4 column 4 of the Matrix.</param>
+    /// <param name="m51">The value to assign at row 5 column 1 of the Matrix.</param>
+    /// <param name="m52">The value to assign at row 5 column 2 of the Matrix.</param>
+    /// <param name="m53">The value to assign at row 5 column 3 of the Matrix.</param>
+    /// <param name="m54">The value to assign at row 5 column 4 of the Matrix.</param>
+    public Matrix5x4(
+        float m11, float m12, float m13, float m14,
+        float m21, float m22, float m23, float m24,
+        float m31, float m32, float m33, float m34,
+        float m41, float m42, float m43, float m44,
+        float m51, float m52, float m53, float m54)
+    {
+        M11 = m11; M12 = m12; M13 = m13; M14 = m14;
+        M21 = m21; M22 = m22; M23 = m23; M24 = m24;
+        M31 = m31; M32 = m32; M33 = m33; M34 = m34;
+        M41 = m41; M42 = m42; M43 = m43; M44 = m44;
+        M51 = m51; M52 = m52; M53 = m53; M54 = m54;
+    }
+
+    /// <summary>
     /// Compares two <see cref="Matrix5x4"/> objects for equality.
     /// </summary>
     /// <param name="left">The <see cref="Matrix5x4"/> on the left hand of the operand.</param>

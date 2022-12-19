@@ -2,6 +2,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
 using System.ComponentModel;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -21,7 +22,7 @@ public readonly struct Size3 : IEquatable<Size3>
     /// <summary>
     /// A special valued <see cref="Size"/>.
     /// </summary>
-    public static readonly Size3 WholeSize = new Size3(~0, ~0, ~0);
+    public static readonly Size3 WholeSize = new(~0, ~0, ~0);
 
     /// <summary>
     /// Initializes a new instance of <see cref="Size3"/> structure.
@@ -41,7 +42,7 @@ public readonly struct Size3 : IEquatable<Size3>
     /// </summary>
     /// <param name="size">The width and height component of the extent.</param>
     /// <param name="depth">The depth component of the extent.</param>
-    public Size3(in SizeI size, int depth)
+    public Size3(in Size size, int depth)
     {
         Width = size.Width;
         Height = size.Height;

@@ -7,7 +7,6 @@ using System.Text;
 
 namespace Vortice.Mathematics;
 
-
 /// <summary>
 /// Describes a 4-by-3 floating point matrix.
 /// </summary>
@@ -75,7 +74,7 @@ public readonly struct Matrix4x3 : IEquatable<Matrix4x3>, IFormattable
     public readonly float M43;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Matrix3x3"/> struct.
+    /// Initializes a new instance of the <see cref="Matrix4x3"/> struct.
     /// </summary>
     /// <param name="value">The value that will be assigned to all components.</param>
     public Matrix4x3(float value)
@@ -89,18 +88,18 @@ public readonly struct Matrix4x3 : IEquatable<Matrix4x3>, IFormattable
     /// <summary>
     /// Initializes a new instance of the <see cref="Matrix4x3"/> struct.
     /// </summary>
-    /// <param name="m11">The value to assign at row 1 column 1 of the Matrix4x3.</param>
-    /// <param name="m12">The value to assign at row 1 column 2 of the Matrix4x3.</param>
-    /// <param name="m13">The value to assign at row 1 column 3 of the Matrix4x3.</param>
-    /// <param name="m21">The value to assign at row 2 column 1 of the Matrix4x3.</param>
-    /// <param name="m22">The value to assign at row 2 column 2 of the Matrix4x3.</param>
-    /// <param name="m23">The value to assign at row 2 column 3 of the Matrix4x3.</param>
-    /// <param name="m31">The value to assign at row 3 column 1 of the Matrix4x3.</param>
-    /// <param name="m32">The value to assign at row 3 column 2 of the Matrix4x3.</param>
-    /// <param name="m33">The value to assign at row 3 column 3 of the Matrix4x3.</param>
-    /// <param name="m41">The value to assign at row 4 column 1 of the Matrix4x3.</param>
-    /// <param name="m42">The value to assign at row 4 column 2 of the Matrix4x3.</param>
-    /// <param name="m43">The value to assign at row 4 column 3 of the Matrix4x3.</param>
+    /// <param name="m11">The value to assign at row 1 column 1 of the Matrix.</param>
+    /// <param name="m12">The value to assign at row 1 column 2 of the Matrix.</param>
+    /// <param name="m13">The value to assign at row 1 column 3 of the Matrix.</param>
+    /// <param name="m21">The value to assign at row 2 column 1 of the Matrix.</param>
+    /// <param name="m22">The value to assign at row 2 column 2 of the Matrix.</param>
+    /// <param name="m23">The value to assign at row 2 column 3 of the Matrix.</param>
+    /// <param name="m31">The value to assign at row 3 column 1 of the Matrix.</param>
+    /// <param name="m32">The value to assign at row 3 column 2 of the Matrix.</param>
+    /// <param name="m33">The value to assign at row 3 column 3 of the Matrix.</param>
+    /// <param name="m41">The value to assign at row 4 column 1 of the Matrix.</param>
+    /// <param name="m42">The value to assign at row 4 column 2 of the Matrix.</param>
+    /// <param name="m43">The value to assign at row 4 column 3 of the Matrix.</param>
     public Matrix4x3(
         float m11, float m12, float m13,
         float m21, float m22, float m23,

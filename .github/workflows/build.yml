@@ -24,17 +24,19 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
       with:
-        fetch-depth: 0
+        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
         
     - name: Setup .NET 7 SDK
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.100
+        dotnet-version: '7.0.x'
 
     - name: Pack
-      run: dotnet pack Vortice.Mathematics.sln --configuration Release --output build/packages
+      run: msbuild Vortice.Mathematics.sln -t:restore,build,pack /p:Configuration=Release
 
     - name: Publish to NuGet
       if: github.event_name == 'push'
-      run: dotnet nuget push build/packages/**/*.nupkg -k ${{secrets.NUGET_TOKEN}} --skip-duplicate --source https://api.nuget.org/v3/index.json
-          
+      run: dotnet nuget push artifacts/**/*.nupkg -k ${{secrets.NUGET_TOKEN}} --skip-duplicate --source https://api.nuget.org/v3/index.json
