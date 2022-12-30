@@ -107,15 +107,43 @@ public readonly struct Matrix3x3
     /// <summary>
     /// Initializes a new instance of the <see cref="Matrix3x3"/> struct.
     /// </summary>
-    /// <param name="values">The values to assign to the components of the Matrix3x3. This must be an array with sixteen elements.</param>
+    /// <param name="values">The values to assign to the components of the Matrix3x3. This must be an array with nine elements.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than sixteen elements.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than nine elements.</exception>
     public Matrix3x3(float[] values)
     {
         if (values == null)
             throw new ArgumentNullException(nameof(values));
         if (values.Length != 9)
-            throw new ArgumentOutOfRangeException(nameof(values), "There must be only nine input values for Matrix3x3.");
+            throw new ArgumentOutOfRangeException(nameof(values),
+                "There must be only nine input values for Matrix3x3.");
+
+        M11 = values[0];
+        M12 = values[1];
+        M13 = values[2];
+
+        M21 = values[3];
+        M22 = values[4];
+        M23 = values[5];
+
+        M31 = values[6];
+        M32 = values[7];
+        M33 = values[8];
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Matrix3x3"/> struct.
+    /// </summary>
+    /// <param name="values">The values to assign to the components of the Matrix3x3. This must be a span with nine elements.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than nine elements.</exception>
+    public Matrix3x3(ReadOnlySpan<float> values)
+    {
+        if (values == null)
+            throw new ArgumentNullException(nameof(values));
+        if (values.Length != 9)
+            throw new ArgumentOutOfRangeException(nameof(values),
+                "There must be only nine input values for Matrix3x3.");
 
         M11 = values[0];
         M12 = values[1];
