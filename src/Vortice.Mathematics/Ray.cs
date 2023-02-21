@@ -28,6 +28,7 @@
 * THE SOFTWARE.
 */
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -44,7 +45,7 @@ public readonly struct Ray : IEquatable<Ray>, IFormattable
     /// </summary>
     /// <param name="position">The position in three dimensional space of the origin of the ray.</param>
     /// <param name="direction">The normalized direction of the ray.</param>
-    public Ray(Vector3 position, Vector3 direction)
+    public Ray(in Vector3 position, in Vector3 direction)
     {
         Position = position;
         Direction = direction;

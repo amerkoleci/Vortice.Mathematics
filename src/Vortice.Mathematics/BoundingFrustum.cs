@@ -1,6 +1,7 @@
 ﻿// Copyright © Amer Koleci and Contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -14,7 +15,7 @@ public readonly struct BoundingFrustum : IEquatable<BoundingFrustum>
     private readonly Plane[] _planes;
     private readonly Vector3[] _corners;
 
-    public BoundingFrustum(Matrix4x4 viewProjection)
+    public BoundingFrustum(in Matrix4x4 viewProjection)
     {
         _planes = new Plane[]
         {
@@ -47,7 +48,7 @@ public readonly struct BoundingFrustum : IEquatable<BoundingFrustum>
     /// </summary>
     /// <param name="box">The <see cref="BoundingBox"/> to check for intersection with the current <see cref="BoundingFrustum"/>.</param>
     /// <returns>True if intersects, false otherwise.</returns>
-    public bool Intersects(BoundingBox box)
+    public bool Intersects(in BoundingBox box)
     {
         for (int i = 0; i < _planes.Length; i++)
         {
@@ -68,7 +69,7 @@ public readonly struct BoundingFrustum : IEquatable<BoundingFrustum>
     /// </summary>
     /// <param name="sphere">The <see cref="BoundingSphere"/> to check for intersection with the current <see cref="BoundingFrustum"/>.</param>
     /// <returns>True if intersects, false otherwise.</returns>
-    public bool Intersects(BoundingSphere sphere)
+    public bool Intersects(in BoundingSphere sphere)
     {
         for (int i = 0; i < _planes.Length; i++)
         {

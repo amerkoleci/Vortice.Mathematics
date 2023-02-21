@@ -5,6 +5,7 @@
 // The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
 
 using System.Globalization;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static Vortice.Mathematics.Vector2Utilities;
@@ -87,7 +88,7 @@ public readonly struct UByteN2 : IPackedVector<ushort>, IEquatable<UByteN2>
     /// Initializes a new instance of the <see cref="UByteN2"/> struct.
     /// </summary>
     /// <param name="vector">The <see cref="Vector4"/> containing X and Y value.</param>
-    public UByteN2(Vector4 vector)
+    public UByteN2(in Vector4 vector)
         : this(vector.X, vector.Y)
     {
     }

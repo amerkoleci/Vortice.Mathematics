@@ -1,6 +1,7 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Vortice.Mathematics;
@@ -16,6 +17,24 @@ public static class Vector4Utilities
         get
         {
             return new Vector4(-1.0f, -1.0f, -1.0f, -1.0f);
+        }
+    }
+
+    public static Vector4 ByteMin
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return new Vector4(-127.0f, -127.0f, -127.0f, -127.0f);
+        }
+    }
+
+    public static Vector4 ByteMax
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return new Vector4(127.0f, 127.0f, 127.0f, 127.0f);
         }
     }
 
@@ -97,7 +116,7 @@ public static class Vector4Utilities
     /// <returns></returns>
     public static Vector4 Round(in Vector4 value)
     {
-        return new Vector4(
+        return new(
             MathF.Round(value.X),
             MathF.Round(value.Y),
             MathF.Round(value.Z),

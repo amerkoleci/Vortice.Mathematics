@@ -4,7 +4,9 @@
 // Based on: https://github.com/terrafx/terrafx/blob/main/sources/Core/Utilities/MathUtilities.cs
 
 using System.Diagnostics;
+using System.Numerics;
 using System.Runtime.CompilerServices;
+
 #if NET6_0_OR_GREATER
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.Arm;

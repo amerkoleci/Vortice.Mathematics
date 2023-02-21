@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Diagnostics;
+using System.Numerics;
 
 #if NET6_0_OR_GREATER
 using System.Runtime.Intrinsics;

@@ -116,6 +116,33 @@ public static unsafe class VectorUtilities
         }
     }
 
+    public static Vector128<int> AbsMask
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return Vector128.Create(0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF);
+        }
+    }
+
+    public static Vector128<uint> NegativeZero
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return Vector128.Create(0x80000000, 0x80000000, 0x80000000, 0x80000000);
+        }
+    }
+
+    public static Vector128<float> NoFraction
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return Vector128.Create(8388608.0f, 8388608.0f, 8388608.0f, 8388608.0f);
+        }
+    }
+
     public static byte Shuffle(byte fp3, byte fp2, byte fp1, byte fp0)
     {
         return (byte)(((fp3) << 6) | ((fp2) << 4) | ((fp1) << 2) | (fp0));
@@ -643,7 +670,7 @@ public static unsafe class VectorUtilities
             result = Sse.Min(max, result);
             return result;
         }
-        else if (AdvSimd.Arm64.IsSupported)
+        else if (AdvSimd.IsSupported)
         {
             Vector128<float> result = AdvSimd.Max(min, vector);
             result = AdvSimd.Min(max, result);
@@ -655,6 +682,47 @@ public static unsafe class VectorUtilities
             result = Min(max, result);
             return result;
 
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector128<float> Round(Vector128<float> vector)
+    {
+        if (Sse41.IsSupported)
+        {
+            return Sse41.RoundToNearestInteger(vector);
+        }
+        else if(Sse.IsSupported)
+        {
+            Vector128<float> sign = Sse.And(vector, NegativeZero.AsSingle());
+            Vector128<float> sMagic = Sse.Or(NoFraction, sign);
+            Vector128<float> R1 = Sse.Add(vector, sMagic);
+            R1 = Sse.Subtract(R1, sMagic);
+            Vector128<float> R2 = Sse.And(vector, AbsMask.AsSingle());
+            Vector128<float> mask = Sse.CompareLessThanOrEqual(R2, NoFraction);
+            R2 = Sse.AndNot(mask, vector);
+            R1 = Sse.And(R1, mask);
+            Vector128<float>  result = Sse.Xor(R1, R2);
+            return result;
+        }
+        else if (AdvSimd.IsSupported)
+        {
+            return AdvSimd.RoundToNearest(vector);
+        }
+        else
+        {
+            return SoftwareFallback(vector);
+        }
+
+
+        static Vector128<float> SoftwareFallback(Vector128<float> vector)
+        {
+            return Vector128.Create(
+                MathF.Round(vector.GetX()),
+                MathF.Round(vector.GetY()),
+                MathF.Round(vector.GetZ()),
+                MathF.Round(vector.GetW())
+            );
         }
     }
 

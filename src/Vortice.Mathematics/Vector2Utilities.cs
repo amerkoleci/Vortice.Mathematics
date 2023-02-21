@@ -1,6 +1,7 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 #if NET6_0_OR_GREATER
 using System.Runtime.Intrinsics;
@@ -63,7 +64,7 @@ public static class Vector2Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            return new Vector2(255.0f);
+            return new Vector2(255.0f, 255.0f);
         }
     }
 
@@ -72,7 +73,7 @@ public static class Vector2Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            return new Vector2(-127.0f);
+            return new Vector2(-127.0f, -127.0f);
         }
     }
 
@@ -81,7 +82,7 @@ public static class Vector2Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            return new Vector2(127.0f);
+            return new Vector2(127.0f, 127.0f);
         }
     }
 
@@ -104,7 +105,7 @@ public static class Vector2Utilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 Truncate(in Vector2 value)
     {
-        return new Vector2(
+        return new(
             MathF.Truncate(value.X),
             MathF.Truncate(value.Y)
             );
@@ -118,7 +119,7 @@ public static class Vector2Utilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 Round(in Vector2 value)
     {
-        return new Vector2(
+        return new(
             MathF.Round(value.X),
             MathF.Round(value.Y)
             );

@@ -2,6 +2,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
 using System.Globalization;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -246,7 +247,7 @@ public readonly struct Color3 : IEquatable<Color3>, IFormattable
     /// Converts the color into a three component vector.
     /// </summary>
     /// <returns>A three component vector containing the red, green, and blue components of the color.</returns>
-    public Vector3 ToVector3() => new Vector3(R, G, B);
+    public Vector3 ToVector3() => new (R, G, B);
 
     /// <summary>
     /// Creates an array containing the elements of the color.

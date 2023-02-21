@@ -6,6 +6,7 @@
 // This file includes code based on code from https://github.com/microsoft/DirectXMath
 // The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static Vortice.Mathematics.MathHelper;
@@ -115,10 +116,10 @@ public readonly struct BoundingBox : IEquatable<BoundingBox>, IFormattable
         return CreateFromPoints(points.AsSpan());
     }
 
-    public static BoundingBox CreateFromPoints(Span<Vector3> points)
+    public static BoundingBox CreateFromPoints(ReadOnlySpan<Vector3> points)
     {
-        Vector3 min = new Vector3(float.MaxValue);
-        Vector3 max = new Vector3(float.MinValue);
+        Vector3 min = new(float.MaxValue);
+        Vector3 max = new(float.MinValue);
 
         for (int i = 0; i < points.Length; ++i)
         {

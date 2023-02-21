@@ -4,6 +4,7 @@
 // This file includes code based on code from https://github.com/microsoft/DirectXMath
 // The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 

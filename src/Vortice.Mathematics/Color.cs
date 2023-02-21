@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Vortice.Mathematics.PackedVector;
@@ -162,7 +163,7 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// </summary>
     /// <param name="vector">The red, green, and blue components of the color.</param>
     /// <param name="alpha">The alpha component of the color.</param>
-    public Color(Vector3 vector, float alpha) : this()
+    public Color(in Vector3 vector, float alpha) : this()
     {
         _packedValue = PackHelpers.PackRGBA(vector.X, vector.Y, vector.Z, alpha);
     }
@@ -171,7 +172,7 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// Initializes a new instance of the <see cref="Color"/> struct.
     /// </summary>
     /// <param name="vector">A three-component color.</param>
-    public Color(Vector3 vector) : this()
+    public Color(in Vector3 vector) : this()
     {
         _packedValue = PackHelpers.PackRGBA(vector.X, vector.Y, vector.Z, 1.0f);
     }

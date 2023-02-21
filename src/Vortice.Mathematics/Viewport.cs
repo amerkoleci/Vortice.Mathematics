@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using static Vortice.Mathematics.MathHelper;
 using System.Drawing;
+using System.Numerics;
 
 namespace Vortice.Mathematics;
 
@@ -99,7 +100,7 @@ public readonly struct Viewport : IEquatable<Viewport>
     /// Initializes a new instance of the <see cref="Viewport"/> struct.
     /// </summary>
     /// <param name="bounds">A <see cref="Vector4"/> that defines the location and size of the viewport in a render target.</param>
-    public Viewport(Vector4 bounds)
+    public Viewport(in Vector4 bounds)
     {
         X = bounds.X;
         Y = bounds.Y;

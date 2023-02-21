@@ -2,6 +2,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
 using System.Globalization;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static Vortice.Mathematics.Vector2Utilities;
@@ -75,7 +76,7 @@ public readonly struct UShortN2 : IPackedVector<uint>, IEquatable<UShortN2>
     /// Initializes a new instance of the <see cref="UShortN2"/> struct.
     /// </summary>
     /// <param name="vector">The <see cref="Vector2"/> containing X and Y value.</param>
-    public UShortN2(Vector2 vector)
+    public UShortN2(in Vector2 vector)
         : this(vector.X, vector.Y)
     {
     }
@@ -84,7 +85,7 @@ public readonly struct UShortN2 : IPackedVector<uint>, IEquatable<UShortN2>
     /// Initializes a new instance of the <see cref="UShortN2"/> struct.
     /// </summary>
     /// <param name="vector">The <see cref="Vector4"/> containing X and Y value.</param>
-    public UShortN2(Vector4 vector)
+    public UShortN2(in Vector4 vector)
         : this(vector.X, vector.Y)
     {
     }

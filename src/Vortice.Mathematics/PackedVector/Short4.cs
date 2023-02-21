@@ -5,9 +5,17 @@
 // The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
 
 using System.Globalization;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+#if NET6_0_OR_GREATER
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+using static Vortice.Mathematics.VectorUtilities;
+#else
 using static Vortice.Mathematics.Vector4Utilities;
+#endif
 
 namespace Vortice.Mathematics.PackedVector;
 
@@ -84,6 +92,30 @@ public readonly struct Short4 : IPackedVector<ulong>, IEquatable<Short4>
     {
         Unsafe.SkipInit(out this);
 
+#if NET6_0_OR_GREATER
+        Vector128<float> vector = Vector128.Create(x, y, z, w);
+        if (Sse41.IsSupported)
+        {
+            Vector128<float> result = Clamp(vector, ShortMin, ShortMax);
+            Vector128<int> vInt = Sse2.ConvertToVector128Int32(result);
+            Vector128<short> vShort = Sse2.PackSignedSaturate(vInt, vInt);
+
+            X = vShort.GetElement(0);
+            Y = vShort.GetElement(1);
+            Z = vShort.GetElement(2);
+            W = vShort.GetElement(3);
+        }
+        else
+        {
+            Vector128<float> result = Clamp(vector, ShortMin, ShortMax);
+            result = Round(result);
+
+            X = (short)vector.GetX();
+            Y = (short)vector.GetY();
+            Z = (short)vector.GetZ();
+            W = (short)vector.GetW();
+        }
+#else
         Vector4 vector = Vector4.Clamp(new Vector4(x, y, z, w), ShortMin, ShortMax);
         vector = Round(vector);
 
@@ -91,13 +123,14 @@ public readonly struct Short4 : IPackedVector<ulong>, IEquatable<Short4>
         Y = (short)vector.Y;
         Z = (short)vector.Z;
         W = (short)vector.W;
+#endif
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Short4"/> struct.
     /// </summary>
     /// <param name="vector">The <see cref="Vector4"/> containing X, Y, Z and W value.</param>
-    public Short4(Vector4 vector)
+    public Short4(in Vector4 vector)
          : this(vector.X, vector.Y, vector.Z, vector.W)
     {
     }

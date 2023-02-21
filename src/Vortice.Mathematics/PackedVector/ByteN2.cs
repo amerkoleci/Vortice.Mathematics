@@ -5,6 +5,7 @@
 // The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
 
 using System.Globalization;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static Vortice.Mathematics.Vector2Utilities;

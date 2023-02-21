@@ -1,7 +1,7 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-#if !NET6_0_OR_GREATER && !WINDOWS_UWP
+#if !NETSTANDARD2_1 && !NET6_0_OR_GREATER && !WINDOWS_UWP
 using System.Runtime.CompilerServices;
 namespace System;
 
