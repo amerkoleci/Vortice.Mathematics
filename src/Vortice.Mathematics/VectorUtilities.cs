@@ -6,7 +6,6 @@
 // This file includes code based on code from https://github.com/microsoft/DirectXMath
 // The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
 
-#if NET6_0_OR_GREATER
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
@@ -660,6 +659,118 @@ public static unsafe class VectorUtilities
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector128<float> Round(Vector128<float> vector)
+    {
+        if (Sse41.IsSupported)
+        {
+            return Sse41.RoundToNearestInteger(vector);
+        }
+        else if (Sse.IsSupported)
+        {
+            Vector128<float> sign = Sse.And(vector, NegativeZero.AsSingle());
+            Vector128<float> sMagic = Sse.Or(NoFraction, sign);
+            Vector128<float> R1 = Sse.Add(vector, sMagic);
+            R1 = Sse.Subtract(R1, sMagic);
+            Vector128<float> R2 = Sse.And(vector, AbsMask.AsSingle());
+            Vector128<float> mask = Sse.CompareLessThanOrEqual(R2, NoFraction);
+            R2 = Sse.AndNot(mask, vector);
+            R1 = Sse.And(R1, mask);
+            Vector128<float> result = Sse.Xor(R1, R2);
+            return result;
+        }
+        else if (AdvSimd.IsSupported)
+        {
+            return AdvSimd.RoundToNearest(vector);
+        }
+        else
+        {
+            return SoftwareFallback(vector);
+        }
+
+        static Vector128<float> SoftwareFallback(Vector128<float> vector)
+        {
+            return Vector128.Create(
+                MathF.Round(vector.GetX()),
+                MathF.Round(vector.GetY()),
+                MathF.Round(vector.GetZ()),
+                MathF.Round(vector.GetW())
+            );
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector128<float> Truncate(Vector128<float> vector)
+    {
+        if (Sse.IsSupported)
+        {
+            return Sse41.RoundToZero(vector);
+        }
+        else if (AdvSimd.IsSupported)
+        {
+            return AdvSimd.RoundToZero(vector);
+        }
+        else
+        {
+            return Clamp(vector, Vector128<float>.Zero, One);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector128<float> Floor(Vector128<float> vector)
+    {
+        if (Sse41.IsSupported)
+        {
+            return Sse41.Floor(vector);
+        }
+        else if (AdvSimd.IsSupported)
+        {
+            return AdvSimd.Floor(vector);
+        }
+        else
+        {
+            return SoftwareFallback(vector);
+        }
+
+        static Vector128<float> SoftwareFallback(Vector128<float> vector)
+        {
+            return Vector128.Create(
+                MathF.Floor(vector.GetX()),
+                MathF.Floor(vector.GetY()),
+                MathF.Floor(vector.GetZ()),
+                MathF.Floor(vector.GetW())
+            );
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector128<float> Ceiling(Vector128<float> vector)
+    {
+        if (Sse41.IsSupported)
+        {
+            return Sse41.Ceiling(vector);
+        }
+        else if (AdvSimd.IsSupported)
+        {
+            return AdvSimd.Ceiling(vector);
+        }
+        else
+        {
+            return SoftwareFallback(vector);
+        }
+
+        static Vector128<float> SoftwareFallback(Vector128<float> vector)
+        {
+            return Vector128.Create(
+                MathF.Ceiling(vector.GetX()),
+                MathF.Ceiling(vector.GetY()),
+                MathF.Ceiling(vector.GetZ()),
+                MathF.Ceiling(vector.GetW())
+            );
+        }
+    }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector128<float> Clamp(Vector128<float> vector, Vector128<float> min, Vector128<float> max)
     {
         Debug.Assert(LessThanOrEqual(min, max));
@@ -686,47 +797,6 @@ public static unsafe class VectorUtilities
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector128<float> Round(Vector128<float> vector)
-    {
-        if (Sse41.IsSupported)
-        {
-            return Sse41.RoundToNearestInteger(vector);
-        }
-        else if(Sse.IsSupported)
-        {
-            Vector128<float> sign = Sse.And(vector, NegativeZero.AsSingle());
-            Vector128<float> sMagic = Sse.Or(NoFraction, sign);
-            Vector128<float> R1 = Sse.Add(vector, sMagic);
-            R1 = Sse.Subtract(R1, sMagic);
-            Vector128<float> R2 = Sse.And(vector, AbsMask.AsSingle());
-            Vector128<float> mask = Sse.CompareLessThanOrEqual(R2, NoFraction);
-            R2 = Sse.AndNot(mask, vector);
-            R1 = Sse.And(R1, mask);
-            Vector128<float>  result = Sse.Xor(R1, R2);
-            return result;
-        }
-        else if (AdvSimd.IsSupported)
-        {
-            return AdvSimd.RoundToNearest(vector);
-        }
-        else
-        {
-            return SoftwareFallback(vector);
-        }
-
-
-        static Vector128<float> SoftwareFallback(Vector128<float> vector)
-        {
-            return Vector128.Create(
-                MathF.Round(vector.GetX()),
-                MathF.Round(vector.GetY()),
-                MathF.Round(vector.GetZ()),
-                MathF.Round(vector.GetW())
-            );
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector128<float> Saturate(Vector128<float> vector)
     {
         if (Sse.IsSupported)
@@ -735,7 +805,7 @@ public static unsafe class VectorUtilities
             result = Sse.Min(result, One);
             return result;
         }
-        else if (AdvSimd.Arm64.IsSupported)
+        else if (AdvSimd.IsSupported)
         {
             Vector128<float> result = AdvSimd.Max(vector, Vector128<float>.Zero);
             result = AdvSimd.Min(result, One);
@@ -747,21 +817,111 @@ public static unsafe class VectorUtilities
         }
     }
 
+    /// <summary>
+    /// Replicate the X component of the vector.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector128<float> Truncate(Vector128<float> vector)
+    public static Vector128<float> VectorSplatX(Vector128<float> value)
     {
-        if (Sse.IsSupported)
+        if (Avx.IsSupported)
         {
-            return Sse41.RoundToZero(vector);
+            return Avx.Permute(value, 0b00_00_00_00);
+        }
+        else if (Sse41.IsSupported)
+        {
+            return Sse.Shuffle(value, value, 0b00_00_00_00);
         }
         else if (AdvSimd.Arm64.IsSupported)
         {
-            return AdvSimd.RoundToZero(vector);
+            return AdvSimd.DuplicateSelectedScalarToVector128(value, 0);
         }
         else
         {
-            return Clamp(vector, Vector128<float>.Zero, One);
+            float x = value.GetX();
+            return Vector128.Create(x);
+        }
+    }
+
+    /// <summary>
+    /// Replicate the Y component of the vector.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector128<float> VectorSplatY(Vector128<float> value)
+    {
+        if (Avx.IsSupported)
+        {
+            return Avx.Permute(value, 0b01_01_01_01);
+        }
+        else if (Sse41.IsSupported)
+        {
+            return Sse.Shuffle(value, value, 0b01_01_01_01);
+        }
+        else if (AdvSimd.Arm64.IsSupported)
+        {
+            return AdvSimd.DuplicateSelectedScalarToVector128(value, 1);
+        }
+        else
+        {
+            float y = value.GetY();
+            return Vector128.Create(y);
+        }
+    }
+
+    /// <summary>
+    /// Replicate the Z component of the vector.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector128<float> VectorSplatZ(Vector128<float> value)
+    {
+        if (Avx.IsSupported)
+        {
+            return Avx.Permute(value, 0b10_10_10_10);
+        }
+        else if (Sse41.IsSupported)
+        {
+            return Sse.Shuffle(value, value, 0b10_10_10_10);
+        }
+        else if (AdvSimd.Arm64.IsSupported)
+        {
+            return AdvSimd.DuplicateSelectedScalarToVector128(value, 2);
+        }
+        else
+        {
+            float z = value.GetZ();
+            return Vector128.Create(z);
+        }
+    }
+
+    /// <summary>
+    /// Replicate the W component of the vector.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector128<float> VectorSplatW(Vector128<float> value)
+    {
+        if (Avx.IsSupported)
+        {
+            return Avx.Permute(value, 0b11_11_11_11);
+        }
+        else if (Sse41.IsSupported)
+        {
+            return Sse.Shuffle(value, value, 0b11_11_11_11);
+        }
+        else if (AdvSimd.Arm64.IsSupported)
+        {
+            return AdvSimd.DuplicateSelectedScalarToVector128(value, 3);
+        }
+        else
+        {
+            float w = value.GetW();
+            return Vector128.Create(w);
         }
     }
 }
-#endif

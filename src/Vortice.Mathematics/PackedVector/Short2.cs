@@ -8,15 +8,10 @@ using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-
-#if NET6_0_OR_GREATER
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
 using static Vortice.Mathematics.VectorUtilities;
-#else
-using static Vortice.Mathematics.Vector2Utilities;
-#endif
 
 namespace Vortice.Mathematics.PackedVector;
 
@@ -75,7 +70,6 @@ public readonly struct Short2 : IPackedVector<uint>, IEquatable<Short2>
     {
         Unsafe.SkipInit(out this);
 
-#if NET6_0_OR_GREATER
         Vector128<float> vector = Vector128.Create(x, y, 0.0f, 0.0f);
         if (Sse41.IsSupported)
         {
@@ -108,13 +102,6 @@ public readonly struct Short2 : IPackedVector<uint>, IEquatable<Short2>
             X = (short)vector.GetX();
             Y = (short)vector.GetY();
         }
-#else
-        Vector2 vector = Vector2.Clamp(new Vector2(x, y), ShortMin, ShortMax);
-        vector = Round(vector);
-
-        X = (short)vector.X;
-        Y = (short)vector.Y;
-#endif
     }
 
     /// <summary>

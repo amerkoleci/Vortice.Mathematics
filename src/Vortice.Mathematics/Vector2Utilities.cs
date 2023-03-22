@@ -3,9 +3,7 @@
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
-#if NET6_0_OR_GREATER
 using System.Runtime.Intrinsics;
-#endif
 
 namespace Vortice.Mathematics;
 
@@ -148,15 +146,8 @@ public static class Vector2Utilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 CompareEqual(in Vector2 left, in Vector2 right)
     {
-#if NET6_0_OR_GREATER
         Vector128<float> result = VectorUtilities.CompareEqual(left.AsVector128(), right.AsVector128());
         return result.AsVector2();
-#else
-        return new Vector2(
-                (left.X == right.X) ? MathHelper.AllBitsSet : 0.0f,
-                (left.Y == right.Y) ? MathHelper.AllBitsSet : 0.0f
-            );
-#endif
     }
 
     /// <summary>Compares two vectors to determine equality.</summary>
@@ -166,23 +157,14 @@ public static class Vector2Utilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool CompareEqualAll(in Vector2 left, in Vector2 right)
     {
-#if NET6_0_OR_GREATER
         return VectorUtilities.CompareEqualAll(left.AsVector128(), right.AsVector128());
-#else
-        return left == right;
-#endif
     }
 
     /// <returns><c>true</c> if <paramref name="left" /> and <paramref name="right" /> are equal; otherwise, <c>false</c>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool CompareEqualAll(in Vector2 left, in Vector2 right, in Vector2 epsilon)
     {
-#if NET6_0_OR_GREATER
         return VectorUtilities.CompareEqualAll(left.AsVector128(), right.AsVector128(), epsilon.AsVector128());
-#else
-        return (MathF.Abs(left.X - right.X) <= epsilon.X)
-                && (MathF.Abs(left.Y - right.Y) <= epsilon.Y);
-#endif
     }
 
     /// <returns></returns>

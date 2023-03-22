@@ -17,7 +17,7 @@ namespace Vortice.Mathematics;
 /// Defines an axis-aligned box-shaped 3D volume.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
-public readonly struct BoundingBox : IEquatable<BoundingBox>, IFormattable
+public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
 {
     /// <summary>
     /// Specifies the total number of corners (8) in the BoundingBox.
@@ -27,7 +27,10 @@ public readonly struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     /// <summary>
     /// A <see cref="BoundingBox"/> which represents an empty space.
     /// </summary>
-    public static readonly BoundingBox Empty = new(new Vector3(float.MaxValue), new Vector3(float.MinValue));
+    public static BoundingBox Zero => new(Vector3.Zero, Vector3.Zero);
+
+    private Vector3 _min;
+    private Vector3 _max;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BoundingBox"/> struct.
@@ -36,8 +39,8 @@ public readonly struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     /// <param name="max">The maximum vertex of the bounding box.</param>
     public BoundingBox(Vector3 min, Vector3 max)
     {
-        Min = min;
-        Max = max;
+        _min = min;
+        _max = max;
     }
 
     /// <summary>
@@ -46,74 +49,120 @@ public readonly struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     /// <param name="sphere">The <see cref="BoundingSphere"/> to initialize from.</param>
     public BoundingBox(in BoundingSphere sphere)
     {
-        Min = new Vector3(sphere.Center.X - sphere.Radius, sphere.Center.Y - sphere.Radius, sphere.Center.Z - sphere.Radius);
-        Max = new Vector3(sphere.Center.X + sphere.Radius, sphere.Center.Y + sphere.Radius, sphere.Center.Z + sphere.Radius);
+        _min = new Vector3(sphere.Center.X - sphere.Radius, sphere.Center.Y - sphere.Radius, sphere.Center.Z - sphere.Radius);
+        _max = new Vector3(sphere.Center.X + sphere.Radius, sphere.Center.Y + sphere.Radius, sphere.Center.Z + sphere.Radius);
     }
 
     /// <summary>
     /// The minimum point of the box.
     /// </summary>
-    public Vector3 Min { get; }
+    public Vector3 Min
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => _min;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => _min = value;
+    }
 
     /// <summary>
     /// The maximum point of the box.
     /// </summary>
-    public Vector3 Max { get; }
+    public Vector3 Max
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => _max;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => _max = value;
+    }
 
     /// <summary>
     /// Gets the center of this bouding box.
     /// </summary>
-    public Vector3 Center => (Min + Max) / 2;
+    public readonly Vector3 Center
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => (_min + _max) / 2;
+    }
 
     /// <summary>
     /// Gets the extent of this bouding box.
     /// </summary>
-    public Vector3 Extent => (Max - Min) / 2;
+    public readonly Vector3 Extent
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => (_max - _min) / 2;
+    }
 
     /// <summary>
     /// Gets size  of this bouding box.
     /// </summary>
-    public Vector3 Size => Max - Min;
+    public readonly Vector3 Size => _max - _min;
 
     /// <summary>
-    /// Gets or sets the width of the bounding box.
+    /// Gets the width of the bounding box.
     /// </summary>
-    public float Width
+    public readonly float Width
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => Extent.X * 2.0f;
+    }
+
+    /// <summary>
+    /// Gets the height of the bounding box.
+    /// </summary>
+    public readonly float Height
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => Extent.Y * 2.0f;
+
+    }
+
+    /// <summary>
+    /// Gets the depth of the bounding box.
+    /// </summary>
+    public readonly float Depth
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => Extent.Z * 2.0f;
+    }
+
+    /// <summary>
+    /// Gets the volume of the bounding box.
+    /// </summary>
+    public readonly float Volume
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            return Extent.X * 2.0f;
+            Vector3 sides = _max - _min;
+            return sides.X * sides.Y * sides.Z;
         }
     }
 
     /// <summary>
-    /// Gets or sets the height of the bounding box.
+    /// Get the perimeter length.
     /// </summary>
-    public float Height
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly float GetPerimeter()
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return Extent.Y * 2.0f;
-        }
+        Vector3 sides = _max - _min;
+        return 4 * (sides.X + sides.Y + sides.Z);
     }
 
     /// <summary>
-    /// Gets or sets the depth of the bounding box.
+    /// Get the surface area.
     /// </summary>
-    public float Depth
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly float GetSurfaceArea()
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return Extent.Z * 2.0f;
-        }
+        Vector3 sides = _max - _min;
+        return 2 * (sides.X * sides.Y + sides.X * sides.Z + sides.Y * sides.Z);
     }
 
     public static BoundingBox CreateFromPoints(Vector3[] points)
     {
-        return CreateFromPoints(points.AsSpan());
+        ReadOnlySpan<Vector3> span = points.AsSpan();
+        return CreateFromPoints(span);
     }
 
     public static BoundingBox CreateFromPoints(ReadOnlySpan<Vector3> points)
@@ -185,7 +234,8 @@ public readonly struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     /// Retrieves the eight corners of the bounding box.
     /// </summary>
     /// <returns>An array of points representing the eight corners of the bounding box.</returns>
-    public void GetCorners(Vector3[] corners)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly void GetCorners(Vector3[] corners)
     {
         if (corners == null)
         {
@@ -197,14 +247,32 @@ public readonly struct BoundingBox : IEquatable<BoundingBox>, IFormattable
             throw new ArgumentOutOfRangeException(nameof(corners), $"GetCorners need at least {CornerCount} elements to copy corners.");
         }
 
-        corners[0] = new Vector3(Min.X, Max.Y, Max.Z);
-        corners[1] = new Vector3(Max.X, Max.Y, Max.Z);
-        corners[2] = new Vector3(Max.X, Min.Y, Max.Z);
-        corners[3] = new Vector3(Min.X, Min.Y, Max.Z);
-        corners[4] = new Vector3(Min.X, Max.Y, Min.Z);
-        corners[5] = new Vector3(Max.X, Max.Y, Min.Z);
-        corners[6] = new Vector3(Max.X, Min.Y, Min.Z);
-        corners[7] = new Vector3(Min.X, Min.Y, Min.Z);
+        corners[0] = new Vector3(_min.X, _max.Y, _max.Z);
+        corners[1] = new Vector3(_max.X, _max.Y, _max.Z);
+        corners[2] = new Vector3(_max.X, _min.Y, _max.Z);
+        corners[3] = new Vector3(_min.X, _min.Y, _max.Z);
+        corners[4] = new Vector3(_min.X, _max.Y, _min.Z);
+        corners[5] = new Vector3(_max.X, _max.Y, _min.Z);
+        corners[6] = new Vector3(_max.X, _min.Y, _min.Z);
+        corners[7] = new Vector3(_min.X, _min.Y, _min.Z);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly void GetCorners(Span<Vector3> corners)
+    {
+        if (corners.Length < CornerCount)
+        {
+            throw new ArgumentOutOfRangeException(nameof(corners), $"GetCorners need at least {CornerCount} elements to copy corners.");
+        }
+
+        corners[0] = new Vector3(_min.X, _max.Y, _max.Z);
+        corners[1] = new Vector3(_max.X, _max.Y, _max.Z);
+        corners[2] = new Vector3(_max.X, _min.Y, _max.Z);
+        corners[3] = new Vector3(_min.X, _min.Y, _max.Z);
+        corners[4] = new Vector3(_min.X, _max.Y, _min.Z);
+        corners[5] = new Vector3(_max.X, _max.Y, _min.Z);
+        corners[6] = new Vector3(_max.X, _min.Y, _min.Z);
+        corners[7] = new Vector3(_min.X, _min.Y, _min.Z);
     }
 
     public ContainmentType Contains(in Vector3 point)
@@ -308,7 +376,7 @@ public readonly struct BoundingBox : IEquatable<BoundingBox>, IFormattable
         float distance = 0.0f;
         float tmax = float.MaxValue;
 
-        if (MathHelper.IsZero(ray.Direction.X))
+        if (IsZero(ray.Direction.X))
         {
             if (ray.Position.X < Min.X || ray.Position.X > Max.X)
             {
@@ -427,17 +495,16 @@ public readonly struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is BoundingBox value && Equals(value);
+    public override readonly bool Equals(object? obj) => (obj is BoundingBox other) && Equals(other);
 
     /// <summary>
     /// Determines whether the specified <see cref="BoundingBox"/> is equal to this instance.
     /// </summary>
     /// <param name="other">The <see cref="Int4"/> to compare with this instance.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(BoundingBox other)
+    public readonly bool Equals(BoundingBox other)
     {
-        return Min.Equals(other.Min)
-            && Max.Equals(other.Max);
+        return _min.Equals(other._min)
+            && _max.Equals(other._max);
     }
 
     /// <summary>
@@ -449,7 +516,11 @@ public readonly struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator ==(BoundingBox left, BoundingBox right) => left.Equals(right);
+    public static bool operator ==(BoundingBox left, BoundingBox right)
+    {
+        return (left._min == right._min)
+            && (left._max == right._max);
+    }
 
     /// <summary>
     /// Compares two <see cref="BoundingBox"/> objects for inequality.
@@ -460,15 +531,21 @@ public readonly struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(BoundingBox left, BoundingBox right) => !left.Equals(right);
+    public static bool operator !=(BoundingBox left, BoundingBox right)
+    {
+        return (left._min != right._min)
+            || (left._max != right._max);
+    }
 
     /// <inheritdoc/>
-    public override int GetHashCode() => HashCode.Combine(Min, Max);
+    public override int GetHashCode() => HashCode.Combine(_min, _max);
 
     /// <inheritdoc />
     public override string ToString() => ToString(format: null, formatProvider: null);
 
     /// <inheritdoc />
     public string ToString(string? format, IFormatProvider? formatProvider)
-    => $"{nameof(BoundingBox)} {{ {nameof(Min)} = {Min.ToString(format, formatProvider)}, {nameof(Max)} = {Max.ToString(format, formatProvider)} }}";
+    {
+        return $"{nameof(BoundingBox)} {{ {nameof(Min)} = {Min.ToString(format, formatProvider)}, {nameof(Max)} = {Max.ToString(format, formatProvider)} }}";
+    }
 }

@@ -115,11 +115,7 @@ public readonly struct Byte4 : IPackedVector<uint>, IEquatable<Byte4>
 
         Unsafe.SkipInit(out this);
 
-#if NET6_0_OR_GREATER
         Vector4 vector = new(values);
-#else
-        Vector4 vector = Unsafe.ReadUnaligned<Vector4>(ref Unsafe.As<float, byte>(ref MemoryMarshal.GetReference(values)));
-#endif
         Vector4 result = Vector4.Clamp(vector, ByteMin, ByteMax);
         result = Round(result);
 

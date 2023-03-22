@@ -6,12 +6,9 @@
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-
-#if NET6_0_OR_GREATER
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
-#endif
 
 namespace Vortice.Mathematics;
 
@@ -20,17 +17,15 @@ namespace Vortice.Mathematics;
 /// </summary>
 public static class MathHelper
 {
+    public static bool Is64BitProcess { get; } = Unsafe.SizeOf<nuint>() == 8;
+
     /// <summary>Gets a value used to represent all bits set.</summary>
     public static float AllBitsSet
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-#if NET6_0_OR_GREATER
             return BitConverter.UInt32BitsToSingle(0xFFFFFFFF);
-#else
-            return UInt32BitsToSingle(0xFFFFFFFF);
-#endif
         }
     }
 
@@ -157,7 +152,6 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Cos(float value) => MathF.Cos(value);
 
-
     /// <summary>Computes the sine and cosine for a given 64-bit float.</summary>
     /// <param name="value">The float, in radians, for which to compute the sine and cosine.</param>
     /// <returns>The sine and cosine of <paramref name="value" />.</returns>
@@ -208,7 +202,6 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Max(double left, double right)
     {
-#if NET6_0_OR_GREATER
         if (Sse41.IsSupported)
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
@@ -229,7 +222,6 @@ public static class MathHelper
             ).ToScalar();
         }
         else
-#endif
         {
             return Math.Max(left, right);
         }
@@ -277,7 +269,6 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Max(float left, float right)
     {
-#if NET6_0_OR_GREATER
         if (Sse41.IsSupported)
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
@@ -298,7 +289,6 @@ public static class MathHelper
             ).ToScalar();
         }
         else
-#endif
         {
             return MathF.Max(left, right);
         }
@@ -347,7 +337,6 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Min(double left, double right)
     {
-#if NET6_0_OR_GREATER
         if (Sse41.IsSupported)
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
@@ -368,7 +357,6 @@ public static class MathHelper
             ).ToScalar();
         }
         else
-#endif
         {
             return Math.Min(left, right);
         }
@@ -417,7 +405,6 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Min(float left, float right)
     {
-#if NET6_0_OR_GREATER
         if (Sse41.IsSupported)
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
@@ -438,7 +425,6 @@ public static class MathHelper
             ).ToScalar();
         }
         else
-#endif
         {
             return MathF.Min(left, right);
         }
@@ -638,11 +624,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsPow2(uint value)
     {
-#if NET6_0_OR_GREATER
         return BitOperations.IsPow2(value);
-#else
-        return (value & (value - 1)) == 0 && value != 0;
-#endif
     }
 
     /// <summary>Determines whether a given value is a power of two.</summary>
@@ -651,11 +633,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsPow2(ulong value)
     {
-#if NET6_0_OR_GREATER
         return BitOperations.IsPow2(value);
-#else
-        return (value & (value - 1)) == 0 && value != 0;
-#endif
     }
 
     /// <summary>Determines whether a given value is a power of two.</summary>
@@ -664,7 +642,7 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsPow2(nuint value)
     {
-        return (value & (value - 1)) == 0 && value != 0;
+        return Is64BitProcess ? BitOperations.IsPow2(value) : BitOperations.IsPow2((uint)value);
     }
 
     // <summary>Rounds a given address down to the nearest alignment.</summary>
@@ -741,21 +719,6 @@ public static class MathHelper
 
         return (address + (alignment - 1)) & ~(alignment - 1);
     }
-
-#if !NET6_0_OR_GREATER
-    /// <summary>
-    /// Converts the specified 32-bit signed integer to a single-precision floating point number.
-    /// </summary>
-    /// <param name="value">The number to convert.</param>
-    /// <returns>A single-precision floating point number whose bits are identical to <paramref name="value"/>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe float Int32BitsToSingle(int value)
-    {
-        return *((float*)&value);
-    }
-
-    public static unsafe float UInt32BitsToSingle(uint value) => Int32BitsToSingle((int)value);
-#endif
 
     /// <summary>
     /// Converts a float value from gamma to linear space.

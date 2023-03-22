@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 
 namespace Vortice.Mathematics;
 
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
 public readonly struct BoundingFrustum : IEquatable<BoundingFrustum>
 {
     public const int CornerCount = 8;
@@ -40,8 +39,37 @@ public readonly struct BoundingFrustum : IEquatable<BoundingFrustum>
         };
     }
 
+    /// <summary>
+    /// The near plane of this frustum.
+    /// </summary>
+    public ref readonly Plane Near => ref _planes[0];
+
+    /// <summary>
+    /// The far plane of this frustum.
+    /// </summary>
+    public ref readonly Plane Far => ref _planes[1];
+
+    /// <summary>
+    /// The left plane of this frustum.
+    /// </summary>
+    public ref readonly Plane Left => ref _planes[2];
+
+    /// <summary>
+    /// The right plane of this frustum.
+    /// </summary>
+    public ref readonly Plane Right => ref _planes[3];
+
+    /// <summary>
+    /// The top  plane of this frustum.
+    /// </summary>
+    public ref readonly Plane Top => ref _planes[4];
+
+    /// <summary>
+    /// The bottom plane of this frustum.
+    /// </summary>
+    public ref readonly Plane Bottom => ref _planes[5];
+
     public IReadOnlyList<Vector3> Corners => _corners;
-    public IReadOnlyList<Plane> Planes => _planes;
 
     /// <summary>
     /// Checks whether the current <see cref="BoundingFrustum"/> intersects with a specified <see cref="BoundingBox"/>.
@@ -100,7 +128,7 @@ public readonly struct BoundingFrustum : IEquatable<BoundingFrustum>
     /// Retrieves the eight corners of the bounding frustum.
     /// </summary>
     /// <returns>An array of points representing the eight corners of the bounding frustum.</returns>
-    public void GetCorners(Vector3[] corners)
+    public readonly void GetCorners(Vector3[] corners)
     {
         if (corners == null)
         {
@@ -112,18 +140,33 @@ public readonly struct BoundingFrustum : IEquatable<BoundingFrustum>
             throw new ArgumentOutOfRangeException(nameof(corners), $"GetCorners need at least {CornerCount} elements to copy corners.");
         }
 
-        this._corners.CopyTo(corners, 0);
+        _corners.CopyTo(corners, 0);
+    }
+
+    /// <summary>
+    /// Retrieves the eight corners of the bounding frustum.
+    /// </summary>
+    /// <returns>An array of points representing the eight corners of the bounding frustum.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly void GetCorners(Span<Vector3> corners)
+    {
+        if (corners.Length < CornerCount)
+        {
+            throw new ArgumentOutOfRangeException(nameof(corners), $"GetCorners need at least {CornerCount} elements to copy corners.");
+        }
+
+        _corners.AsSpan().CopyTo(corners);
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is BoundingFrustum value && Equals(value);
+    public override readonly bool Equals(object? obj) => obj is BoundingFrustum value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="BoundingFrustum"/> is equal to this instance.
     /// </summary>
     /// <param name="other">The <see cref="Int4"/> to compare with this instance.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(BoundingFrustum other)
+    public readonly bool Equals(BoundingFrustum other)
     {
         for (int i = 0; i < _planes.Length; i++)
         {

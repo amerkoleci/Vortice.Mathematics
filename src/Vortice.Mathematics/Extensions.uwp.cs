@@ -1,7 +1,7 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-#if WINDOWS_UWP
+#if WINDOWS
 using System.Drawing;
 using WindowsPoint = Windows.Foundation.Point;
 using WindowsSize = Windows.Foundation.Size;

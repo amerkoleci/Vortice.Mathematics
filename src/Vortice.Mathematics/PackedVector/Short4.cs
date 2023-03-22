@@ -8,14 +8,9 @@ using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-
-#if NET6_0_OR_GREATER
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using static Vortice.Mathematics.VectorUtilities;
-#else
-using static Vortice.Mathematics.Vector4Utilities;
-#endif
 
 namespace Vortice.Mathematics.PackedVector;
 
@@ -92,7 +87,6 @@ public readonly struct Short4 : IPackedVector<ulong>, IEquatable<Short4>
     {
         Unsafe.SkipInit(out this);
 
-#if NET6_0_OR_GREATER
         Vector128<float> vector = Vector128.Create(x, y, z, w);
         if (Sse41.IsSupported)
         {
@@ -115,15 +109,6 @@ public readonly struct Short4 : IPackedVector<ulong>, IEquatable<Short4>
             Z = (short)vector.GetZ();
             W = (short)vector.GetW();
         }
-#else
-        Vector4 vector = Vector4.Clamp(new Vector4(x, y, z, w), ShortMin, ShortMax);
-        vector = Round(vector);
-
-        X = (short)vector.X;
-        Y = (short)vector.Y;
-        Z = (short)vector.Z;
-        W = (short)vector.W;
-#endif
     }
 
     /// <summary>
@@ -145,10 +130,10 @@ public readonly struct Short4 : IPackedVector<ulong>, IEquatable<Short4>
     /// </summary>
     public Vector4 ToVector4() => new(X, Y, Z, W);
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Short4 other && Equals(other);
+    public override readonly bool Equals(object? obj) => obj is Short4 other && Equals(other);
 
     /// <inheritdoc/>
-    public bool Equals(Short4 other) => PackedValue.Equals(other.PackedValue);
+    public readonly bool Equals(Short4 other) => PackedValue.Equals(other.PackedValue);
 
     /// <summary>
     /// Compares two <see cref="Short4"/> objects for equality.

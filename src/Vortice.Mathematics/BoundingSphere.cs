@@ -1,48 +1,28 @@
 ﻿// Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-//
-// -----------------------------------------------------------------------------
-// Original code from SlimMath project. http://code.google.com/p/slimmath/
-// Greetings to SlimDX Group. Original code published with the following license:
-// -----------------------------------------------------------------------------
-/*
-* Copyright (c) 2007-2011 SlimDX Group
-* 
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-* 
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE.
-*/
+// Copyright © Tanner Gooding and Contributors. Licensed under the MIT License (MIT). See License.md in the repository root for more information.
+
+// This file includes code based on code from https://github.com/microsoft/DirectXMath
+// The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace Vortice.Mathematics;
 
 /// <summary>
 /// Defines an sphere in three dimensional space.
 /// </summary>
-public readonly struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
+public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
 {
     /// <summary>
-    /// An empty bounding sphere (Center = 0 and Radius = 0).
+    /// Gets a bounding sphere with zero radius.
     /// </summary>
-    public static readonly BoundingSphere Empty = new();
+    public static BoundingSphere Zero => new(Vector3.Zero, 0.0f);
+
+    private Vector3 _center;
+    private float _radius;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BoundingSphere"/> struct.
@@ -51,19 +31,43 @@ public readonly struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     /// <param name="radius">The radius of the sphere.</param>
     public BoundingSphere(Vector3 center, float radius)
     {
-        Center = center;
-        Radius = radius;
+        _center = center;
+        _radius = radius;
     }
 
     /// <summary>
-    /// The center point of the sphere.
+    /// Gets or sets the center of the bounding sphere.
     /// </summary>
-    public Vector3 Center { get; }
+    public Vector3 Center
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return _center;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set
+        {
+            _center = value;
+        }
+    }
 
     /// <summary>
-    /// The radious of the sphere.
+    /// Gets or sets the radius of the bounding sphere.
     /// </summary>
-    public float Radius { get; }
+    public float Radius
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return _radius;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set
+        {
+            _radius = value;
+        }
+    }
 
     /// <summary>
     /// Creates a <see cref="BoundingBox"/> from the sum of 2 <see cref="BoundingBox"/>es.
@@ -93,16 +97,34 @@ public readonly struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     }
 
     /// <summary>
+    /// Creates a bounding sphere from a center and radius.
+    /// </summary>
+    /// <param name="center">The center of the bounding sphere.</param>
+    /// <param name="radius">The radius of the bounding sphere.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static BoundingSphere CreateFromRadius(Vector3 center, float radius)
+    {
+        BoundingSphere result;
+
+        result._center = center;
+        result._radius = radius;
+
+        return result;
+    }
+
+    /// <summary>
     /// Creates the smallest <see cref="BoundingSphere"/> that can contain a specified <see cref="BoundingBox"/>.
     /// </summary>
     /// <param name="box">The <see cref="BoundingBox"/> to create the <see cref="BoundingSphere"/> from.</param>
     /// <returns>The created <see cref="BoundingSphere"/>.</returns>
     public static BoundingSphere CreateFromBoundingBox(in BoundingBox box)
     {
-        return new(
-            Vector3.Lerp(box.Min, box.Max, 0.5f),
-            Vector3.Distance(box.Min, box.Max) * 0.5f
-            );
+        BoundingSphere result;
+
+        result._center = Vector3.Lerp(box.Min, box.Max, 0.5f);
+        result._radius = Vector3.Distance(box.Min, box.Max) * 0.5f;
+
+        return result;
     }
 
     /// <summary>
@@ -240,7 +262,7 @@ public readonly struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is BoundingSphere value && Equals(value);
+    public override bool Equals(object? obj) => (obj is BoundingSphere other) && Equals(other);
 
     /// <summary>
     /// Determines whether the specified <see cref="BoundingSphere"/> is equal to this instance.
@@ -249,8 +271,8 @@ public readonly struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Equals(BoundingSphere other)
     {
-        return Center.Equals(other.Center)
-            && Radius == other.Radius;
+        return _center.Equals(other._center)
+            && _radius.Equals(other._radius);
     }
 
     /// <summary>
@@ -262,7 +284,11 @@ public readonly struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator ==(BoundingSphere left, BoundingSphere right) => left.Equals(right);
+    public static bool operator ==(BoundingSphere left, BoundingSphere right)
+    {
+        return (left._center == right._center)
+            && (left._radius == right._radius);
+    }
 
     /// <summary>
     /// Compares two <see cref="BoundingSphere"/> objects for inequality.
@@ -273,18 +299,14 @@ public readonly struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(BoundingSphere left, BoundingSphere right) => !left.Equals(right);
+    public static bool operator !=(BoundingSphere left, BoundingSphere right)
+    {
+        return (left._center != right._center)
+            || (left._radius != right._radius);
+    }
 
     /// <inheritdoc/>
-    public override int GetHashCode()
-    {
-        HashCode hashCode = new HashCode();
-        {
-            hashCode.Add(Center);
-            hashCode.Add(Radius);
-        }
-        return hashCode.ToHashCode();
-    }
+    public override int GetHashCode() => HashCode.Combine(_center, _radius);
 
     /// <inheritdoc />
     public override string ToString() => ToString(format: null, formatProvider: null);
@@ -292,6 +314,6 @@ public readonly struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     /// <inheritdoc />
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
-        return $"Center:{Center.ToString(format, formatProvider)} Radius:{Radius.ToString(format, formatProvider)}";
+        return $"{nameof(BoundingSphere)} {{ {nameof(Center)} = {_center.ToString(format, formatProvider)}, {nameof(Radius)} = {_radius.ToString(format, formatProvider)} }}";
     }
 }

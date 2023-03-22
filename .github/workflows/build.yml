@@ -11,11 +11,7 @@ on:
     paths-ignore:
       - '*.md'
       - 'LICENSE'
-
-env:
-  DOTNET_CLI_TELEMETRY_OPTOUT: false
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-
+      
 jobs:
   build:
     runs-on: windows-latest
@@ -35,7 +31,7 @@ jobs:
         dotnet-version: '7.0.x'
 
     - name: Pack
-      run: msbuild Vortice.Mathematics.sln -t:restore,build,pack /p:Configuration=Release
+      run: dotnet pack Vortice.Mathematics.sln --configuration Release
 
     - name: Publish to NuGet
       if: github.event_name == 'push'

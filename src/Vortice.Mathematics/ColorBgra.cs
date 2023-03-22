@@ -5,13 +5,10 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Vortice.Mathematics.PackedVector;
-
-#if NET6_0_OR_GREATER
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
 using static Vortice.Mathematics.VectorUtilities;
-#endif
 
 namespace Vortice.Mathematics;
 
@@ -110,7 +107,7 @@ public readonly struct ColorBgra : IPackedVector<uint>, IEquatable<ColorBgra>
     {
         Unsafe.SkipInit(out this);
 
-#if NET6_0_OR_GREATER && TODO
+#if TODO
         unsafe
         {
             if (Sse2.IsSupported)

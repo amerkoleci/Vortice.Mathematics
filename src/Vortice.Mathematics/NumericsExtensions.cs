@@ -85,4 +85,22 @@ public static class NumericsExtensions
     {
         result = new(planeNormal, -Vector3.Dot(planeNormal, pointOnPlane));
     }
+
+    /// <summary>
+    /// Creates a plane of unit length.
+    /// </summary>
+    /// <param name="normalX">The X component of the normal.</param>
+    /// <param name="normalY">The Y component of the normal.</param>
+    /// <param name="normalZ">The Z component of the normal.</param>
+    /// <param name="planeD">The distance of the plane along its normal from the origin.</param>
+    /// <param name="result">When the method completes, contains the normalized plane.</param>
+    public static void NormalizePlane(float normalX, float normalY, float normalZ, float planeD, out Plane result)
+    {
+        float magnitude = 1.0f / MathF.Sqrt((normalX * normalX) + (normalY * normalY) + (normalZ * normalZ));
+
+        result.Normal.X = normalX * magnitude;
+        result.Normal.Y = normalY * magnitude;
+        result.Normal.Z = normalZ * magnitude;
+        result.D = planeD * magnitude;
+    }
 }

@@ -7,11 +7,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Diagnostics;
 using System.Numerics;
-
-#if NET6_0_OR_GREATER
 using System.Runtime.Intrinsics;
 using static Vortice.Mathematics.VectorUtilities;
-#endif
 
 namespace Vortice.Mathematics;
 
@@ -20,9 +17,7 @@ namespace Vortice.Mathematics;
 /// </summary>
 public readonly struct Color4 : IEquatable<Color4>, IFormattable
 {
-#if NET6_0_OR_GREATER
     private readonly Vector128<float> _value;
-#endif
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Color4"/> struct.
@@ -30,11 +25,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="value">The value that will be assigned to all components.</param>
     public Color4(float value)
     {
-#if NET6_0_OR_GREATER
         _value = Vector128.Create(value, value, value, value);
-#else
-        A = R = G = B = value;
-#endif
     }
 
     /// <summary>
@@ -45,14 +36,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="blue">The blue component of the color.</param>
     public Color4(float red, float green, float blue)
     {
-#if NET6_0_OR_GREATER
         _value = Vector128.Create(red, green, blue, 1.0f);
-#else
-        R = red;
-        G = green;
-        B = blue;
-        A = 1.0f;
-#endif
     }
 
     /// <summary>
@@ -64,14 +48,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="alpha">The alpha component of the color.</param>
     public Color4(float red, float green, float blue, float alpha)
     {
-#if NET6_0_OR_GREATER
         _value = Vector128.Create(red, green, blue, alpha);
-#else
-        R = red;
-        G = green;
-        B = blue;
-        A = alpha;
-#endif
     }
 
     /// <summary>
@@ -80,14 +57,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="value">The red, green, blue, and alpha components of the color.</param>
     public Color4(in Vector4 value)
     {
-#if NET6_0_OR_GREATER
         _value = value.AsVector128();
-#else
-        R = value.X;
-        G = value.Y;
-        B = value.Z;
-        A = value.W;
-#endif
     }
 
     /// <summary>
@@ -97,14 +67,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="alpha">The alpha component of the color.</param>
     public Color4(in Vector3 value, float alpha)
     {
-#if NET6_0_OR_GREATER
         _value = Vector128.Create(value.X, value.Y, value.Z, alpha);
-#else
-        R = value.X;
-        G = value.Y;
-        B = value.Z;
-        A = alpha;
-#endif
     }
 
     /// <summary>
@@ -114,14 +77,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="alpha">The alpha component of the color.</param>
     public Color4(in Color3 value, float alpha)
     {
-#if NET6_0_OR_GREATER
         _value = Vector128.Create(value.R, value.G, value.B, alpha);
-#else
-        R = value.R;
-        G = value.G;
-        B = value.B;
-        A = alpha;
-#endif
     }
 
     /// <summary>
@@ -133,14 +89,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="a">Alpha component.</param>
     public Color4(byte r, byte g, byte b, byte a = 255)
     {
-#if NET6_0_OR_GREATER
         _value = Vector128.Create(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
-#else
-        R = r / 255.0f;
-        G = g / 255.0f;
-        B = b / 255.0f;
-        A = a / 255.0f;
-#endif
     }
 
     /// <summary>
@@ -149,14 +98,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="color"><see cref="Color"/> used to initialize the color.</param>
     public Color4(in Color color)
     {
-#if NET6_0_OR_GREATER
         _value = Vector128.Create(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f, color.A / 255.0f);
-#else
-        R = color.R / 255.0f;
-        G = color.G / 255.0f;
-        B = color.B / 255.0f;
-        A = color.A / 255.0f;
-#endif
     }
 
     /// <summary>
@@ -173,7 +115,6 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
         this = Unsafe.ReadUnaligned<Color4>(ref Unsafe.As<float, byte>(ref MemoryMarshal.GetReference(values)));
     }
 
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Initializes a new instance of the <see cref="Color" /> struct.
     /// </summary>
@@ -230,28 +171,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
             return _value.GetW();
         }
     }
-#else
-    /// <summary>
-    /// Red component of the color.
-    /// </summary>
-    public float R { get; }
-
-    /// <summary>
-    /// Green component of the color.
-    /// </summary>
-    public float G { get; }
-
-    /// <summary>
-    /// Blue component of the color.
-    /// </summary>
-    public float B { get; }
-
-    /// <summary>
-    /// Alpha component of the color.
-    /// </summary>
-    public float A { get; }
-#endif
-
+    
     public readonly float this[int index] => GetElement(this, index);
 
     /// <summary>
@@ -709,12 +629,8 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color4 Multiply(Color4 left, Color4 right)
     {
-#if NET6_0_OR_GREATER
         Vector128<float> result = VectorUtilities.Multiply(left._value, right._value);
         return new Color4(result);
-#else
-        return new Color4(left.R * right.R, left.G * right.G, left.B * right.B, left.A * right.A);
-#endif
     }
 
     /// <summary>Multiplies a color by a specified scalar.</summary>
@@ -724,12 +640,8 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color4 Multiply(Color4 left, float right)
     {
-#if NET6_0_OR_GREATER
         Vector128<float> result = VectorUtilities.Multiply(left._value, right);
         return new Color4(result);
-#else
-        return new Color4(left.R * right, left.G * right, left.B * right, left.A * right);
-#endif
     }
 
     /// <summary>Multiplies a scalar value by a specified color.</summary>
@@ -739,12 +651,8 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color4 Multiply(float left, Color4 right)
     {
-#if NET6_0_OR_GREATER
         Vector128<float> result = VectorUtilities.Multiply(right._value, left);
         return new Color4(result);
-#else
-        return new Color4(left * right.R, left * right.G, left * right.B, left * right.A);
-#endif
     }
 
     /// <summary>
@@ -849,12 +757,8 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color4 operator *(Color4 left, float right)
     {
-#if NET6_0_OR_GREATER
         Vector128<float> result = VectorUtilities.Multiply(left._value, right);
         return new Color4(result);
-#else
-        return new Color4(left.R * right, left.G * right, left.B * right, left.A * right);
-#endif
     }
 
     /// <summary>Computes the product of two colors.</summary>
@@ -864,12 +768,8 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color4 operator *(Color4 left, Color4 right)
     {
-#if NET6_0_OR_GREATER
         Vector128<float> result = VectorUtilities.Multiply(left._value, right._value);
         return new Color4(result);
-#else
-        return new Color4(left.R * right.R, left.G * right.G, left.B * right.B, left.A * right.A);
-#endif
     }
 
     /// <summary>
@@ -883,11 +783,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator ==(Color4 left, Color4 right)
     {
-#if NET6_0_OR_GREATER
         return CompareEqualAll(left._value, right._value);
-#else
-        return left.A == right.A && left.R == right.R && left.G == right.G && left.B == right.B;
-#endif
     }
 
     /// <summary>
@@ -901,11 +797,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator !=(Color4 left, Color4 right)
     {
-#if NET6_0_OR_GREATER
         return CompareNotEqualAny(left._value, right._value);
-#else
-        return !left.Equals(right);
-#endif
     }
 
     /// <inheritdoc/>

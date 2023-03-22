@@ -154,7 +154,7 @@ public readonly struct Viewport : IEquatable<Viewport>
     {
         get
         {
-            if (!MathHelper.IsZero(Height))
+            if (!IsZero(Height))
             {
                 return Width / Height;
             }
@@ -170,7 +170,7 @@ public readonly struct Viewport : IEquatable<Viewport>
     /// <param name="projection">The projection matrix.</param>
     /// <param name="view">The view matrix.</param>
     /// <param name="world">The world matrix.</param>
-    public Vector3 Project(Vector3 source, Matrix4x4 projection, Matrix4x4 view, Matrix4x4 world)
+    public Vector3 Project(in Vector3 source, in Matrix4x4 projection, in Matrix4x4 view, in Matrix4x4 world)
     {
         Matrix4x4 worldViewProjection = Matrix4x4.Multiply(Matrix4x4.Multiply(world, view), projection);
         return Project(source, worldViewProjection);
