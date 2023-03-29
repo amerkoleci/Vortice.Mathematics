@@ -1,13 +1,13 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
+using System.Diagnostics;
 using System.Globalization;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Diagnostics;
-using System.Numerics;
 using System.Runtime.Intrinsics;
+using System.Text;
 using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics;
@@ -15,6 +15,7 @@ namespace Vortice.Mathematics;
 /// <summary>
 /// Represents a floating-point RGBA color.
 /// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 4)]
 public readonly struct Color4 : IEquatable<Color4>, IFormattable
 {
     private readonly Vector128<float> _value;
@@ -526,7 +527,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="min"></param>
     /// <param name="max"></param>
     /// <returns></returns>
-    private float SaturationHSV(float min, float max)
+    private static float SaturationHSV(float min, float max)
     {
         // Avoid div-by-zero: result undefined
         if (max <= MathHelper.NearZeroEpsilon)
@@ -542,7 +543,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="min"></param>
     /// <param name="max"></param>
     /// <returns></returns>
-    private float SaturationHSL(float min, float max)
+    private static float SaturationHSL(float min, float max)
     {
         // Avoid div-by-zero: result undefined
         if (max <= MathHelper.NearZeroEpsilon || min >= 1.0f - MathHelper.NearZeroEpsilon)

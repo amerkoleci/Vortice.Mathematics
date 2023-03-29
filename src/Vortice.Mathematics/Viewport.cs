@@ -13,10 +13,39 @@ namespace Vortice.Mathematics;
 /// <summary>
 /// Represents a floating-point viewport struct.
 /// </summary>
-[Serializable]
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
-public readonly struct Viewport : IEquatable<Viewport>
+public struct Viewport : IEquatable<Viewport>
 {
+    /// <summary>
+    /// Position of the pixel coordinate of the upper-left corner of the viewport.
+    /// </summary>
+    public float X;
+
+    /// <summary>
+    /// Position of the pixel coordinate of the upper-left corner of the viewport.
+    /// </summary>
+    public float Y;
+
+    /// <summary>
+    /// Width dimension of the viewport.
+    /// </summary>
+    public float Width;
+
+    /// <summary>
+    /// Height dimension of the viewport.
+    /// </summary>
+    public float Height;
+
+    /// <summary>
+    /// Gets or sets the minimum depth of the clip volume.
+    /// </summary>
+    public float MinDepth;
+
+    /// <summary>
+    /// Gets or sets the maximum depth of the clip volume.
+    /// </summary>
+    public float MaxDepth;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Viewport"/> struct.
     /// </summary>
@@ -109,36 +138,6 @@ public readonly struct Viewport : IEquatable<Viewport>
         MinDepth = 0.0f;
         MaxDepth = 1.0f;
     }
-
-    /// <summary>
-    /// Position of the pixel coordinate of the upper-left corner of the viewport.
-    /// </summary>
-    public float X { get; }
-
-    /// <summary>
-    /// Position of the pixel coordinate of the upper-left corner of the viewport.
-    /// </summary>
-    public float Y { get; }
-
-    /// <summary>
-    /// Width dimension of the viewport.
-    /// </summary>
-    public float Width { get; }
-
-    /// <summary>
-    /// Height dimension of the viewport.
-    /// </summary>
-    public float Height { get; }
-
-    /// <summary>
-    /// Gets or sets the minimum depth of the clip volume.
-    /// </summary>
-    public float MinDepth { get; }
-
-    /// <summary>
-    /// Gets or sets the maximum depth of the clip volume.
-    /// </summary>
-    public float MaxDepth { get; }
 
     /// <summary>
     /// Gets or sets the bounds of the viewport.
