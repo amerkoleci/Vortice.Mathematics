@@ -12,33 +12,30 @@ public static class NumericsExtensions
 {
     public static Vector3 ToEuler(this in Quaternion rotation)
     {
-        Vector3 rotationEuler;
-
         float xx = rotation.X * rotation.X;
         float yy = rotation.Y * rotation.Y;
         float zz = rotation.Z * rotation.Z;
-        float xy = rotation.X * rotation.Y;
-        float zw = rotation.Z * rotation.W;
-        float zx = rotation.Z * rotation.X;
-        float yw = rotation.Y * rotation.W;
-        float yz = rotation.Y * rotation.Z;
-        float xw = rotation.X * rotation.W;
 
-        rotationEuler.Y = MathHelper.Asin(2.0f * (yw - zx));
-        double test = MathHelper.Cos(rotationEuler.Y);
+        float m31 = 2.0f * rotation.X * rotation.Z + 2.0f * rotation.Y * rotation.W;
+        float m32 = 2.0f * rotation.Y * rotation.Z - 2.0f * rotation.X * rotation.W;
+        float m33 = 1.0f - 2.0f * xx - 2.0f * yy;
 
-        if (test > 1e-6f)
+        float cy = MathF.Sqrt(m33 * m33 + m31 * m31);
+        float cx = MathF.Atan2(-m32, cy);
+        if (cy > 16.0f * float.Epsilon)
         {
-            rotationEuler.Z = MathHelper.Atan2(2.0f * (xy + zw), 1.0f - (2.0f * (yy + zz)));
-            rotationEuler.X = MathHelper.Atan2(2.0f * (yz + xw), 1.0f - (2.0f * (yy + xx)));
+            float m12 = 2.0f * rotation.X * rotation.Y + 2.0f * rotation.Z * rotation.W;
+            float m22 = 1.0f - 2.0f * xx - 2.0f * zz;
+
+            return new Vector3(cx, MathF.Atan2(m31, m33), MathF.Atan2(m12, m22));
         }
         else
         {
-            rotationEuler.Z = MathHelper.Atan2(2.0f * (zw - xy), 2.0f * (zx + yw));
-            rotationEuler.X = 0.0f;
-        }
+            float m11 = 1.0f - 2.0f * yy - 2.0f * zz;
+            float m21 = 2.0f * rotation.X * rotation.Y - 2.0f * rotation.Z * rotation.W;
 
-        return rotationEuler;
+            return new Vector3(cx, 0.0f, MathF.Atan2(-m21, m11));
+        }
     }
 
     public static Quaternion FromEuler(this in Vector3 value)
@@ -47,12 +44,12 @@ public static class NumericsExtensions
 
         Vector3 halfAngles = value * 0.5f;
 
-        float fSinX = MathHelper.Sin(halfAngles.X);
-        float fCosX = MathHelper.Cos(halfAngles.X);
-        float fSinY = MathHelper.Sin(halfAngles.Y);
-        float fCosY = MathHelper.Cos(halfAngles.Y);
-        float fSinZ = MathHelper.Sin(halfAngles.Z);
-        float fCosZ = MathHelper.Cos(halfAngles.Z);
+        float fSinX = MathF.Sin(halfAngles.X);
+        float fCosX = MathF.Cos(halfAngles.X);
+        float fSinY = MathF.Sin(halfAngles.Y);
+        float fCosY = MathF.Cos(halfAngles.Y);
+        float fSinZ = MathF.Sin(halfAngles.Z);
+        float fCosZ = MathF.Cos(halfAngles.Z);
 
         float fCosXY = fCosX * fCosY;
         float fSinXY = fSinX * fSinY;

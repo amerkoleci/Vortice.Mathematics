@@ -12,17 +12,17 @@ namespace Vortice.Mathematics;
 /// Vector type containing two 32 bit signed integer components.
 /// </summary>
 [DebuggerDisplay("X={X}, Y={Y}")]
-public readonly  struct Int2 : IEquatable<Int2>, IFormattable
+public struct Int2 : IEquatable<Int2>, IFormattable
 {
     /// <summary>
     /// The X component of the vector.
     /// </summary>
-    public readonly int X;
+    public int X;
 
     /// <summary>
     /// The Y component of the vector.
     /// </summary>
-    public readonly int Y;
+    public int Y;
 
     internal const int Count = 2;
 
@@ -106,7 +106,18 @@ public readonly  struct Int2 : IEquatable<Int2>, IFormattable
         get => new(1, 1);
     }
 
-    public readonly int this[int index] => GetElement(this, index);
+    /// <summary>Gets or sets the element at the specified index.</summary>
+    /// <param name="index">The index of the element to get or set.</param>
+    /// <returns>The the element at <paramref name="index" />.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> was less than zero or greater than the number of elements.</exception>
+    public int this[int index]
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        readonly get => this.GetElement(index);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => this = this.WithElement(index, value);
+    }
 
     public void Deconstruct(out int x, out int y)
     {
@@ -230,22 +241,4 @@ public readonly  struct Int2 : IEquatable<Int2>, IFormattable
     /// <inheritdoc />
     public string ToString(string? format, IFormatProvider? formatProvider)
         => $"{nameof(Int2)} {{ {nameof(X)} = {X.ToString(format, formatProvider)}, {nameof(Y)} = {Y.ToString(format, formatProvider)} }}";
-
-    internal static int GetElement(Int2 vector, int index)
-    {
-        if (index >= Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index));
-        }
-
-        return GetElementUnsafe(ref vector, index);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int GetElementUnsafe(ref Int2 vector, int index)
-    {
-        Debug.Assert(index is >= 0 and < Count);
-
-        return Unsafe.Add(ref Unsafe.As<Int2, int>(ref vector), index);
-    }
 }
