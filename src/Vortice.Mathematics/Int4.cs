@@ -12,27 +12,27 @@ namespace Vortice.Mathematics;
 /// Vector type containing four 32 bit signed integer components.
 /// </summary>
 [DebuggerDisplay("X={X}, Y={Y}, Z={Z}, W={W}")]
-public readonly struct Int4 : IEquatable<Int4>, IFormattable
+public struct Int4 : IEquatable<Int4>, IFormattable
 {
     /// <summary>
     /// The X component of the vector.
     /// </summary>
-    public readonly int X;
+    public int X;
 
     /// <summary>
     /// The Y component of the vector.
     /// </summary>
-    public readonly int Y;
+    public int Y;
 
     /// <summary>
     /// The Z component of the vector.
     /// </summary>
-    public readonly int Z;
+    public int Z;
 
     /// <summary>
     /// The W component of the vector.
     /// </summary>
-    public readonly int W;
+    public int W;
 
     internal const int Count = 4;
 
@@ -63,7 +63,7 @@ public readonly struct Int4 : IEquatable<Int4>, IFormattable
     /// </summary>
     /// <param name="value">A <see cref="Int3"/> containing the values with which to initialize the X, Y, and Z components.</param>
     /// <param name="w">Initial value for the W component of the vector.</param>
-    public Int4(Int3 value, int w)
+    public Int4(in Int3 value, int w)
     {
         X = value.X;
         Y = value.Y;
@@ -154,7 +154,18 @@ public readonly struct Int4 : IEquatable<Int4>, IFormattable
         get => new(1, 1, 1, 1);
     }
 
-    public readonly int this[int index] => GetElement(this, index);
+    /// <summary>Gets or sets the element at the specified index.</summary>
+    /// <param name="index">The index of the element to get or set.</param>
+    /// <returns>The the element at <paramref name="index" />.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> was less than zero or greater than the number of elements.</exception>
+    public int this[int index]
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        readonly get => this.GetElement(index);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => this = this.WithElement(index, value);
+    }
 
     public void Deconstruct(out int x, out int y, out int z, out int w)
     {
@@ -307,23 +318,4 @@ public readonly struct Int4 : IEquatable<Int4>, IFormattable
     /// <inheritdoc />
     public string ToString(string? format, IFormatProvider? formatProvider)
         => $"{nameof(Int4)} {{ {nameof(X)} = {X.ToString(format, formatProvider)}, {nameof(Y)} = {Y.ToString(format, formatProvider)}, {nameof(Z)} = {Z.ToString(format, formatProvider)}, {nameof(W)} = {W.ToString(format, formatProvider)} }}";
-
-
-    internal static int GetElement(Int4 vector, int index)
-    {
-        if (index >= Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index));
-        }
-
-        return GetElementUnsafe(ref vector, index);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int GetElementUnsafe(ref Int4 vector, int index)
-    {
-        Debug.Assert(index is >= 0 and < Count);
-
-        return Unsafe.Add(ref Unsafe.As<Int4, int>(ref vector), index);
-    }
 }

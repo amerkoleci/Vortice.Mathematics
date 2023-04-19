@@ -10,11 +10,11 @@ using static Vortice.Mathematics.Vector2Utilities;
 namespace Vortice.Mathematics.PackedVector;
 
 /// <summary>
-/// Packed vector type containing two 16-bit unsigned normalized integer components.
+/// Packed vector type containing two 16-bit signed normalized integer components.
 /// </summary>
-/// <remarks>Equivalent of XMUSHORTN2.</remarks>
+/// <remarks>Equivalent of XMSHORTN2.</remarks>
 [StructLayout(LayoutKind.Explicit)]
-public readonly struct UShortN2 : IPackedVector<uint>, IEquatable<UShortN2>
+public readonly struct Short2Normalized : IPackedVector<uint>, IEquatable<Short2Normalized>
 {
     [FieldOffset(0)]
     private readonly uint _packedValue;
@@ -23,19 +23,19 @@ public readonly struct UShortN2 : IPackedVector<uint>, IEquatable<UShortN2>
     /// The X component of the vector.
     /// </summary>
     [FieldOffset(0)]
-    public readonly ushort X;
+    public readonly short X;
 
     /// <summary>
     /// The Y component of the vector.
     /// </summary>
     [FieldOffset(2)]
-    public readonly ushort Y;
+    public readonly short Y;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UShortN2"/> struct.
+    /// Initializes a new instance of the <see cref="Short2Normalized"/> struct.
     /// </summary>
     /// <param name="packedValue">The packed value to assign.</param>
-    public UShortN2(uint packedValue)
+    public Short2Normalized(uint packedValue)
     {
         Unsafe.SkipInit(out this);
 
@@ -43,11 +43,11 @@ public readonly struct UShortN2 : IPackedVector<uint>, IEquatable<UShortN2>
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UShortN2"/> struct.
+    /// Initializes a new instance of the <see cref="Short2Normalized"/> struct.
     /// </summary>
     /// <param name="x">The x value.</param>
     /// <param name="y">The y value.</param>
-    public UShortN2(ushort x, ushort y)
+    public Short2Normalized(short x, short y)
     {
         Unsafe.SkipInit(out this);
 
@@ -56,36 +56,36 @@ public readonly struct UShortN2 : IPackedVector<uint>, IEquatable<UShortN2>
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UShortN2"/> struct.
+    /// Initializes a new instance of the <see cref="Short2Normalized"/> struct.
     /// </summary>
     /// <param name="x">The x value.</param>
     /// <param name="y">The y value.</param>
-    public UShortN2(float x, float y)
+    public Short2Normalized(float x, float y)
     {
         Unsafe.SkipInit(out this);
 
-        Vector2 vector = Saturate(new Vector2(x, y));
-        vector = MultiplyAdd(vector, UShortMax, OneHalf);
-        vector = Truncate(vector);
+        Vector2 vector = Vector2.Clamp(new Vector2(x, y), NegativeOne, Vector2.One);
+        vector = Vector2.Multiply(vector, ShortMax);
+        vector = Round(vector);
 
-        X = (ushort)vector.X;
-        Y = (ushort)vector.Y;
+        X = (short)vector.X;
+        Y = (short)vector.Y;
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UShortN2"/> struct.
+    /// Initializes a new instance of the <see cref="Short2Normalized"/> struct.
     /// </summary>
     /// <param name="vector">The <see cref="Vector2"/> containing X and Y value.</param>
-    public UShortN2(in Vector2 vector)
+    public Short2Normalized(Vector2 vector)
         : this(vector.X, vector.Y)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UShortN2"/> struct.
+    /// Initializes a new instance of the <see cref="Short2Normalized"/> struct.
     /// </summary>
     /// <param name="vector">The <see cref="Vector4"/> containing X and Y value.</param>
-    public UShortN2(in Vector4 vector)
+    public Short2Normalized(Vector4 vector)
         : this(vector.X, vector.Y)
     {
     }
@@ -98,7 +98,10 @@ public readonly struct UShortN2 : IPackedVector<uint>, IEquatable<UShortN2>
     /// <summary>
     /// Expands the packed representation to a <see cref="Vector2"/>.
     /// </summary>
-    public Vector2 ToVector2() => new((float)X / 65535.0f, (float)Y / 65535.0f);
+    public Vector2 ToVector2() => new(
+        (X == -32768) ? -1.0f : (float)X * (1.0f / 32767.0f),
+        (Y == -32768) ? -1.0f : (float)Y * (1.0f / 32767.0f)
+        );
 
     Vector4 IPackedVector.ToVector4()
     {
@@ -107,32 +110,32 @@ public readonly struct UShortN2 : IPackedVector<uint>, IEquatable<UShortN2>
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is UShortN2 other && Equals(other);
+    public override bool Equals(object? obj) => obj is Short2Normalized other && Equals(other);
 
     /// <inheritdoc/>
-    public bool Equals(UShortN2 other) => PackedValue.Equals(other.PackedValue);
+    public bool Equals(Short2Normalized other) => PackedValue.Equals(other.PackedValue);
 
     /// <summary>
-    /// Compares two <see cref="UShortN2"/> objects for equality.
+    /// Compares two <see cref="Short2Normalized"/> objects for equality.
     /// </summary>
-    /// <param name="left">The <see cref="UShortN2"/> on the left hand of the operand.</param>
-    /// <param name="right">The <see cref="UShortN2"/> on the right hand of the operand.</param>
+    /// <param name="left">The <see cref="Short2Normalized"/> on the left hand of the operand.</param>
+    /// <param name="right">The <see cref="Short2Normalized"/> on the right hand of the operand.</param>
     /// <returns>
     /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator ==(UShortN2 left, UShortN2 right) => left.Equals(right);
+    public static bool operator ==(Short2Normalized left, Short2Normalized right) => left.Equals(right);
 
     /// <summary>
-    /// Compares two <see cref="UShortN2"/> objects for inequality.
+    /// Compares two <see cref="Short2Normalized"/> objects for inequality.
     /// </summary>
-    /// <param name="left">The <see cref="UShortN2"/> on the left hand of the operand.</param>
-    /// <param name="right">The <see cref="UShortN2"/> on the right hand of the operand.</param>
+    /// <param name="left">The <see cref="Short2Normalized"/> on the left hand of the operand.</param>
+    /// <param name="right">The <see cref="Short2Normalized"/> on the right hand of the operand.</param>
     /// <returns>
     /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(UShortN2 left, UShortN2 right) => !left.Equals(right);
+    public static bool operator !=(Short2Normalized left, Short2Normalized right) => !left.Equals(right);
 
     /// <inheritdoc/>
     public override int GetHashCode() => PackedValue.GetHashCode();

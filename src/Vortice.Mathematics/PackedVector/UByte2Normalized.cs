@@ -17,7 +17,7 @@ namespace Vortice.Mathematics.PackedVector;
 /// </summary>
 /// <remarks>Equivalent of XMUBYTEN2.</remarks>
 [StructLayout(LayoutKind.Explicit)]
-public readonly struct UByteN2 : IPackedVector<ushort>, IEquatable<UByteN2>
+public readonly struct UByte2Normalized : IPackedVector<ushort>, IEquatable<UByte2Normalized>
 {
     [FieldOffset(0)]
     private readonly ushort _packedValue;
@@ -35,10 +35,10 @@ public readonly struct UByteN2 : IPackedVector<ushort>, IEquatable<UByteN2>
     public readonly byte Y;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UByteN2"/> struct.
+    /// Initializes a new instance of the <see cref="UByte2Normalized"/> struct.
     /// </summary>
     /// <param name="packedValue">The packed value to assign.</param>
-    public UByteN2(ushort packedValue)
+    public UByte2Normalized(ushort packedValue)
     {
         Unsafe.SkipInit(out this);
 
@@ -46,11 +46,11 @@ public readonly struct UByteN2 : IPackedVector<ushort>, IEquatable<UByteN2>
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UByteN2"/> struct.
+    /// Initializes a new instance of the <see cref="UByte2Normalized"/> struct.
     /// </summary>
     /// <param name="x">The x value.</param>
     /// <param name="y">The y value.</param>
-    public UByteN2(byte x, byte y)
+    public UByte2Normalized(byte x, byte y)
     {
         Unsafe.SkipInit(out this);
 
@@ -59,11 +59,11 @@ public readonly struct UByteN2 : IPackedVector<ushort>, IEquatable<UByteN2>
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UByteN2"/> struct.
+    /// Initializes a new instance of the <see cref="UByte2Normalized"/> struct.
     /// </summary>
     /// <param name="x">The x value.</param>
     /// <param name="y">The y value.</param>
-    public UByteN2(float x, float y)
+    public UByte2Normalized(float x, float y)
     {
         Unsafe.SkipInit(out this);
 
@@ -76,19 +76,19 @@ public readonly struct UByteN2 : IPackedVector<ushort>, IEquatable<UByteN2>
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UByteN2"/> struct.
+    /// Initializes a new instance of the <see cref="UByte2Normalized"/> struct.
     /// </summary>
     /// <param name="vector">The <see cref="Vector2"/> containing X and Y value.</param>
-    public UByteN2(Vector2 vector)
+    public UByte2Normalized(Vector2 vector)
         : this(vector.X, vector.Y)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UByteN2"/> struct.
+    /// Initializes a new instance of the <see cref="UByte2Normalized"/> struct.
     /// </summary>
     /// <param name="vector">The <see cref="Vector4"/> containing X and Y value.</param>
-    public UByteN2(in Vector4 vector)
+    public UByte2Normalized(in Vector4 vector)
         : this(vector.X, vector.Y)
     {
     }
@@ -113,32 +113,32 @@ public readonly struct UByteN2 : IPackedVector<ushort>, IEquatable<UByteN2>
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is UByteN2 other && Equals(other);
+    public override bool Equals(object? obj) => obj is UByte2Normalized other && Equals(other);
 
     /// <inheritdoc/>
-    public bool Equals(UByteN2 other) => PackedValue.Equals(other.PackedValue);
+    public bool Equals(UByte2Normalized other) => PackedValue.Equals(other.PackedValue);
 
     /// <summary>
-    /// Compares two <see cref="UByteN2"/> objects for equality.
+    /// Compares two <see cref="UByte2Normalized"/> objects for equality.
     /// </summary>
-    /// <param name="left">The <see cref="UByteN2"/> on the left hand of the operand.</param>
-    /// <param name="right">The <see cref="UByteN2"/> on the right hand of the operand.</param>
+    /// <param name="left">The <see cref="UByte2Normalized"/> on the left hand of the operand.</param>
+    /// <param name="right">The <see cref="UByte2Normalized"/> on the right hand of the operand.</param>
     /// <returns>
     /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator ==(UByteN2 left, UByteN2 right) => left.Equals(right);
+    public static bool operator ==(UByte2Normalized left, UByte2Normalized right) => left.Equals(right);
 
     /// <summary>
-    /// Compares two <see cref="UByteN2"/> objects for inequality.
+    /// Compares two <see cref="UByte2Normalized"/> objects for inequality.
     /// </summary>
-    /// <param name="left">The <see cref="UByteN2"/> on the left hand of the operand.</param>
-    /// <param name="right">The <see cref="UByteN2"/> on the right hand of the operand.</param>
+    /// <param name="left">The <see cref="UByte2Normalized"/> on the left hand of the operand.</param>
+    /// <param name="right">The <see cref="UByte2Normalized"/> on the right hand of the operand.</param>
     /// <returns>
     /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(UByteN2 left, UByteN2 right) => !left.Equals(right);
+    public static bool operator !=(UByte2Normalized left, UByte2Normalized right) => !left.Equals(right);
 
     /// <inheritdoc/>
     public override int GetHashCode() => PackedValue.GetHashCode();

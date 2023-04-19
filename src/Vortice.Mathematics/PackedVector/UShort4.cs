@@ -72,7 +72,7 @@ public readonly struct UShort4 : IPackedVector<ulong>, IEquatable<UShort4>
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UShortN4"/> struct.
+    /// Initializes a new instance of the <see cref="UShort4Normalized"/> struct.
     /// </summary>
     /// <param name="x">The x value.</param>
     /// <param name="y">The y value.</param>

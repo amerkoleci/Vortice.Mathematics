@@ -60,7 +60,7 @@ public readonly struct Short4 : IPackedVector<ulong>, IEquatable<Short4>
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ShortN4"/> struct.
+    /// Initializes a new instance of the <see cref="Short4Normalized"/> struct.
     /// </summary>
     /// <param name="x">The x value.</param>
     /// <param name="y">The y value.</param>
@@ -147,7 +147,7 @@ public readonly struct Short4 : IPackedVector<ulong>, IEquatable<Short4>
     public static bool operator ==(Short4 left, Short4 right) => left.Equals(right);
 
     /// <summary>
-    /// Compares two <see cref="ShortN4"/> objects for inequality.
+    /// Compares two <see cref="Short4Normalized"/> objects for inequality.
     /// </summary>
     /// <param name="left">The <see cref="Short4"/> on the left hand of the operand.</param>
     /// <param name="right">The <see cref="Short4"/> on the right hand of the operand.</param>

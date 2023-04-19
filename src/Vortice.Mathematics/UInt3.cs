@@ -12,22 +12,22 @@ namespace Vortice.Mathematics;
 /// Vector type containing three 32 bit unsigned integer components.
 /// </summary>
 [DebuggerDisplay("X={X}, Y={Y}, Z={Z}")]
-public readonly struct UInt3 : IEquatable<UInt3>, IFormattable
+public struct UInt3 : IEquatable<UInt3>, IFormattable
 {
     /// <summary>
     /// The X component of the vector.
     /// </summary>
-    public readonly uint X;
+    public uint X;
 
     /// <summary>
     /// The Y component of the vector.
     /// </summary>
-    public readonly uint Y;
+    public uint Y;
 
     /// <summary>
     /// The Z component of the vector.
     /// </summary>
-    public readonly uint Z;
+    public uint Z;
 
     internal const int Count = 3;
 
@@ -35,7 +35,8 @@ public readonly struct UInt3 : IEquatable<UInt3>, IFormattable
     /// Initializes a new instance of the <see cref="UInt3"/> struct.
     /// </summary>
     /// <param name="value">The value that will be assigned to all components.</param>
-    public UInt3(uint value) : this(value, value, value)
+    public UInt3(uint value)
+        : this(value, value, value)
     {
     }
 
@@ -57,7 +58,7 @@ public readonly struct UInt3 : IEquatable<UInt3>, IFormattable
     /// </summary>
     /// <param name="xy">Initial value for the X and Y component of the vector.</param>
     /// <param name="z">Initial value for the Z component of the vector.</param>
-    public UInt3(UInt2 xy, uint z)
+    public UInt3(in UInt2 xy, uint z)
     {
         X = xy.X;
         Y = xy.Y;
@@ -123,7 +124,18 @@ public readonly struct UInt3 : IEquatable<UInt3>, IFormattable
         get => new(1, 1, 1);
     }
 
-    public readonly uint this[int index] => GetElement(this, index);
+    /// <summary>Gets or sets the element at the specified index.</summary>
+    /// <param name="index">The index of the element to get or set.</param>
+    /// <returns>The the element at <paramref name="index" />.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> was less than zero or greater than the number of elements.</exception>
+    public uint this[int index]
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        readonly get => this.GetElement(index);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => this = this.WithElement(index, value);
+    }
 
     public void Deconstruct(out uint x, out uint y, out uint z)
     {
@@ -251,22 +263,4 @@ public readonly struct UInt3 : IEquatable<UInt3>, IFormattable
     /// <inheritdoc />
     public string ToString(string? format, IFormatProvider? formatProvider)
         => $"{nameof(UInt3)} {{ {nameof(X)} = {X.ToString(format, formatProvider)}, {nameof(Y)} = {Y.ToString(format, formatProvider)}, {nameof(Z)} = {Z.ToString(format, formatProvider)} }}";
-
-    internal static uint GetElement(UInt3 vector, int index)
-    {
-        if ((uint)index >= Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index));
-        }
-
-        return GetElementUnsafe(ref vector, index);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static uint GetElementUnsafe(ref UInt3 vector, int index)
-    {
-        Debug.Assert(index is >= 0 and < Count);
-
-        return Unsafe.Add(ref Unsafe.As<UInt3, uint>(ref vector), index);
-    }
 }

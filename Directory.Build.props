@@ -56,10 +56,5 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
-
-  <!-- UAP -->
-  <PropertyGroup Condition=" $(TargetFramework.StartsWith('uap10.0')) ">
-    <ExtrasUwpMetaPackageVersion>6.2.14</ExtrasUwpMetaPackageVersion>
-  </PropertyGroup>
   
 </Project>

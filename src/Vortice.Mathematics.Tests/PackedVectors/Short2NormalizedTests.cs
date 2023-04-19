@@ -7,13 +7,13 @@ using Vortice.Mathematics.PackedVector;
 
 namespace Vortice.Mathematics.Tests.PackedVectors;
 
-[TestFixture(TestOf = typeof(ShortN2))]
-public partial class ShortN2Tests
+[TestFixture(TestOf = typeof(Short2Normalized))]
+public partial class Short2NormalizedTests
 {
     [TestCase]
     public void DefaultChecks()
     {
-        ShortN2 vector = new ShortN2();
+        Short2Normalized vector = new Short2Normalized();
         Assert.AreEqual(vector.X, 0);
         Assert.AreEqual(vector.Y, 0);
         Assert.AreEqual(vector.PackedValue, 0u);
@@ -22,7 +22,7 @@ public partial class ShortN2Tests
     [TestCase]
     public void CreationTests()
     {
-        ShortN2 vector = new(250, 450);
+        Short2Normalized vector = new(250, 450);
         Assert.AreEqual(vector.X, 250);
         Assert.AreEqual(vector.Y, 450);
         Assert.AreEqual(vector.PackedValue, 29491450u);
