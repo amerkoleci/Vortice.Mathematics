@@ -1,12 +1,6 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-using System.Runtime.CompilerServices;
-using System.Runtime.Intrinsics;
-using System.Runtime.Intrinsics.Arm;
-using System.Runtime.Intrinsics.X86;
-using static Vortice.Mathematics.VectorUtilities;
-
 namespace Vortice.Mathematics;
 
 public static unsafe class PackHelpers

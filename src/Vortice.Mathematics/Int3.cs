@@ -254,7 +254,7 @@ public struct Int3 : IEquatable<Int3>, IFormattable
     public static bool operator !=(Int3 left, Int3 right) => !left.Equals(right);
 
     /// <inheritdoc/>
-    public override int GetHashCode() => HashCode.Combine(X, Y, Z);
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z);
 
     /// <inheritdoc />
     public override string ToString() => ToString(format: null, formatProvider: null);

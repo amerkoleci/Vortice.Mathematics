@@ -12,27 +12,27 @@ namespace Vortice.Mathematics;
 /// Vector type containing four 64 bit floating point components..
 /// </summary>
 [DebuggerDisplay("X={X}, Y={Y}, Z={Z}, W={W}")]
-public readonly struct Double4 : IEquatable<Double4>, IFormattable
+public struct Double4 : IEquatable<Double4>, IFormattable
 {
     /// <summary>
     /// The X component of the vector.
     /// </summary>
-    public readonly double X;
+    public double X;
 
     /// <summary>
     /// The Y component of the vector.
     /// </summary>
-    public readonly double Y;
+    public double Y;
 
     /// <summary>
     /// The Z component of the vector.
     /// </summary>
-    public readonly double Z;
+    public double Z;
 
     /// <summary>
     /// The W component of the vector.
     /// </summary>
-    public readonly double W;
+    public double W;
 
     internal const int Count = 4;
 
@@ -154,7 +154,18 @@ public readonly struct Double4 : IEquatable<Double4>, IFormattable
         get => new(1, 1, 1, 1);
     }
 
-    public readonly double this[int index] => GetElement(this, index);
+    /// <summary>Gets or sets the element at the specified index.</summary>
+    /// <param name="index">The index of the element to get or set.</param>
+    /// <returns>The the element at <paramref name="index" />.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> was less than zero or greater than the number of elements.</exception>
+    public double this[int index]
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        readonly get => this.GetElement(index);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => this = this.WithElement(index, value);
+    }
 
     public void Deconstruct(out double x, out double y, out double z, out double w)
     {

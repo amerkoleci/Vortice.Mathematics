@@ -12,17 +12,17 @@ namespace Vortice.Mathematics;
 /// Stores an ordered pair of integer numbers describing the width, height and depth of a rectangle.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
-public readonly struct Size3 : IEquatable<Size3>
+public struct Size3 : IEquatable<Size3>
 {
     /// <summary>
     /// A <see cref="Size3"/> with all of its components set to zero.
     /// </summary>
-    public static readonly Size3 Empty = default;
+    public static Size3 Empty => default;
 
     /// <summary>
     /// A special valued <see cref="Size"/>.
     /// </summary>
-    public static readonly Size3 WholeSize = new(~0, ~0, ~0);
+    public static Size3 WholeSize => new(~0, ~0, ~0);
 
     /// <summary>
     /// Initializes a new instance of <see cref="Size3"/> structure.
@@ -52,17 +52,17 @@ public readonly struct Size3 : IEquatable<Size3>
     /// <summary>
     /// The width component of the extent.
     /// </summary>
-    public int Width { get; }
+    public int Width;
 
     /// <summary>
     /// The height component of the extent.
     /// </summary>
-    public int Height { get; }
+    public int Height;
 
     /// <summary>
     /// The depth component of the extent.
     /// </summary>
-    public int Depth { get; }
+    public int Depth;
 
     /// <summary>
     /// Gets a value indicating whether this <see cref="Size3"/> is empty.
@@ -112,7 +112,7 @@ public readonly struct Size3 : IEquatable<Size3>
     public bool Equals(Size3 other) => this == other;
 
     /// <inheritdoc/>
-    public override int GetHashCode()
+    public override readonly int GetHashCode()
     {
         var hashCode = new HashCode();
         {

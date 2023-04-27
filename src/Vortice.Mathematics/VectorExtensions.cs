@@ -232,6 +232,38 @@ public static class VectorExtensions
         return vector.GetElementUnsafe(index);
     }
 
+    /// <summary>Gets the element at the specified index.</summary>
+    /// <param name="vector">The vector to get the element from.</param>
+    /// <param name="index">The index of the element to get.</param>
+    /// <returns>The value of the element at <paramref name="index" />.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> was less than zero or greater than the number of elements.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static double GetElement(this Double3 vector, int index)
+    {
+        if ((uint)(index) >= (uint)(Double3.Count))
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+        return vector.GetElementUnsafe(index);
+    }
+
+    /// <summary>Gets the element at the specified index.</summary>
+    /// <param name="vector">The vector to get the element from.</param>
+    /// <param name="index">The index of the element to get.</param>
+    /// <returns>The value of the element at <paramref name="index" />.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> was less than zero or greater than the number of elements.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static double GetElement(this Double4 vector, int index)
+    {
+        if ((uint)(index) >= (uint)(Double4.Count))
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+        return vector.GetElementUnsafe(index);
+    }
+
     /// <summary>Creates a new <see cref="Vector2" /> with the element at the specified index set to the specified value and the remaining elements set to the same value as that in the given vector.</summary>
     /// <param name="vector">The vector to get the remaining elements from.</param>
     /// <param name="index">The index of the element to set.</param>
@@ -246,6 +278,42 @@ public static class VectorExtensions
         }
 
         Double2 result = vector;
+        result.SetElementUnsafe(index, value);
+        return result;
+    }
+
+    /// <summary>Creates a new <see cref="Vector2" /> with the element at the specified index set to the specified value and the remaining elements set to the same value as that in the given vector.</summary>
+    /// <param name="vector">The vector to get the remaining elements from.</param>
+    /// <param name="index">The index of the element to set.</param>
+    /// <param name="value">The value to set the element to.</param>
+    /// <returns>A <see cref="Vector2" /> with the value of the element at <paramref name="index" /> set to <paramref name="value" /> and the remaining elements set to the same value as that in <paramref name="vector" />.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> was less than zero or greater than the number of elements.</exception>
+    internal static Double3 WithElement(this Double3 vector, int index, double value)
+    {
+        if ((uint)(index) >= (uint)(Double3.Count))
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+        Double3 result = vector;
+        result.SetElementUnsafe(index, value);
+        return result;
+    }
+
+    /// <summary>Creates a new <see cref="Vector2" /> with the element at the specified index set to the specified value and the remaining elements set to the same value as that in the given vector.</summary>
+    /// <param name="vector">The vector to get the remaining elements from.</param>
+    /// <param name="index">The index of the element to set.</param>
+    /// <param name="value">The value to set the element to.</param>
+    /// <returns>A <see cref="Vector2" /> with the value of the element at <paramref name="index" /> set to <paramref name="value" /> and the remaining elements set to the same value as that in <paramref name="vector" />.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> was less than zero or greater than the number of elements.</exception>
+    internal static Double4 WithElement(this Double4 vector, int index, double value)
+    {
+        if ((uint)(index) >= (uint)(Double4.Count))
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+        Double4 result = vector;
         result.SetElementUnsafe(index, value);
         return result;
     }
@@ -362,9 +430,43 @@ public static class VectorExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static double GetElementUnsafe(in this Double3 vector, int index)
+    {
+        Debug.Assert((index >= 0) && (index < Double3.Count));
+
+        ref double address = ref Unsafe.AsRef(in vector.X);
+        return Unsafe.Add(ref address, index);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static double GetElementUnsafe(in this Double4 vector, int index)
+    {
+        Debug.Assert((index >= 0) && (index < Double4.Count));
+
+        ref double address = ref Unsafe.AsRef(in vector.X);
+        return Unsafe.Add(ref address, index);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void SetElementUnsafe(ref this Double2 vector, int index, double value)
     {
         Debug.Assert((index >= 0) && (index < Double2.Count));
+
+        Unsafe.Add(ref vector.X, index) = value;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void SetElementUnsafe(ref this Double3 vector, int index, double value)
+    {
+        Debug.Assert((index >= 0) && (index < Double3.Count));
+
+        Unsafe.Add(ref vector.X, index) = value;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void SetElementUnsafe(ref this Double4 vector, int index, double value)
+    {
+        Debug.Assert((index >= 0) && (index < Double4.Count));
 
         Unsafe.Add(ref vector.X, index) = value;
     }

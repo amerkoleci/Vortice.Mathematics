@@ -38,7 +38,7 @@ namespace Vortice.Mathematics;
 /// Defines a ray.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
-public readonly struct Ray : IEquatable<Ray>, IFormattable
+public struct Ray : IEquatable<Ray>, IFormattable
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Ray"/> struct.
@@ -54,12 +54,12 @@ public readonly struct Ray : IEquatable<Ray>, IFormattable
     /// <summary>
     /// The position in three dimensional space where the ray starts.
     /// </summary>
-    public Vector3 Position { get; }
+    public Vector3 Position;
 
     /// <summary>
     /// The normalized direction in which the ray points.
     /// </summary>
-    public Vector3 Direction { get; }
+    public Vector3 Direction;
 
     /// <summary>
     /// Checks whether the current <see cref="Ray"/> intersects with a specified <see cref="Vector3"/>.
@@ -269,7 +269,7 @@ public readonly struct Ray : IEquatable<Ray>, IFormattable
     public static bool operator !=(Ray left, Ray right) => !left.Equals(right);
 
     /// <inheritdoc/>
-		public override int GetHashCode()
+	public override readonly int GetHashCode()
     {
         var hashCode = new HashCode();
         {

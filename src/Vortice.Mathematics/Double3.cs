@@ -12,22 +12,22 @@ namespace Vortice.Mathematics;
 /// Vector type containing three 64 bit floating point components.
 /// </summary>
 [DebuggerDisplay("X={X}, Y={Y}, Z={Z}")]
-public readonly struct Double3 : IEquatable<Double3>, IFormattable
+public struct Double3 : IEquatable<Double3>, IFormattable
 {
     /// <summary>
     /// The X component of the vector.
     /// </summary>
-    public readonly double X;
+    public double X;
 
     /// <summary>
     /// The Y component of the vector.
     /// </summary>
-    public readonly double Y;
+    public double Y;
 
     /// <summary>
     /// The Z component of the vector.
     /// </summary>
-    public readonly double Z;
+    public double Z;
 
     internal const int Count = 3;
 
@@ -123,7 +123,18 @@ public readonly struct Double3 : IEquatable<Double3>, IFormattable
         get => new(1, 1, 1);
     }
 
-    public readonly double this[int index] => GetElement(this, index);
+    /// <summary>Gets or sets the element at the specified index.</summary>
+    /// <param name="index">The index of the element to get or set.</param>
+    /// <returns>The the element at <paramref name="index" />.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> was less than zero or greater than the number of elements.</exception>
+    public double this[int index]
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        readonly get => this.GetElement(index);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => this = this.WithElement(index, value);
+    }
 
     public void Deconstruct(out double x, out double y, out double z)
     {
@@ -251,22 +262,4 @@ public readonly struct Double3 : IEquatable<Double3>, IFormattable
     /// <inheritdoc />
     public string ToString(string? format, IFormatProvider? formatProvider)
         => $"{nameof(Double3)} {{ {nameof(X)} = {X.ToString(format, formatProvider)}, {nameof(Y)} = {Y.ToString(format, formatProvider)}, {nameof(Z)} = {Z.ToString(format, formatProvider)} }}";
-
-    internal static double GetElement(Double3 vector, int index)
-    {
-        if (index >= Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index));
-        }
-
-        return GetElementUnsafe(ref vector, index);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static double GetElementUnsafe(ref Double3 vector, int index)
-    {
-        Debug.Assert(index is >= 0 and < Count);
-
-        return Unsafe.Add(ref Unsafe.As<Double3, double>(ref vector), index);
-    }
 }
