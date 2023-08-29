@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
-    <GlobalPackageReference Include="Nerdbank.GitVersioning" Version="3.5.113" />
+    <GlobalPackageReference Include="Microsoft.Net.Compilers.Toolset" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>

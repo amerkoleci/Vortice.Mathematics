@@ -9,7 +9,6 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static Vortice.Mathematics.MathHelper;
 
 namespace Vortice.Mathematics;
 
@@ -59,7 +58,7 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     public Vector3 Min
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => _min;
+        readonly get => _min;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         set => _min = value;
     }
@@ -70,7 +69,7 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     public Vector3 Max
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => _max;
+        readonly get => _max;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         set => _max = value;
     }
@@ -211,10 +210,10 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
         Vector3 oldEdge = box.Size * 0.5f;
 
         Vector3 newEdge = new(
-            Abs(transform.M11) * oldEdge.X + Abs(transform.M12) * oldEdge.Y + Abs(transform.M13) * oldEdge.Z,
-            Abs(transform.M21) * oldEdge.X + Abs(transform.M22) * oldEdge.Y + Abs(transform.M23) * oldEdge.Z,
-            Abs(transform.M31) * oldEdge.X + Abs(transform.M32) * oldEdge.Y + Abs(transform.M33) * oldEdge.Z
-        );
+            MathHelper.Abs(transform.M11) * oldEdge.X + MathHelper.Abs(transform.M12) * oldEdge.Y + MathHelper.Abs(transform.M13) * oldEdge.Z,
+            MathHelper.Abs(transform.M21) * oldEdge.X + MathHelper.Abs(transform.M22) * oldEdge.Y + MathHelper.Abs(transform.M23) * oldEdge.Z,
+            MathHelper.Abs(transform.M31) * oldEdge.X + MathHelper.Abs(transform.M32) * oldEdge.Y + MathHelper.Abs(transform.M33) * oldEdge.Z
+        ); 
 
         result = new(newCenter - newEdge, newCenter + newEdge);
     }
@@ -223,7 +222,7 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     /// Retrieves the eight corners of the bounding box.
     /// </summary>
     /// <returns>An array of points representing the eight corners of the bounding box.</returns>
-    public Vector3[] GetCorners()
+    public readonly Vector3[] GetCorners()
     {
         Vector3[] results = new Vector3[CornerCount];
         GetCorners(results);
@@ -237,10 +236,7 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly void GetCorners(Vector3[] corners)
     {
-        if (corners == null)
-        {
-            throw new ArgumentNullException(nameof(corners));
-        }
+        ArgumentNullException.ThrowIfNull(corners);
 
         if (corners.Length < CornerCount)
         {
@@ -376,7 +372,7 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
         float distance = 0.0f;
         float tmax = float.MaxValue;
 
-        if (IsZero(ray.Direction.X))
+        if (MathHelper.IsZero(ray.Direction.X))
         {
             if (ray.Position.X < Min.X || ray.Position.X > Max.X)
             {
@@ -391,13 +387,11 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
 
             if (t1 > t2)
             {
-                float temp = t1;
-                t1 = t2;
-                t2 = temp;
+                (t2, t1) = (t1, t2);
             }
 
-            distance = Math.Max(t1, distance);
-            tmax = Math.Min(t2, tmax);
+            distance = MathHelper.Max(t1, distance);
+            tmax = MathHelper.Min(t2, tmax);
 
             if (distance > tmax)
             {
@@ -420,9 +414,7 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
 
             if (t1 > t2)
             {
-                float temp = t1;
-                t1 = t2;
-                t2 = temp;
+                (t2, t1) = (t1, t2);
             }
 
             distance = Math.Max(t1, distance);
@@ -449,13 +441,11 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
 
             if (t1 > t2)
             {
-                float temp = t1;
-                t1 = t2;
-                t2 = temp;
+                (t2, t1) = (t1, t2);
             }
 
-            distance = Math.Max(t1, distance);
-            tmax = Math.Min(t2, tmax);
+            distance = MathHelper.Max(t1, distance);
+            tmax = MathHelper.Min(t2, tmax);
 
             if (distance > tmax)
             {
@@ -538,7 +528,7 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     }
 
     /// <inheritdoc/>
-    public override int GetHashCode() => HashCode.Combine(_min, _max);
+    public override readonly int GetHashCode() => HashCode.Combine(_min, _max);
 
     /// <inheritdoc />
     public override string ToString() => ToString(format: null, formatProvider: null);

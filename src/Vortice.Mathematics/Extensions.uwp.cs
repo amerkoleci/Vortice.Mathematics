@@ -72,22 +72,15 @@ public static class Extensions
     public static RectangleF ToSystemRectF(this WindowsRect rect) =>
         new RectangleF((float)rect.X, (float)rect.Y, (float)rect.Width, (float)rect.Height);
 
-    public static WindowsRect ToPlatformRect(this Rectangle rect) =>
-        new WindowsRect(rect.X, rect.Y, rect.Width, rect.Height);
+    public static WindowsRect ToPlatformRect(this Rectangle rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
 
-    public static WindowsRect ToPlatformRect(this RectangleF rect) =>
-        new WindowsRect(rect.X, rect.Y, rect.Width, rect.Height);
+    public static WindowsRect ToPlatformRect(this RectangleF rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
 
-    public static Color ToSystemColor(this WindowsColor color) =>
-            new Color(color.R, color.G, color.B, color.A);
+    public static Color ToSystemColor(this WindowsColor color) => new(color.R, color.G, color.B, color.A);
 
-    public static WindowsColor ToPlatformColor(this Color color) =>
-           WindowsColor.FromArgb(color.A, color.R, color.G, color.B);
+    public static WindowsColor ToPlatformColor(this Color color) => WindowsColor.FromArgb(color.A, color.R, color.G, color.B);
+    public static WindowsColor ToPlatformColor(this System.Drawing.Color color) => WindowsColor.FromArgb(color.A, color.R, color.G, color.B);
 
-    public static System.Drawing.Color ToSystemDrawingColor(this WindowsColor color) =>
-            System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
-
-    public static WindowsColor ToPlatformColor(this System.Drawing.Color color) =>
-           WindowsColor.FromArgb(color.A, color.R, color.G, color.B);
+    public static System.Drawing.Color ToSystemDrawingColor(this WindowsColor color) => System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
 }
 #endif

@@ -267,32 +267,7 @@ public static class MathHelper
     /// <param name="right">The float to compare with <paramref name="left" />.</param>
     /// <returns>The maximum of <paramref name="left" /> and <paramref name="right" />.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Max(float left, float right)
-    {
-        if (Sse41.IsSupported)
-        {
-            // TODO: This isn't correctly taking +0.0 vs -0.0 into account
-
-            var vLeft = Vector128.CreateScalarUnsafe(left);
-            var vRight = Vector128.CreateScalarUnsafe(right);
-
-            var tmp = Sse.Max(vLeft, vRight);
-            var msk = Sse.CompareUnordered(vLeft, vLeft);
-
-            return Sse41.BlendVariable(tmp, vLeft, msk).ToScalar();
-        }
-        else if (AdvSimd.Arm64.IsSupported)
-        {
-            return AdvSimd.Arm64.MaxScalar(
-                Vector64.CreateScalar(left),
-                Vector64.CreateScalar(right)
-            ).ToScalar();
-        }
-        else
-        {
-            return MathF.Max(left, right);
-        }
-    }
+    public static float Max(float left, float right) => MathF.Max(left, right);
 
     /// <summary>Computes the maximum of two 16-bit unsigned integers.</summary>
     /// <param name="left">The integer to compare with <paramref name="right" />.</param>
@@ -403,32 +378,7 @@ public static class MathHelper
     /// <returns>The minimum of <paramref name="left" /> and <paramref name="right" />.</returns>
     /// <remarks>This method does not account for <c>negative zero</c> and returns the other parameter if one is <see cref="double.NaN" />.</remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Min(float left, float right)
-    {
-        if (Sse41.IsSupported)
-        {
-            // TODO: This isn't correctly taking +0.0 vs -0.0 into account
-
-            var vLeft = Vector128.CreateScalarUnsafe(left);
-            var vRight = Vector128.CreateScalarUnsafe(right);
-
-            var tmp = Sse.Min(vLeft, vRight);
-            var msk = Sse.CompareUnordered(vLeft, vLeft);
-
-            return Sse41.BlendVariable(tmp, vLeft, msk).ToScalar();
-        }
-        else if (AdvSimd.Arm64.IsSupported)
-        {
-            return AdvSimd.Arm64.MinScalar(
-                Vector64.CreateScalar(left),
-                Vector64.CreateScalar(right)
-            ).ToScalar();
-        }
-        else
-        {
-            return MathF.Min(left, right);
-        }
-    }
+    public static float Min(float left, float right) => MathF.Min(left, right);
 
     /// <summary>Computes the minimum of two 16-bit unsigned integers.</summary>
     /// <param name="left">The integer to compare with <paramref name="right" />.</param>

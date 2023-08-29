@@ -9,11 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{630DF6DF
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
 		Directory.Packages.props = Directory.Packages.props
-		global.json = global.json
 		LICENSE = LICENSE
 		NuGet.config = NuGet.config
 		README.md = README.md
-		version.json = version.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vortice.Mathematics.Tests", "src\Vortice.Mathematics.Tests\Vortice.Mathematics.Tests.csproj", "{C1983138-9CC7-4889-B413-19B2736BBB68}"
