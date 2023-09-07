@@ -178,6 +178,23 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
         return new BoundingBox(min, max);
     }
 
+    public static BoundingBox CreateFromSphere(in BoundingSphere sphere)
+    {
+        Vector3 min = new(
+            sphere.Center.X - sphere.Radius,
+            sphere.Center.Y - sphere.Radius,
+            sphere.Center.Z - sphere.Radius
+        );
+
+        Vector3 max = new(
+            sphere.Center.X + sphere.Radius,
+            sphere.Center.Y + sphere.Radius,
+            sphere.Center.Z + sphere.Radius
+        );
+        return new BoundingBox(min, max);
+    }
+
+
     public static BoundingBox CreateMerged(in BoundingBox original, in BoundingBox additional)
     {
         return new BoundingBox(
@@ -366,8 +383,8 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     /// <returns>Distance value if intersects, null otherwise.</returns>
     public float? Intersects(in Ray ray)
     {
-        //Source: Real-Time Collision Detection by Christer Ericson
-        //Reference: Page 179
+        // Source: Real-Time Collision Detection by Christer Ericson
+        // Reference: Page 179
 
         float distance = 0.0f;
         float tmax = float.MaxValue;

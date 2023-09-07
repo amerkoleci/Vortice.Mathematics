@@ -41,15 +41,9 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     public Vector3 Center
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return _center;
-        }
+        readonly get => _center;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set
-        {
-            _center = value;
-        }
+        set => _center = value;
     }
 
     /// <summary>
@@ -58,58 +52,104 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     public float Radius
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return _radius;
-        }
+        readonly get => _radius;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set
+        set => _radius = value;
+    }
+
+    public static BoundingSphere CreateFromPoints(Vector3[] points)
+    {
+        Span<Vector3> span = points.AsSpan();
+        return CreateFromPoints(span);
+    }
+
+    public static BoundingSphere CreateFromPoints(Span<Vector3> points)
+    {
+        Vector3 MinX, MaxX, MinY, MaxY, MinZ, MaxZ;
+        MinX = MaxX = MinY = MaxY = MinZ = MaxZ = points[0];
+
+        for (int i = 0; i < points.Length; ++i)
         {
-            _radius = value;
+            Vector3 point = points[i];
+            if (point.X < MinX.X)
+                MinX = point;
+
+            if (point.X > MaxX.X)
+                MaxX = point;
+
+            if (point.Y < MinY.Y)
+                MinY = point;
+
+            if (point.Y > MaxY.Y)
+                MaxY = point;
+
+            if (point.Z < MinZ.Z)
+                MinZ = point;
+
+            if (point.Z > MaxZ.Z)
+                MaxZ = point;
         }
-    }
 
-    /// <summary>
-    /// Creates a <see cref="BoundingBox"/> from the sum of 2 <see cref="BoundingBox"/>es.
-    /// </summary>
-    /// <param name="primary"><see cref="BoundingBox"/> is the first subject</param>
-    /// <param name="secondary"><see cref="BoundingBox"/> is second subject</param>
-    public static BoundingBox MergeBoundingBoxes(in BoundingBox primary, in BoundingBox secondary)
-    {
-        return new BoundingBox(
-            Vector3.Min(primary.Min, secondary.Min),
-            Vector3.Max(primary.Max, secondary.Max)
-            );
-    }
+        // Use the min/max pair that are farthest apart to form the initial sphere.
+        Vector3 DeltaX = Vector3.Subtract(MaxX, MinX);
+        Vector3 DeltaY = Vector3.Subtract(MaxY, MinY);
+        Vector3 DeltaZ = Vector3.Subtract(MaxZ, MinZ);
 
-    /// <summary>
-    /// Creates a <see cref="BoundingBox"/> from the sum of 2 <see cref="BoundingBox"/>es.
-    /// </summary>
-    /// <param name="primary"><see cref="BoundingBox"/> is the first subject</param>
-    /// <param name="secondary"><see cref="BoundingBox"/> is second subject</param>
-    /// <param name="result">The created <see cref="BoundingBox"/> is the result of the sum of the input.</param>
-    public static void MergeBoundingBoxes(in BoundingBox primary, in BoundingBox secondary, out BoundingBox result)
-    {
-        result = new BoundingBox(
-            Vector3.Min(primary.Min, secondary.Min),
-            Vector3.Max(primary.Max, secondary.Max)
-            );
-    }
+        float DistX = DeltaX.Length();
+        float DistY = DeltaY.Length();
+        float DistZ = DeltaZ.Length();
 
-    /// <summary>
-    /// Creates a bounding sphere from a center and radius.
-    /// </summary>
-    /// <param name="center">The center of the bounding sphere.</param>
-    /// <param name="radius">The radius of the bounding sphere.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static BoundingSphere CreateFromRadius(Vector3 center, float radius)
-    {
-        BoundingSphere result;
+        Vector3 center;
+        float radius;
 
-        result._center = center;
-        result._radius = radius;
+        if (DistX > DistY)
+        {
+            if (DistX > DistZ)
+            {
+                // Use min/max x.
+                center = Vector3.Lerp(MaxX, MinX, 0.5f);
+                radius = DistX * 0.5f;
+            }
+            else
+            {
+                // Use min/max z.
+                center = Vector3.Lerp(MaxZ, MinZ, 0.5f);
+                radius = DistZ * 0.5f;
+            }
+        }
+        else // Y >= X
+        {
+            if (DistY > DistZ)
+            {
+                // Use min/max y.
+                center = Vector3.Lerp(MaxY, MinY, 0.5f);
+                radius = DistY * 0.5f;
+            }
+            else
+            {
+                // Use min/max z.
+                center = Vector3.Lerp(MaxZ, MinZ, 0.5f);
+                radius = DistZ * 0.5f;
+            }
+        }
 
-        return result;
+        // Add any points not inside the sphere.
+        for (int i = 0; i < points.Length; ++i)
+        {
+            Vector3 point = points[i];
+
+            Vector3 Delta = Vector3.Subtract(point, center);
+            float Dist = Delta.Length();
+
+            if (Dist > radius)
+            {
+                // Adjust sphere to include the new point.
+                radius = (radius + Dist) * 0.5f;
+                center += (1.0f - (radius / Dist)) * Delta;
+            }
+        }
+
+        return new BoundingSphere(center, radius);
     }
 
     /// <summary>
@@ -125,6 +165,40 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
         result._radius = Vector3.Distance(box.Min, box.Max) * 0.5f;
 
         return result;
+    }
+
+    public static BoundingSphere CreateMerged(in BoundingSphere original, in BoundingSphere additional)
+    {
+        Vector3 center1 = original._center;
+        float r1 = original._radius;
+
+        Vector3 center2 = additional._center;
+        float r2 = additional._radius;
+
+        Vector3 V = Vector3.Subtract(center2, center1);
+
+        float d = V.Length();
+
+        if (r1 + r2 >= d)
+        {
+            if (r1 - r2 >= d)
+            {
+                return original;
+            }
+            else if (r2 - r1 >= d)
+            {
+                return additional;
+            }
+        }
+
+        Vector3 N = Vector3.Divide(V, d);
+
+        float t1 = MathF.Min(-r1, d - r2);
+        float t2 = MathF.Max(r1, d + r2);
+        float t_5 = (t2 - t1) * 0.5f;
+
+        Vector3 NCenter = Vector3.Add(center1, N * (t_5 + t1));
+        return new(NCenter, t_5);
     }
 
     /// <summary>
