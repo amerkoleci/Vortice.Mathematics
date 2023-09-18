@@ -167,7 +167,7 @@ public struct Int4 : IEquatable<Int4>, IFormattable
         set => this = this.WithElement(index, value);
     }
 
-    public void Deconstruct(out int x, out int y, out int z, out int w)
+    public readonly void Deconstruct(out int x, out int y, out int z, out int w)
     {
         x = X;
         y = Y;
@@ -272,14 +272,14 @@ public struct Int4 : IEquatable<Int4>, IFormattable
     public static explicit operator Vector3(Int4 value) => new(value.X, value.Y, value.Z);
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Int4 value && Equals(value);
+    public override readonly bool Equals(object? obj) => obj is Int4 value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Int4"/> is equal to this instance.
     /// </summary>
     /// <param name="other">The <see cref="Int4"/> to compare with this instance.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(Int4 other)
+    public readonly bool Equals(Int4 other)
     {
         return X == other.X
             && Y == other.Y
@@ -316,6 +316,6 @@ public struct Int4 : IEquatable<Int4>, IFormattable
     public override string ToString() => ToString(format: null, formatProvider: null);
 
     /// <inheritdoc />
-    public string ToString(string? format, IFormatProvider? formatProvider)
+    public readonly string ToString(string? format, IFormatProvider? formatProvider)
         => $"{nameof(Int4)} {{ {nameof(X)} = {X.ToString(format, formatProvider)}, {nameof(Y)} = {Y.ToString(format, formatProvider)}, {nameof(Z)} = {Z.ToString(format, formatProvider)}, {nameof(W)} = {W.ToString(format, formatProvider)} }}";
 }

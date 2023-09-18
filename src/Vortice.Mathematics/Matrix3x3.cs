@@ -14,12 +14,12 @@ public readonly struct Matrix3x3
     /// <summary>
     /// A <see cref="Matrix3x3"/> with all of its components set to zero.
     /// </summary>
-    public static readonly Matrix3x3 Zero = new();
+    public static Matrix3x3 Zero => new();
 
     /// <summary>
     /// The identity <see cref="Matrix3x3"/>.
     /// </summary>
-    public static readonly Matrix3x3 Identity = new(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+    public static Matrix3x3 Identity => new(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
     /// <summary>
     /// Value at row 1 column 1.

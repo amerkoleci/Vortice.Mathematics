@@ -76,7 +76,7 @@ public struct Size3 : IEquatable<Size3>
     /// <param name="width">The out value for the width.</param>
     /// <param name="height">The out value for the height.</param>
     /// <param name="depth">The out value for the depth.</param>
-    public void Deconstruct(out int width, out int height, out int depth)
+    public readonly void Deconstruct(out int width, out int height, out int depth)
     {
         width = Width;
         height = Height;
@@ -109,7 +109,7 @@ public struct Size3 : IEquatable<Size3>
     public override bool Equals(object? obj) => obj is Size3 other && Equals(other);
 
     /// <inheritdoc/>
-    public bool Equals(Size3 other) => this == other;
+    public readonly bool Equals(Size3 other) => this == other;
 
     /// <inheritdoc/>
     public override readonly int GetHashCode()

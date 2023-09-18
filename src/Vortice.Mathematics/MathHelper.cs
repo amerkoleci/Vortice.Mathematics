@@ -670,6 +670,18 @@ public static class MathHelper
         return (address + (alignment - 1)) & ~(alignment - 1);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint DivideByMultiple(uint value, uint alignment)
+    {
+        return ((value + alignment - 1) / alignment);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong DivideByMultiple(ulong value, ulong alignment)
+    {
+        return ((value + alignment - 1) / alignment);
+    }
+
     /// <summary>
     /// Converts a float value from gamma to linear space.
     /// </summary>

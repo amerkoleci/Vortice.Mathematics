@@ -236,7 +236,7 @@ public struct Double2 : IEquatable<Double2>, IFormattable
     /// <returns>The result of the conversion.</returns>
     public static explicit operator Vector2(Double2 xy) => new((float)xy.X, (float)xy.Y);
 
-    public void Deconstruct(out double x, out double y)
+    public readonly void Deconstruct(out double x, out double y)
     {
         x = X;
         y = Y;
@@ -596,7 +596,7 @@ public struct Double2 : IEquatable<Double2>, IFormattable
     /// </summary>
     /// <param name="other">The <see cref="Double2"/> to compare with this instance.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(Double2 other)
+    public readonly bool Equals(Double2 other)
     {
         return X == other.X
             && Y == other.Y;
@@ -631,6 +631,6 @@ public struct Double2 : IEquatable<Double2>, IFormattable
     public override string ToString() => ToString(format: null, formatProvider: null);
 
     /// <inheritdoc />
-    public string ToString(string? format, IFormatProvider? formatProvider)
+    public readonly string ToString(string? format, IFormatProvider? formatProvider)
         => $"{nameof(Double2)} {{ {nameof(X)} = {X.ToString(format, formatProvider)}, {nameof(Y)} = {Y.ToString(format, formatProvider)} }}";
 }

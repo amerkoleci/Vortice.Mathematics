@@ -103,14 +103,14 @@ public struct Box : IEquatable<Box>, IFormattable
     public readonly int Depth => Back - Front;
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Box value && Equals(value);
+    public override readonly bool Equals(object? obj) => obj is Box value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Box"/> is equal to this instance.
     /// </summary>
     /// <param name="other">The <see cref="Box"/> to compare with this instance.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(Box other)
+    public readonly bool Equals(Box other)
     {
         return Left == other.Left
             && Top == other.Top
@@ -143,13 +143,13 @@ public struct Box : IEquatable<Box>, IFormattable
     public static bool operator !=(Box left, Box right) => !left.Equals(right);
 
     /// <inheritdoc/>
-    public override int GetHashCode() => HashCode.Combine(Left, Top, Front, Right, Bottom, Back);
+    public override readonly int GetHashCode() => HashCode.Combine(Left, Top, Front, Right, Bottom, Back);
 
     /// <inheritdoc/>
     public override string ToString() => ToString(format: null, formatProvider: null);
 
     /// <inheritdoc />
-    public string ToString(string? format, IFormatProvider? formatProvider)
+    public readonly string ToString(string? format, IFormatProvider? formatProvider)
     {
         var separator = NumberFormatInfo.GetInstance(formatProvider).NumberGroupSeparator;
 

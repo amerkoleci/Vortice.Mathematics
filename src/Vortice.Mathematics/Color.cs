@@ -186,7 +186,7 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
         _packedValue = PackHelpers.PackRGBA(vector.X, vector.Y, vector.Z, vector.W);
     }
 
-    public void Deconstruct(out byte red, out byte green, out byte blue, out byte alpha)
+    public readonly void Deconstruct(out byte red, out byte green, out byte blue, out byte alpha)
     {
         red = R;
         green = G;
@@ -199,7 +199,7 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// </summary>
     public Vector4 ToVector4()
     {
-        PackHelpers.UnpackRGBA(_packedValue, out var x, out var y, out var z, out var w);
+        PackHelpers.UnpackRGBA(_packedValue, out float x, out float y, out float z, out float w);
         return new Vector4(x, y, z, w);
     }
 
@@ -208,7 +208,7 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// </summary>
     public Color4 ToColor4()
     {
-        PackHelpers.UnpackRGBA(_packedValue, out var x, out var y, out var z, out var w);
+        PackHelpers.UnpackRGBA(_packedValue, out float x, out float y, out float z, out float w);
         return new Color4(x, y, z, w);
     }
 
@@ -279,14 +279,14 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
-    public static explicit operator Color(int value) => new Color(value);
+    public static explicit operator Color(int value) => new(value);
 
     /// <summary>
     /// Performs an explicit conversion from <see cref="int"/> to <see cref="Color"/>.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
-    public static implicit operator Color(uint value) => new Color(value);
+    public static implicit operator Color(uint value) => new(value);
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is Color color && Equals(ref color);

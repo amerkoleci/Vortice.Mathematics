@@ -66,7 +66,7 @@ public struct Ray : IEquatable<Ray>, IFormattable
     /// </summary>
     /// <param name="point">Point to test ray intersection</param>
     /// <returns></returns>
-    public bool Intersects(in Vector3 point)
+    public readonly bool Intersects(in Vector3 point)
     {
         //Source: RayIntersectsSphere
         //Reference: None
@@ -94,8 +94,7 @@ public struct Ray : IEquatable<Ray>, IFormattable
     /// </summary>
     /// <param name="sphere">The <see cref="BoundingSphere"/> to check for intersection with the current <see cref="Ray"/>.</param>
     /// <returns>Distance value if intersects, null otherwise.</returns>
-    public float? Intersects(in BoundingSphere sphere) => sphere.Intersects(this);
-
+    public readonly float? Intersects(in BoundingSphere sphere) => sphere.Intersects(this);
 
     /// <summary>
     /// Checks whether the current <see cref="Ray"/> intersects with a specified <see cref="BoundingBox"/>.
@@ -103,7 +102,7 @@ public struct Ray : IEquatable<Ray>, IFormattable
     /// <param name="box">The <see cref="BoundingBox"/> to check for intersection with the current <see cref="Ray"/>.</param>
     /// <param name="result">Distance of normalised vector to intersection if >= 0 </param>
     /// <returns>bool returns true if intersection with plane</returns>
-    public bool Intersects(in BoundingBox box, out float result)
+    public readonly bool Intersects(in BoundingBox box, out float result)
     {
         float? rs = box.Intersects(this);
 
@@ -117,14 +116,14 @@ public struct Ray : IEquatable<Ray>, IFormattable
     /// </summary>
     /// <param name="box">The <see cref="BoundingBox"/> to check for intersection with the current <see cref="Ray"/>.</param>
     /// <returns>Distance value if intersects, null otherwise.</returns>
-    public float? Intersects(in BoundingBox box) => box.Intersects(this);
+    public readonly float? Intersects(in BoundingBox box) => box.Intersects(this);
 
     /// <summary>
     /// Checks whether the current <see cref="Ray"/> intersects with a specified <see cref="Plane"/>.
     /// </summary>
     /// <param name="plane">The <see cref="Plane"/> to check for intersection with the current <see cref="Ray"/>.</param>
     /// <returns>Distance value if intersects, null otherwise.</returns>
-    public float? Intersects(in Plane plane)
+    public readonly float? Intersects(in Plane plane)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 175
@@ -158,7 +157,7 @@ public struct Ray : IEquatable<Ray>, IFormattable
     /// <param name="plane">The <see cref="Plane"/> to check for intersection with the current <see cref="Ray"/>.</param>
     /// <param name="result">Distance of normalised vector to intersection if >= 0 </param>
     /// <returns>bool returns true if intersection with plane</returns>
-    public bool Intersects(in Plane plane, out float result)
+    public readonly bool Intersects(in Plane plane, out float result)
     {
         float? rs = Intersects(plane);
 
@@ -168,14 +167,14 @@ public struct Ray : IEquatable<Ray>, IFormattable
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Ray value && Equals(value);
+    public override readonly bool Equals(object? obj) => obj is Ray value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Ray"/> is equal to this instance.
     /// </summary>
     /// <param name="other">The <see cref="Int4"/> to compare with this instance.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(Ray other)
+    public readonly bool Equals(Ray other)
     {
         return Position.Equals(other.Position)
             && Direction.Equals(other.Direction);
@@ -201,7 +200,7 @@ public struct Ray : IEquatable<Ray>, IFormattable
     /// <param name="v2">Triangle Corner 3</param>
     /// <param name="pointInTriangle">Intersection point if boolean returns true</param>
     /// <returns></returns>
-    public bool Intersects( in Vector3 v0, in Vector3 v1, in Vector3 v2, out Vector3 pointInTriangle)
+    public readonly bool Intersects( in Vector3 v0, in Vector3 v1, in Vector3 v2, out Vector3 pointInTriangle)
     {
         // Code origin can no longer be determined.
         // was adapted from C++ code.
@@ -283,7 +282,7 @@ public struct Ray : IEquatable<Ray>, IFormattable
     public override string ToString() => ToString(format: null, formatProvider: null);
 
     /// <inheritdoc />
-    public string ToString(string? format, IFormatProvider? formatProvider)
+    public readonly string ToString(string? format, IFormatProvider? formatProvider)
     {
         return $"Position:{Position.ToString(format, formatProvider)} Direction:{Direction.ToString(format, formatProvider)}";
     }

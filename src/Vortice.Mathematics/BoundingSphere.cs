@@ -59,7 +59,7 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
 
     public static BoundingSphere CreateFromPoints(Vector3[] points)
     {
-        Span<Vector3> span = points.AsSpan();
+        Span<Vector3> span = [.. points];
         return CreateFromPoints(span);
     }
 
@@ -232,7 +232,7 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
         result = new BoundingSphere(center, radius);
     }
 
-    public ContainmentType Contains(in Vector3 point)
+    public readonly ContainmentType Contains(in Vector3 point)
     {
         if (Vector3.DistanceSquared(point, Center) <= Radius * Radius)
         {
@@ -242,12 +242,12 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
         return ContainmentType.Disjoint;
     }
 
-    public ContainmentType Contains(in BoundingBox box)
+    public readonly ContainmentType Contains(in BoundingBox box)
     {
         return box.Contains(this);
     }
 
-    public ContainmentType Contains(in BoundingSphere sphere)
+    public readonly ContainmentType Contains(in BoundingSphere sphere)
     {
         float distance = Vector3.Distance(Center, sphere.Center);
 
@@ -260,7 +260,7 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
         return ContainmentType.Contains;
     }
 
-    public float? Intersects(in Ray ray)
+    public readonly float? Intersects(in Ray ray)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 177
@@ -295,7 +295,7 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     /// </summary>
     /// <param name="box">The <see cref="BoundingBox"/> to check for intersection with the current <see cref="BoundingSphere"/>.</param>
     /// <returns>True if intersects, false otherwise.</returns>
-    public bool Intersects(in BoundingBox box)
+    public readonly bool Intersects(in BoundingBox box)
     {
         Vector3 clampedVector = Vector3.Clamp(Center, box.Min, box.Max);
         float distance = Vector3.DistanceSquared(Center, clampedVector);
@@ -307,7 +307,7 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     /// </summary>
     /// <param name="sphere">The <see cref="BoundingSphere"/> to check for intersection with the current <see cref="BoundingSphere"/>.</param>
     /// <returns>True if intersects, false otherwise.</returns>
-    public bool Intersects(in BoundingSphere sphere)
+    public readonly bool Intersects(in BoundingSphere sphere)
     {
         float radiisum = Radius + sphere.Radius;
         return Vector3.DistanceSquared(Center, sphere.Center) <= radiisum * radiisum;
@@ -318,7 +318,7 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     /// </summary>
     /// <param name="plane">The <see cref="Plane"/> to check for intersection with the current <see cref="Plane"/>.</param>
     /// <returns>True if intersects, false otherwise.</returns>
-    public PlaneIntersectionType Intersects(in Plane plane)
+    public readonly PlaneIntersectionType Intersects(in Plane plane)
     {
         //Source: Real-Time Collision Detection by Christer Ericson
         //Reference: Page 160
@@ -336,14 +336,14 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => (obj is BoundingSphere other) && Equals(other);
+    public override readonly bool Equals(object? obj) => (obj is BoundingSphere other) && Equals(other);
 
     /// <summary>
     /// Determines whether the specified <see cref="BoundingSphere"/> is equal to this instance.
     /// </summary>
     /// <param name="other">The <see cref="Int4"/> to compare with this instance.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(BoundingSphere other)
+    public readonly bool Equals(BoundingSphere other)
     {
         return _center.Equals(other._center)
             && _radius.Equals(other._radius);
@@ -386,7 +386,7 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     public override string ToString() => ToString(format: null, formatProvider: null);
 
     /// <inheritdoc />
-    public string ToString(string? format, IFormatProvider? formatProvider)
+    public readonly string ToString(string? format, IFormatProvider? formatProvider)
     {
         return $"{nameof(BoundingSphere)} {{ {nameof(Center)} = {_center.ToString(format, formatProvider)}, {nameof(Radius)} = {_radius.ToString(format, formatProvider)} }}";
     }
