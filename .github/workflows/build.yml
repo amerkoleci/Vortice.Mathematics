@@ -18,13 +18,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
   
     - name: Setup .NET 8 SDK
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.0.x'
-        dotnet-quality: 'preview'
+        global-json-file: ./global.json
 
     - name: Pack
       run: dotnet pack Vortice.Mathematics.sln --configuration Release
