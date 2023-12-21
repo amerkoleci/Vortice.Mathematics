@@ -131,10 +131,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     public readonly float R
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return _value.GetX();
-        }
+        get => _value.GetX();
     }
 
     /// <summary>
@@ -143,10 +140,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     public readonly float G
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return _value.GetY();
-        }
+        get => _value.GetY();
     }
 
     /// <summary>
@@ -155,10 +149,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     public readonly float B
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return _value.GetZ();
-        }
+        get => _value.GetZ();
     }
 
     /// <summary>
@@ -167,12 +158,9 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     public readonly float A
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return _value.GetW();
-        }
+        get => _value.GetW();
     }
-    
+
     public readonly float this[int index] => GetElement(this, index);
 
     /// <summary>
@@ -194,7 +182,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// Converts the color into a packed integer.
     /// </summary>
     /// <returns>A packed integer containing all four color components.</returns>
-    public int ToBgra()
+    public uint ToBgra()
     {
         uint a = (uint)(A * 255.0f) & 255;
         uint r = (uint)(R * 255.0f) & 255;
@@ -206,7 +194,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
         value |= r << 16;
         value |= a << 24;
 
-        return (int)value;
+        return value;
     }
 
     /// <summary>
@@ -225,7 +213,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// Converts the color into a packed integer.
     /// </summary>
     /// <returns>A packed integer containing all four color components.</returns>
-    public int ToRgba()
+    public uint ToRgba()
     {
         uint r = (uint)(R * 255.0f) & 255;
         uint g = (uint)(G * 255.0f) & 255;
@@ -237,7 +225,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
         value |= b << 16;
         value |= a << 24;
 
-        return (int)value;
+        return value;
     }
 
     /// <summary>

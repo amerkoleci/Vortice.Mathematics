@@ -236,7 +236,7 @@ public struct Int2 : IEquatable<Int2>, IFormattable
     public override readonly int GetHashCode() => HashCode.Combine(X, Y);
 
     /// <inheritdoc />
-    public override string ToString() => ToString(format: null, formatProvider: null);
+    public override readonly string ToString() => ToString(format: null, formatProvider: null);
 
     /// <inheritdoc />
     public readonly string ToString(string? format, IFormatProvider? formatProvider)

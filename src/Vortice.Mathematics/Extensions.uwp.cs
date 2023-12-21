@@ -9,7 +9,7 @@ using WindowsSize = Windows.Foundation.Size;
 
 namespace Vortice.Mathematics;
 
-public static class Extensions
+public static partial class Extensions
 {
     public static Point ToSystemPoint(this Windows.Foundation.Point point)
     {

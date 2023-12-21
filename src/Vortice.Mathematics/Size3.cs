@@ -12,7 +12,7 @@ namespace Vortice.Mathematics;
 /// Stores an ordered pair of integer numbers describing the width, height and depth of a rectangle.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
-public struct Size3 : IEquatable<Size3>
+public record struct Size3
 {
     /// <summary>
     /// A <see cref="Size3"/> with all of its components set to zero.
@@ -23,6 +23,21 @@ public struct Size3 : IEquatable<Size3>
     /// A special valued <see cref="Size"/>.
     /// </summary>
     public static Size3 WholeSize => new(~0, ~0, ~0);
+
+    /// <summary>
+    /// The width component of the extent.
+    /// </summary>
+    public readonly int Width;
+
+    /// <summary>
+    /// The height component of the extent.
+    /// </summary>
+    public readonly int Height;
+
+    /// <summary>
+    /// The depth component of the extent.
+    /// </summary>
+    public readonly int Depth;
 
     /// <summary>
     /// Initializes a new instance of <see cref="Size3"/> structure.
@@ -50,21 +65,6 @@ public struct Size3 : IEquatable<Size3>
     }
 
     /// <summary>
-    /// The width component of the extent.
-    /// </summary>
-    public int Width;
-
-    /// <summary>
-    /// The height component of the extent.
-    /// </summary>
-    public int Height;
-
-    /// <summary>
-    /// The depth component of the extent.
-    /// </summary>
-    public int Depth;
-
-    /// <summary>
     /// Gets a value indicating whether this <see cref="Size3"/> is empty.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -82,47 +82,4 @@ public struct Size3 : IEquatable<Size3>
         height = Height;
         depth = Depth;
     }
-
-    /// <summary>
-    /// Compares two <see cref="Size3"/> objects for equality.
-    /// </summary>
-    /// <param name="left">The <see cref="Size3"/> on the left hand of the operand.</param>
-    /// <param name="right">The <see cref="Size3"/> on the right hand of the operand.</param>
-    /// <returns>
-    /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
-    /// </returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator ==(Size3 left, Size3 right) => left.Width == right.Width && left.Height == right.Height && left.Depth == right.Depth;
-
-    /// <summary>
-    /// Compares two <see cref="Size3"/> objects for inequality.
-    /// </summary>
-    /// <param name="left">The <see cref="Size3"/> on the left hand of the operand.</param>
-    /// <param name="right">The <see cref="Size3"/> on the right hand of the operand.</param>
-    /// <returns>
-    /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
-    /// </returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(Size3 left, Size3 right) => (left.Width != right.Width) || (left.Height != right.Height) || (left.Depth != right.Depth);
-
-    /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Size3 other && Equals(other);
-
-    /// <inheritdoc/>
-    public readonly bool Equals(Size3 other) => this == other;
-
-    /// <inheritdoc/>
-    public override readonly int GetHashCode()
-    {
-        var hashCode = new HashCode();
-        {
-            hashCode.Add(Width);
-            hashCode.Add(Height);
-            hashCode.Add(Depth);
-        }
-        return hashCode.ToHashCode();
-    }
-
-    /// <inheritdoc/>
-    public override readonly string ToString() => $"{{{nameof(Width)}={Width},{nameof(Height)}={Height},{nameof(Depth)}={Depth}}}";
 }

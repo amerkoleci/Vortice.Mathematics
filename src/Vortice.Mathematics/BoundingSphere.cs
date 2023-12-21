@@ -1,11 +1,6 @@
 // Copyright (c) Amer Koleci and Contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-// Copyright © Tanner Gooding and Contributors. Licensed under the MIT License (MIT). See License.md in the repository root for more information.
-
-// This file includes code based on code from https://github.com/microsoft/DirectXMath
-// The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -21,40 +16,25 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     /// </summary>
     public static BoundingSphere Zero => new(Vector3.Zero, 0.0f);
 
-    private Vector3 _center;
-    private float _radius;
+    /// <summary>
+    /// Gets or sets the center of the bounding sphere.
+    /// </summary>
+    public Vector3 Center;
+
+    /// <summary>
+    /// Gets or sets the radius of the bounding sphere.
+    /// </summary>
+    public float Radius;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BoundingSphere"/> struct.
     /// </summary>
     /// <param name="center">The center of the sphere.</param>
     /// <param name="radius">The radius of the sphere.</param>
-    public BoundingSphere(Vector3 center, float radius)
+    public BoundingSphere(in Vector3 center, float radius)
     {
-        _center = center;
-        _radius = radius;
-    }
-
-    /// <summary>
-    /// Gets or sets the center of the bounding sphere.
-    /// </summary>
-    public Vector3 Center
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        readonly get => _center;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => _center = value;
-    }
-
-    /// <summary>
-    /// Gets or sets the radius of the bounding sphere.
-    /// </summary>
-    public float Radius
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        readonly get => _radius;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => _radius = value;
+        Center = center;
+        Radius = radius;
     }
 
     public static BoundingSphere CreateFromPoints(Vector3[] points)
@@ -159,21 +139,19 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     /// <returns>The created <see cref="BoundingSphere"/>.</returns>
     public static BoundingSphere CreateFromBoundingBox(in BoundingBox box)
     {
-        BoundingSphere result;
+        Vector3 center = Vector3.Lerp(box.Min, box.Max, 0.5f);
+        float radius = Vector3.Distance(box.Min, box.Max) * 0.5f;
 
-        result._center = Vector3.Lerp(box.Min, box.Max, 0.5f);
-        result._radius = Vector3.Distance(box.Min, box.Max) * 0.5f;
-
-        return result;
+        return new BoundingSphere(center, radius);
     }
 
     public static BoundingSphere CreateMerged(in BoundingSphere original, in BoundingSphere additional)
     {
-        Vector3 center1 = original._center;
-        float r1 = original._radius;
+        Vector3 center1 = original.Center;
+        float r1 = original.Radius;
 
-        Vector3 center2 = additional._center;
-        float r2 = additional._radius;
+        Vector3 center2 = additional.Center;
+        float r2 = additional.Radius;
 
         Vector3 V = Vector3.Subtract(center2, center1);
 
@@ -345,8 +323,8 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly bool Equals(BoundingSphere other)
     {
-        return _center.Equals(other._center)
-            && _radius.Equals(other._radius);
+        return Center.Equals(other.Center)
+            && Radius.Equals(other.Radius);
     }
 
     /// <summary>
@@ -360,8 +338,8 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator ==(BoundingSphere left, BoundingSphere right)
     {
-        return (left._center == right._center)
-            && (left._radius == right._radius);
+        return (left.Center == right.Center)
+            && (left.Radius == right.Radius);
     }
 
     /// <summary>
@@ -375,19 +353,19 @@ public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator !=(BoundingSphere left, BoundingSphere right)
     {
-        return (left._center != right._center)
-            || (left._radius != right._radius);
+        return (left.Center != right.Center)
+            || (left.Radius != right.Radius);
     }
 
     /// <inheritdoc/>
-    public override int GetHashCode() => HashCode.Combine(_center, _radius);
+    public override readonly int GetHashCode() => HashCode.Combine(Center, Radius);
 
     /// <inheritdoc />
-    public override string ToString() => ToString(format: null, formatProvider: null);
+    public override readonly string ToString() => ToString(format: null, formatProvider: null);
 
     /// <inheritdoc />
     public readonly string ToString(string? format, IFormatProvider? formatProvider)
     {
-        return $"{nameof(BoundingSphere)} {{ {nameof(Center)} = {_center.ToString(format, formatProvider)}, {nameof(Radius)} = {_radius.ToString(format, formatProvider)} }}";
+        return $"{{ {nameof(Center)} = {Center.ToString(format, formatProvider)}, {nameof(Radius)} = {Radius.ToString(format, formatProvider)} }}";
     }
 }
