@@ -9,12 +9,6 @@
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
-  <!-- Version -->
-  <PropertyGroup>
-    <VersionPrefix>1.7.2</VersionPrefix>
-    <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
-  </PropertyGroup>
-
   <PropertyGroup>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>12.0</LangVersion>
@@ -31,9 +25,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>CS1591;CS1701</NoWarn>
 
-    <!-- WORKAROUND: mismatched analyzer assembly version (.NET 8 preview SDK) -->
-    <NoWarn>$(NoWarn);CS9057</NoWarn>
-
     <SignAssembly Condition="'$(SignAssembly)' == ''">true</SignAssembly>
     <VorticePublicKey>0024000004800000940000000602000000240000525341310004000001000100758064dc2d7cc685f393036f2d5fd6c3a8d9a811a6633e614a2a224c0aa45ef6e7dd9a45172f3b0055f0af31e7637b152a02263922c9fdfd0ed4408d30dcc26fc080c9d0e4c5e1307527e661037b4927b9f27b5318307698d474bf15506f21b9b2cf8155855624863b46584c11bf75bfde5dbbe8120c00524f713541725167cb</VorticePublicKey>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)Vortice.snk</AssemblyOriginatorKeyFile>
@@ -44,17 +35,17 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Authors>Amer Koleci and Contributors</Authors>
-    <Copyright>Copyright © Amer Koleci and Contributors</Copyright>
-    <Product>Alimer</Product>
+    <Authors>Amer Koleci</Authors>
+    <Owners>Amer Koleci</Owners>
+    <Company>Amer Koleci</Company>
+    <Copyright>Copyright (c) Amer Koleci and Contributors</Copyright>
+    <Product>Vortice.Mathematics</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
     <PackageOutputPath>$(MSBuildThisFileDirectory)artifacts/</PackageOutputPath>
     <PackageTags>3D Engine Graphics gamedev vortice Direct3D DirectX Vulkan OpenGL Metal Core Standard Game</PackageTags>
-
     <ContinuousIntegrationBuild Condition="'$(GITHUB_RUN_ID)' != ''">true</ContinuousIntegrationBuild>
-    <UseSharedCompilation>true</UseSharedCompilation>
   </PropertyGroup>
 
   <!-- https://github.com/dotnet/sourcelink -->

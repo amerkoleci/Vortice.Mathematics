@@ -13,11 +13,8 @@ public static class Extensions
 {
     public static Point ToSystemPoint(this Windows.Foundation.Point point)
     {
-        if (point.X > int.MaxValue)
-            throw new ArgumentOutOfRangeException(nameof(point.X));
-
-        if (point.Y > int.MaxValue)
-            throw new ArgumentOutOfRangeException(nameof(point.Y));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(point.X, int.MaxValue, nameof(point.X));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(point.Y, int.MaxValue, nameof(point.Y));
 
         return new Point((int)point.X, (int)point.Y);
     }

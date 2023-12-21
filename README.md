@@ -4,7 +4,7 @@
 [![Build status](https://github.com/amerkoleci/Vortice.Mathematics/workflows/Build/badge.svg)](https://github.com/amerkoleci/Vortice.Mathematics/actions)
 [![NuGet](https://img.shields.io/nuget/v/Vortice.Mathematics.svg)](https://www.nuget.org/packages/Vortice.Mathematics)
 
-**Vortice.Mathematics** is a high-performance cross platform .NET math library supporting **.NET 7** and **.NET 8**.
+**Vortice.Mathematics** is a high-performance cross platform **.NET 7** and **.NET 8** math library.
 
 ## Sponsors
 Please consider becoming a [SPONSOR](https://github.com/sponsors/amerkoleci) to further help development and to allow faster issue triaging and new features to be implemented.

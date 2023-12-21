@@ -1,4 +1,4 @@
-// Copyright © Amer Koleci and Contributors.
+// Copyright (c) Amer Koleci and Contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
 using System.Numerics;
@@ -13,7 +13,7 @@ public partial class Short2NormalizedTests
     [TestCase]
     public void DefaultChecks()
     {
-        Short2Normalized vector = new Short2Normalized();
+        Short2Normalized vector = new();
         Assert.AreEqual(vector.X, 0);
         Assert.AreEqual(vector.Y, 0);
         Assert.AreEqual(vector.PackedValue, 0u);
