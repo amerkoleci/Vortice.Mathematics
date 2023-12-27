@@ -1,6 +1,7 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
+using System.Diagnostics;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -13,22 +14,22 @@ namespace Vortice.Mathematics;
 /// Represents a floating-point RGB color.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
-public struct Color3 : IEquatable<Color3>, IFormattable
+public readonly struct Color3 : IEquatable<Color3>, IFormattable
 {
     /// <summary>
     /// Red component of the color.
     /// </summary>
-    public float R;
+    public readonly float R;
 
     /// <summary>
     /// Green component of the color.
     /// </summary>
-    public float G;
+    public readonly float G;
 
     /// <summary>
     /// Blue component of the color.
     /// </summary>
-    public float B;
+    public readonly float B;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Color3"/> struct.
@@ -56,11 +57,68 @@ public struct Color3 : IEquatable<Color3>, IFormattable
     /// Initializes a new instance of the <see cref="Color3"/> struct.
     /// </summary>
     /// <param name="value">The red, green, and blue components of the color.</param>
-    public Color3(Vector3 value)
+    public Color3(in Vector3 value)
     {
         R = value.X;
         G = value.Y;
         B = value.Z;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Color3"/> struct.
+    /// </summary>
+    /// <param name="rgb">A packed integer containing all three color components.
+    /// The alpha component is ignored.</param>
+    public Color3(int rgb)
+    {
+        B = ((rgb >> 16) & 255) / 255.0f;
+        G = ((rgb >> 8) & 255) / 255.0f;
+        R = (rgb & 255) / 255.0f;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Color3"/> struct.
+    /// </summary>
+    /// <param name="rgb">A packed unsigned integer containing all three color components.
+    /// The alpha component is ignored.</param>
+    public Color3(uint rgb)
+    {
+        B = ((rgb >> 16) & 255) / 255.0f;
+        G = ((rgb >> 8) & 255) / 255.0f;
+        R = (rgb & 255) / 255.0f;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Color3" /> struct.
+    /// </summary>
+    /// <param name="values">The span of elements to assign to the vector.</param>
+    public Color3(ReadOnlySpan<float> values)
+    {
+        if (values.Length < 3)
+        {
+            throw new ArgumentOutOfRangeException(nameof(values), "There must be 3 uint values.");
+        }
+
+        this = Unsafe.ReadUnaligned<Color3>(ref Unsafe.As<float, byte>(ref MemoryMarshal.GetReference(values)));
+    }
+
+    /// <summary>Gets or sets the element at the specified index.</summary>
+    /// <param name="index">The index of the element to get or set.</param>
+    /// <returns>The the element at <paramref name="index" />.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> was less than zero or greater than the number of elements.</exception>
+    public float this[int index]
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            if (index >= 3)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
+            ref float address = ref Unsafe.AsRef(in R);
+            return Unsafe.Add(ref address, index);
+        }
     }
 
     public readonly void Deconstruct(out float r, out float g, out float b)
@@ -68,6 +126,79 @@ public struct Color3 : IEquatable<Color3>, IFormattable
         r = R;
         g = G;
         b = B;
+    }
+
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly void CopyTo(float[] array)
+    {
+        if (array.Length < 3)
+        {
+            throw new ArgumentOutOfRangeException(nameof(array));
+        }
+
+        Unsafe.WriteUnaligned(ref Unsafe.As<float, byte>(ref array[0]), this);
+    }
+
+    public readonly void CopyTo(float[] array, int index)
+    {
+        if ((index < 0) || (index >= array.Length))
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+        if ((array.Length - index) < 3)
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+        Unsafe.WriteUnaligned(ref Unsafe.As<float, byte>(ref array[index]), this);
+    }
+
+    /// <summary>Copies the vector to the given <see cref="Span{T}" />.The length of the destination span must be at least 2.</summary>
+    /// <param name="destination">The destination span which the values are copied into.</param>
+    /// <exception cref="ArgumentException">If number of elements in source vector is greater than those available in destination span.</exception>
+    public readonly void CopyTo(Span<float> destination)
+    {
+        if (destination.Length < 3)
+        {
+            throw new ArgumentOutOfRangeException(nameof(destination));
+        }
+
+        Unsafe.WriteUnaligned(ref Unsafe.As<float, byte>(ref MemoryMarshal.GetReference(destination)), this);
+    }
+
+    /// <summary>Attempts to copy the vector to the given <see cref="Span{Int32}" />. The length of the destination span must be at least 2.</summary>
+    /// <param name="destination">The destination span which the values are copied into.</param>
+    /// <returns><see langword="true" /> if the source vector was successfully copied to <paramref name="destination" />. <see langword="false" /> if <paramref name="destination" /> is not large enough to hold the source vector.</returns>
+    public readonly bool TryCopyTo(Span<float> destination)
+    {
+        if (destination.Length < 3)
+        {
+            return false;
+        }
+
+        Unsafe.WriteUnaligned(ref Unsafe.As<float, byte>(ref MemoryMarshal.GetReference(destination)), this);
+        return true;
+    }
+
+    /// <summary>
+    /// Converts this color from sRGB space to linear space.
+    /// </summary>
+    /// <returns>A <see cref="Color3"/> in linear space.</returns>
+    public Color3 ToLinear()
+    {
+        return new(MathHelper.SRgbToLinear(R), MathHelper.SRgbToLinear(G), MathHelper.SRgbToLinear(B));
+    }
+
+    /// <summary>
+    /// Converts this color from linear space to sRGB space.
+    /// </summary>
+    /// <returns>A <see cref="Color3"/> in sRGB space.</returns>
+    public Color3 ToSRgb()
+    {
+        return new(MathHelper.LinearToSRgb(R), MathHelper.LinearToSRgb(G), MathHelper.LinearToSRgb(B));
     }
 
     /// <summary>
@@ -108,32 +239,28 @@ public struct Color3 : IEquatable<Color3>, IFormattable
     public readonly Vector3 ToVector3() => new(R, G, B);
 
     /// <summary>
-    /// Creates an array containing the elements of the color.
+    /// Performs an explicit conversion from <see cref="Color3"/> to <see cref="Vector3"/>.
     /// </summary>
-    /// <returns>A four-element array containing the components of the color.</returns>
-    public readonly float[] ToArray() => new[] { R, G, B };
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator Vector3(in Color3 value) => new(value.R, value.G, value.B);
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Vector3"/> to <see cref="Color3"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator Color3(in Vector3 value) => new(value);
 
     /// <inheritdoc/>
-    public override readonly bool Equals(object? obj) => obj is Color3 value && Equals(ref value);
+    public override readonly bool Equals(object? obj) => obj is Color3 value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Color3"/> is equal to this instance.
     /// </summary>
     /// <param name="other">The <see cref="Color3"/> to compare with this instance.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(Color3 other) => Equals(ref other);
-
-    /// <summary>
-    /// Determines whether the specified <see cref="Color3"/> is equal to this instance.
-    /// </summary>
-    /// <param name="other">The <see cref="Color3"/> to compare with this instance.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly bool Equals(ref Color3 other)
-    {
-        return R.Equals(other.R)
-            && G.Equals(other.G)
-            && B.Equals(other.B);
-    }
+    public bool Equals(Color3 other) => R.Equals(other.R) && G.Equals(other.G) && B.Equals(other.B);
 
     /// <summary>
     /// Compares two <see cref="Color3"/> objects for equality.
@@ -144,7 +271,7 @@ public struct Color3 : IEquatable<Color3>, IFormattable
     /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator ==(Color3 left, Color3 right) => left.Equals(ref right);
+    public static bool operator ==(Color3 left, Color3 right) => left.Equals(right);
 
     /// <summary>
     /// Compares two <see cref="Color3"/> objects for inequality.
@@ -155,19 +282,10 @@ public struct Color3 : IEquatable<Color3>, IFormattable
     /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(Color3 left, Color3 right) => !left.Equals(ref right);
+    public static bool operator !=(Color3 left, Color3 right) => !left.Equals(right);
 
     /// <inheritdoc/>
-    public override int GetHashCode()
-    {
-        var hashCode = new HashCode();
-        {
-            hashCode.Add(R);
-            hashCode.Add(G);
-            hashCode.Add(B);
-        }
-        return hashCode.ToHashCode();
-    }
+    public override int GetHashCode() => HashCode.Combine(R, G, B);
 
     /// <inheritdoc/>
     public override string ToString() => ToString(format: null, formatProvider: null);

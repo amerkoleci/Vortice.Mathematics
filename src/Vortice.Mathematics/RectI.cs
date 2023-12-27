@@ -63,23 +63,23 @@ public record struct RectI
     /// <summary>
     /// Initializes a new instance of the <see cref='RectI'/> struct with the specified size.
     /// </summary>
-    public RectI(in Int2 size)
+    public RectI(in SizeI size)
     {
         X = 0;
         Y = 0;
-        Width = size.X;
-        Height = size.Y;
+        Width = size.Width;
+        Height = size.Height;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref='RectI'/> struct with the specified location and size.
     /// </summary>
-    public RectI(in Int2 location, in Int2 size)
+    public RectI(in Int2 location, in SizeI size)
     {
         X = location.X;
         Y = location.Y;
-        Width = size.X;
-        Height = size.Y;
+        Width = size.Width;
+        Height = size.Height;
     }
 
     /// <summary>
@@ -110,13 +110,13 @@ public record struct RectI
     }
 
     [IgnoreDataMember]
-    public Int2 Size
+    public SizeI Size
     {
         readonly get => new(Width, Height);
         set
         {
-            Width = value.X;
-            Height = value.Y;
+            Width = value.Width;
+            Height = value.Height;
         }
     }
 

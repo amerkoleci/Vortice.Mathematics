@@ -5,7 +5,8 @@ using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static Vortice.Mathematics.Vector2Utilities;
+using System.Runtime.Intrinsics;
+using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics.PackedVector;
 
@@ -37,8 +38,6 @@ public readonly struct Short2Normalized : IPackedVector<uint>, IEquatable<Short2
     /// <param name="packedValue">The packed value to assign.</param>
     public Short2Normalized(uint packedValue)
     {
-        Unsafe.SkipInit(out this);
-
         _packedValue = packedValue;
     }
 
@@ -49,8 +48,6 @@ public readonly struct Short2Normalized : IPackedVector<uint>, IEquatable<Short2
     /// <param name="y">The y value.</param>
     public Short2Normalized(short x, short y)
     {
-        Unsafe.SkipInit(out this);
-
         X = x;
         Y = y;
     }
@@ -62,14 +59,12 @@ public readonly struct Short2Normalized : IPackedVector<uint>, IEquatable<Short2
     /// <param name="y">The y value.</param>
     public Short2Normalized(float x, float y)
     {
-        Unsafe.SkipInit(out this);
-
-        Vector2 vector = Vector2.Clamp(new Vector2(x, y), NegativeOne, Vector2.One);
-        vector = Vector2.Multiply(vector, ShortMax);
+        Vector128<float> vector = Clamp(Vector128.Create(x, y, 0.0f, 0.0f), NegativeOne, One);
+        vector = Vector128.Multiply(vector, ShortMax);
         vector = Round(vector);
 
-        X = (short)vector.X;
-        Y = (short)vector.Y;
+        X = (short)vector.GetX();
+        Y = (short)vector.GetY();
     }
 
     /// <summary>

@@ -1,10 +1,10 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-// Copyright © Tanner Gooding and Contributors. Licensed under the MIT License (MIT). See License.md in the repository root for more information.
+// Copyright Â© Tanner Gooding and Contributors. Licensed under the MIT License (MIT). See License.md in the repository root for more information.
 
 // This file includes code based on code from https://github.com/microsoft/DirectXMath
-// The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
+// The original code is Copyright Â© Microsoft. All rights reserved. Licensed under the MIT License (MIT).
 
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -66,7 +66,29 @@ public static unsafe class VectorUtilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
+#if NET8_0_OR_GREATER
+            return Vector128<float>.One;
+#else
             return Vector128.Create(1.0f, 1.0f, 1.0f, 1.0f);
+#endif
+        }
+    }
+
+    public static Vector128<float> ByteMin
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return Vector128.Create(-127.0f, -127.0f, -127.0f, -127.0f);
+        }
+    }
+
+    public static Vector128<float> ByteMax
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return Vector128.Create(127.0f, 127.0f, 127.0f, 127.0f);
         }
     }
 
@@ -130,6 +152,15 @@ public static unsafe class VectorUtilities
         get
         {
             return Vector128.Create(0x80000000, 0x80000000, 0x80000000, 0x80000000);
+        }
+    }
+
+    public static Vector128<float> NegativeOne
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return Vector128.Create(-1.0f, -1.0f, -1.0f, -1.0f);
         }
     }
 
@@ -243,73 +274,6 @@ public static unsafe class VectorUtilities
     /// <param name="right">The vector to compare with <paramref name="left" />.</param>
     /// <returns><c>true</c> if <paramref name="left" /> and <paramref name="right" /> are equal; otherwise, <c>false</c>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool CompareEqualAll(Vector128<float> left, Vector128<float> right)
-    {
-        if (Sse.IsSupported)
-        {
-            Vector128<float> result = Sse.CompareNotEqual(left, right);
-            return Sse.MoveMask(result) == 0x00;
-        }
-        else if (AdvSimd.Arm64.IsSupported)
-        {
-            Vector128<float> result = AdvSimd.CompareEqual(left, right);
-            return AdvSimd.Arm64.MinAcross(result).ToScalar() != 0;
-        }
-        else
-        {
-            return SoftwareFallback(left, right);
-        }
-
-        static bool SoftwareFallback(Vector128<float> left, Vector128<float> right)
-        {
-            return (left.GetX() == right.GetX())
-                && (left.GetY() == right.GetY())
-                && (left.GetZ() == right.GetZ())
-                && (left.GetW() == right.GetW());
-        }
-    }
-
-    /// <summary>Compares two vectors to determine if all elements are approximately equal.</summary>
-    /// <param name="left">The vector to compare with <paramref name="right" />.</param>
-    /// <param name="right">The vector to compare with <paramref name="left" />.</param>
-    /// <param name="epsilon">he maximum (inclusive) difference between <paramref name="left" /> and <paramref name="right" /> for which they should be considered equivalent.</param>
-    /// <returns><c>true</c> if <paramref name="left" /> and <paramref name="right" /> differ by no more than <paramref name="epsilon" />; otherwise, <c>false</c>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool CompareEqualAll(Vector128<float> left, Vector128<float> right, Vector128<float> epsilon)
-    {
-        if (Sse41.IsSupported)
-        {
-            Vector128<float> result = Sse.Subtract(left, right);
-            result = Sse.And(result, Vector128.Create(0x7FFFFFFF).AsSingle());
-            result = Sse.CompareNotLessThanOrEqual(result, epsilon);
-            return Sse.MoveMask(result) == 0x00;
-        }
-        else if (AdvSimd.Arm64.IsSupported)
-        {
-            Vector128<float> result = AdvSimd.Subtract(left, right);
-            result = AdvSimd.Abs(result);
-            result = AdvSimd.CompareLessThanOrEqual(result, epsilon);
-            return AdvSimd.Arm64.MinAcross(result).ToScalar() != 0;
-        }
-        else
-        {
-            return SoftwareFallback(left, right, epsilon);
-        }
-
-        static bool SoftwareFallback(Vector128<float> left, Vector128<float> right, Vector128<float> epsilon)
-        {
-            return (MathF.Abs(left.GetX() - right.GetX()) <= epsilon.GetX())
-                && (MathF.Abs(left.GetY() - right.GetY()) <= epsilon.GetY())
-                && (MathF.Abs(left.GetZ() - right.GetZ()) <= epsilon.GetZ())
-                && (MathF.Abs(left.GetW() - right.GetW()) <= epsilon.GetW());
-        }
-    }
-
-    /// <summary>Compares two vectors to determine equality.</summary>
-    /// <param name="left">The vector to compare with <paramref name="right" />.</param>
-    /// <param name="right">The vector to compare with <paramref name="left" />.</param>
-    /// <returns><c>true</c> if <paramref name="left" /> and <paramref name="right" /> are equal; otherwise, <c>false</c>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool CompareNotEqualAny(Vector128<float> left, Vector128<float> right)
     {
         if (Sse41.IsSupported)
@@ -398,70 +362,6 @@ public static unsafe class VectorUtilities
         }
     }
 
-    /// <summary>Computes the product of a vector and a float.</summary>
-    /// <param name="left">The vector to multiply by <paramref name="right" />.</param>
-    /// <param name="right">The float which is used to multiply <paramref name="left" />.</param>
-    /// <returns>The product of <paramref name="left" /> multipled by <paramref name="right" />.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector128<float> Multiply(Vector128<float> left, float right)
-    {
-        if (Sse41.IsSupported)
-        {
-            var scalar = Vector128.Create(right);
-            return Sse.Multiply(left, scalar);
-        }
-        else if (AdvSimd.Arm64.IsSupported)
-        {
-            var scalar = Vector64.CreateScalar(right);
-            return AdvSimd.MultiplyBySelectedScalar(left, scalar, 0);
-        }
-        else
-        {
-            return SoftwareFallback(left, right);
-        }
-
-        static Vector128<float> SoftwareFallback(Vector128<float> left, float right)
-        {
-            return Vector128.Create(
-                left.GetX() * right,
-                left.GetY() * right,
-                left.GetZ() * right,
-                left.GetW() * right
-            );
-        }
-    }
-
-    /// <summary>Computes the product of two vectors.</summary>
-    /// <param name="left">The vector to multiply by <paramref name="right" />.</param>
-    /// <param name="right">The vector which is used to multiply <paramref name="left" />.</param>
-    /// <returns>The product of <paramref name="left" /> multipled by <paramref name="right" />.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector128<float> Multiply(Vector128<float> left, Vector128<float> right)
-    {
-        if (Sse41.IsSupported)
-        {
-            return Sse.Multiply(left, right);
-        }
-        else if (AdvSimd.Arm64.IsSupported)
-        {
-            return AdvSimd.Multiply(left, right);
-        }
-        else
-        {
-            return SoftwareFallback(left, right);
-        }
-
-        static Vector128<float> SoftwareFallback(Vector128<float> left, Vector128<float> right)
-        {
-            return Vector128.Create(
-                left.GetX() * right.GetX(),
-                left.GetY() * right.GetY(),
-                left.GetZ() * right.GetZ(),
-                left.GetW() * right.GetW()
-            );
-        }
-    }
-
     /// <summary>Computes the product of two vectors and then adds a third.</summary>
     /// <param name="addend">The vector which is added to the product of <paramref name="left" /> and <paramref name="right" />.</param>
     /// <param name="left">The vector to multiply by <paramref name="right" />.</param>
@@ -492,68 +392,6 @@ public static unsafe class VectorUtilities
                 addend.GetY() + (left.GetY() * right.GetY()),
                 addend.GetZ() + (left.GetZ() * right.GetZ()),
                 addend.GetW() + (left.GetW() * right.GetW())
-            );
-        }
-    }
-
-    /// <summary>Compares two vectors to determine the element-wise maximum.</summary>
-    /// <param name="left">The vector to compare with <paramref name="right" />.</param>
-    /// <param name="right">The vector to compare with <paramref name="left" />.</param>
-    /// <returns>The element-wise maximum of <paramref name="left" /> and <paramref name="right" />.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector128<float> Max(Vector128<float> left, Vector128<float> right)
-    {
-        if (Sse.IsSupported)
-        {
-            return Sse.Max(left, right);
-        }
-        else if (AdvSimd.IsSupported)
-        {
-            return AdvSimd.Max(left, right);
-        }
-        else
-        {
-            return SoftwareFallback(left, right);
-        }
-
-        static Vector128<float> SoftwareFallback(Vector128<float> left, Vector128<float> right)
-        {
-            return Vector128.Create(
-                MathHelper.Max(left.GetX(), right.GetX()),
-                MathHelper.Max(left.GetY(), right.GetY()),
-                MathHelper.Max(left.GetZ(), right.GetZ()),
-                MathHelper.Max(left.GetW(), right.GetW())
-            );
-        }
-    }
-
-    /// <summary>Compares two vectors to determine the element-wise minimum.</summary>
-    /// <param name="left">The vector to compare with <paramref name="right" />.</param>
-    /// <param name="right">The vector to compare with <paramref name="left" />.</param>
-    /// <returns>The element-wise minimum of <paramref name="left" /> and <paramref name="right" />.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector128<float> Min(Vector128<float> left, Vector128<float> right)
-    {
-        if (Sse41.IsSupported)
-        {
-            return Sse.Min(left, right);
-        }
-        else if (AdvSimd.Arm64.IsSupported)
-        {
-            return AdvSimd.Min(left, right);
-        }
-        else
-        {
-            return SoftwareFallback(left, right);
-        }
-
-        static Vector128<float> SoftwareFallback(Vector128<float> left, Vector128<float> right)
-        {
-            return Vector128.Create(
-                MathHelper.Min(left.GetX(), right.GetX()),
-                MathHelper.Min(left.GetY(), right.GetY()),
-                MathHelper.Min(left.GetZ(), right.GetZ()),
-                MathHelper.Min(left.GetW(), right.GetW())
             );
         }
     }
@@ -775,46 +613,15 @@ public static unsafe class VectorUtilities
     {
         Debug.Assert(LessThanOrEqual(min, max));
 
-        if (Sse.IsSupported)
-        {
-            Vector128<float> result = Sse.Max(min, vector);
-            result = Sse.Min(max, result);
-            return result;
-        }
-        else if (AdvSimd.IsSupported)
-        {
-            Vector128<float> result = AdvSimd.Max(min, vector);
-            result = AdvSimd.Min(max, result);
-            return result;
-        }
-        else
-        {
-            Vector128<float> result = Max(min, vector);
-            result = Min(max, result);
-            return result;
-
-        }
+        Vector128<float> result = Vector128.Max(min, vector);
+        result = Vector128.Min(max, result);
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector128<float> Saturate(Vector128<float> vector)
     {
-        if (Sse.IsSupported)
-        {
-            Vector128<float> result = Sse.Max(vector, Vector128<float>.Zero);
-            result = Sse.Min(result, One);
-            return result;
-        }
-        else if (AdvSimd.IsSupported)
-        {
-            Vector128<float> result = AdvSimd.Max(vector, Vector128<float>.Zero);
-            result = AdvSimd.Min(result, One);
-            return result;
-        }
-        else
-        {
-            return Clamp(vector, Vector128<float>.Zero, One);
-        }
+        return Clamp(vector, Vector128<float>.Zero, One);
     }
 
     /// <summary>

@@ -130,7 +130,16 @@ public struct Int3 : IEquatable<Int3>, IFormattable
     public int this[int index]
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        readonly get => this.GetElement(index);
+        readonly get
+        {
+            if (index >= Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
+            ref int address = ref Unsafe.AsRef(in X);
+            return Unsafe.Add(ref address, index);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         set => this = this.WithElement(index, value);

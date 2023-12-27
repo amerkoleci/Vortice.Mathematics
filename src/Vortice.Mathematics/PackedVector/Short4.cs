@@ -1,9 +1,6 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-// This file includes code based on code from https://github.com/microsoft/DirectXMath
-// The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
-
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -54,8 +51,6 @@ public readonly struct Short4 : IPackedVector<ulong>, IEquatable<Short4>
     /// <param name="packedValue">The packed value to assign.</param>
     public Short4(ulong packedValue)
     {
-        Unsafe.SkipInit(out this);
-
         _packedValue = packedValue;
     }
 
@@ -68,8 +63,6 @@ public readonly struct Short4 : IPackedVector<ulong>, IEquatable<Short4>
     /// <param name="w">The w value.</param>
     public Short4(short x, short y, short z, short w)
     {
-        Unsafe.SkipInit(out this);
-
         X = x;
         Y = y;
         Z = z;
@@ -85,30 +78,13 @@ public readonly struct Short4 : IPackedVector<ulong>, IEquatable<Short4>
     /// <param name="w">The w value.</param>
     public Short4(float x, float y, float z, float w)
     {
-        Unsafe.SkipInit(out this);
+        Vector128<float> vector = Clamp(Vector128.Create(x, y, z, w), ShortMin, ShortMax);
+        vector = Round(vector);
 
-        Vector128<float> vector = Vector128.Create(x, y, z, w);
-        if (Sse41.IsSupported)
-        {
-            Vector128<float> result = Clamp(vector, ShortMin, ShortMax);
-            Vector128<int> vInt = Sse2.ConvertToVector128Int32(result);
-            Vector128<short> vShort = Sse2.PackSignedSaturate(vInt, vInt);
-
-            X = vShort.GetElement(0);
-            Y = vShort.GetElement(1);
-            Z = vShort.GetElement(2);
-            W = vShort.GetElement(3);
-        }
-        else
-        {
-            Vector128<float> result = Clamp(vector, ShortMin, ShortMax);
-            result = Round(result);
-
-            X = (short)vector.GetX();
-            Y = (short)vector.GetY();
-            Z = (short)vector.GetZ();
-            W = (short)vector.GetW();
-        }
+        X = (short)vector.GetX();
+        Y = (short)vector.GetY();
+        Z = (short)vector.GetZ();
+        W = (short)vector.GetW();
     }
 
     /// <summary>

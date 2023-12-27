@@ -5,7 +5,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using static Vortice.Mathematics.MathHelper;
-using System.Drawing;
 using System.Numerics;
 
 namespace Vortice.Mathematics;
@@ -100,8 +99,8 @@ public struct Viewport : IEquatable<Viewport>
     /// <summary>
     /// Initializes a new instance of the <see cref="Viewport"/> struct.
     /// </summary>
-    /// <param name="bounds">A <see cref="RectangleF"/> that defines the location and size of the viewport in a render target.</param>
-    public Viewport(RectangleF bounds)
+    /// <param name="bounds">A <see cref="Rect"/> that defines the location and size of the viewport in a render target.</param>
+    public Viewport(in Rect bounds)
     {
         X = bounds.X;
         Y = bounds.Y;
@@ -114,8 +113,8 @@ public struct Viewport : IEquatable<Viewport>
     /// <summary>
     /// Initializes a new instance of the <see cref="Viewport"/> struct.
     /// </summary>
-    /// <param name="bounds">A <see cref="Rectangle"/> that defines the location and size of the viewport in a render target.</param>
-    public Viewport(Rectangle bounds)
+    /// <param name="bounds">A <see cref="RectI"/> that defines the location and size of the viewport in a render target.</param>
+    public Viewport(in RectI bounds)
     {
         X = bounds.X;
         Y = bounds.Y;
@@ -143,13 +142,13 @@ public struct Viewport : IEquatable<Viewport>
     /// Gets or sets the bounds of the viewport.
     /// </summary>
     /// <value>The bounds.</value>
-    public RectangleF Bounds => new(X, Y, Width, Height);
+    public readonly Rect Bounds => new(X, Y, Width, Height);
 
     /// <summary>
     /// Gets the aspect ratio used by the viewport.
     /// </summary>
     /// <value>The aspect ratio.</value>
-    public float AspectRatio
+    public readonly float AspectRatio
     {
         get
         {
@@ -169,7 +168,7 @@ public struct Viewport : IEquatable<Viewport>
     /// <param name="projection">The projection matrix.</param>
     /// <param name="view">The view matrix.</param>
     /// <param name="world">The world matrix.</param>
-    public Vector3 Project(in Vector3 source, in Matrix4x4 projection, in Matrix4x4 view, in Matrix4x4 world)
+    public readonly Vector3 Project(in Vector3 source, in Matrix4x4 projection, in Matrix4x4 view, in Matrix4x4 world)
     {
         Matrix4x4 worldViewProjection = Matrix4x4.Multiply(Matrix4x4.Multiply(world, view), projection);
         return Project(source, worldViewProjection);
@@ -181,12 +180,12 @@ public struct Viewport : IEquatable<Viewport>
     /// <param name="source">The vector to project.</param>
     /// <param name="worldViewProjection">The World-View-Projection matrix.</param>
     /// <returns>The unprojected vector. </returns>
-    public Vector3 Project(Vector3 source, Matrix4x4 worldViewProjection)
+    public readonly Vector3 Project(Vector3 source, Matrix4x4 worldViewProjection)
     {
         Vector3 vector = Vector3.Transform(source, worldViewProjection);
         float a = (source.X * worldViewProjection.M14) + (source.Y * worldViewProjection.M24) + (source.Z * worldViewProjection.M34) + worldViewProjection.M44;
 
-        if (!MathHelper.IsOne(a))
+        if (!IsOne(a))
         {
             vector.X /= a;
             vector.Y /= a;
@@ -207,7 +206,7 @@ public struct Viewport : IEquatable<Viewport>
     /// <param name="view">The view matrix.</param>
     /// <param name="world">The world matrix.</param>
     /// <returns>The unprojected vector. </returns>
-    public Vector3 Unproject(Vector3 source, Matrix4x4 projection, Matrix4x4 view, Matrix4x4 world)
+    public readonly Vector3 Unproject(Vector3 source, Matrix4x4 projection, Matrix4x4 view, Matrix4x4 world)
     {
         Matrix4x4 worldViewProjection = Matrix4x4.Multiply(Matrix4x4.Multiply(world, view), projection);
         return Unproject(source, worldViewProjection);
@@ -219,7 +218,7 @@ public struct Viewport : IEquatable<Viewport>
     /// <param name="source">The vector to project.</param>
     /// <param name="worldViewProjection">The World-View-Projection matrix.</param>
     /// <returns>The unprojected vector. </returns>
-    public Vector3 Unproject(Vector3 source, Matrix4x4 worldViewProjection)
+    public readonly Vector3 Unproject(Vector3 source, Matrix4x4 worldViewProjection)
     {
         Matrix4x4.Invert(worldViewProjection, out Matrix4x4 matrix);
 
@@ -230,7 +229,7 @@ public struct Viewport : IEquatable<Viewport>
         float a = (source.X * matrix.M14) + (source.Y * matrix.M24) + (source.Z * matrix.M34) + matrix.M44;
         source = Vector3.Transform(source, matrix);
 
-        if (!MathHelper.IsOne(a))
+        if (!IsOne(a))
         {
             source /= a;
         }
@@ -238,13 +237,13 @@ public struct Viewport : IEquatable<Viewport>
         return source;
     }
 
-    public static Rectangle ComputeDisplayArea(ViewportScaling scaling, int backBufferWidth, int backBufferHeight, int outputWidth, int outputHeight)
+    public static RectI ComputeDisplayArea(ViewportScaling scaling, int backBufferWidth, int backBufferHeight, int outputWidth, int outputHeight)
     {
         switch (scaling)
         {
             case ViewportScaling.Stretch:
                 // Output fills the entire window area
-                return new Rectangle(0, 0, outputWidth, outputHeight);
+                return new RectI(0, 0, outputWidth, outputHeight);
 
             case ViewportScaling.AspectRatioStretch:
                 // Output fills the window area but respects the original aspect ratio, using pillar boxing or letter boxing as required
@@ -267,7 +266,7 @@ public struct Viewport : IEquatable<Viewport>
                     float offsetY = (outputHeight - scaledHeight) * 0.5f;
 
                     // Clip to display window
-                    return new Rectangle(
+                    return new RectI(
                         (int)Max(0, offsetX),
                         (int)Max(0, offsetY),
                         (int)Min(outputWidth, scaledWidth),
@@ -278,16 +277,16 @@ public struct Viewport : IEquatable<Viewport>
             case ViewportScaling.None:
             default:
                 // Output is displayed in the upper left corner of the window area
-                return new Rectangle(0, 0, Min(backBufferWidth, outputWidth), Min(backBufferHeight, outputHeight));
+                return new RectI(0, 0, Min(backBufferWidth, outputWidth), Min(backBufferHeight, outputHeight));
         }
     }
 
-    public static Rectangle ComputeTitleSafeArea(int backBufferWidth, int backBufferHeight)
+    public static RectI ComputeTitleSafeArea(int backBufferWidth, int backBufferHeight)
     {
         float safew = (backBufferWidth + 19.0f) / 20.0f;
         float safeh = (backBufferHeight + 19.0f) / 20.0f;
 
-        return Rectangle.FromLTRB(
+        return RectI.FromLTRB(
             (int)safew,
             (int)safeh,
             (int)(backBufferWidth - safew + 0.5f),
@@ -296,14 +295,14 @@ public struct Viewport : IEquatable<Viewport>
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Viewport value && Equals(value);
+    public override readonly bool Equals(object? obj) => obj is Viewport value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Viewport"/> is equal to this instance.
     /// </summary>
     /// <param name="other">The <see cref="Viewport"/> to compare with this instance.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(Viewport other)
+    public readonly bool Equals(Viewport other)
     {
         return CompareEqual(X, other.X, NearZeroEpsilon)
             && CompareEqual(Y, other.Y, NearZeroEpsilon)
@@ -336,22 +335,10 @@ public struct Viewport : IEquatable<Viewport>
     public static bool operator !=(Viewport left, Viewport right) => !left.Equals(right);
 
     /// <inheritdoc/>
-    public override int GetHashCode()
-    {
-        var hashCode = new HashCode();
-        {
-            hashCode.Add(X);
-            hashCode.Add(Y);
-            hashCode.Add(Width);
-            hashCode.Add(Height);
-            hashCode.Add(MinDepth);
-            hashCode.Add(MaxDepth);
-        }
-        return hashCode.ToHashCode();
-    }
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y, Width, Height, MinDepth, MaxDepth);
 
     /// <inheritdoc/>
-    public override string ToString()
+    public override readonly string ToString()
     {
         return $"{nameof(X)}: {X}, {nameof(Y)}: {Y}, {nameof(Width)}: {Width}, {nameof(Height)}: {Height}, {nameof(MinDepth)}: {MinDepth}, {nameof(MaxDepth)}: {MaxDepth}";
     }

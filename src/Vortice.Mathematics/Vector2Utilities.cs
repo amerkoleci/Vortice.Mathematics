@@ -12,15 +12,6 @@ namespace Vortice.Mathematics;
 /// </summary>
 public static class Vector2Utilities
 {
-    public static Vector2 NegativeOne
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return new Vector2(-1.0f);
-        }
-    }
-
     public static Vector2 OneHalf
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -63,24 +54,6 @@ public static class Vector2Utilities
         get
         {
             return new Vector2(255.0f, 255.0f);
-        }
-    }
-
-    public static Vector2 ByteMin
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return new Vector2(-127.0f, -127.0f);
-        }
-    }
-
-    public static Vector2 ByteMax
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            return new Vector2(127.0f, 127.0f);
         }
     }
 
@@ -148,23 +121,6 @@ public static class Vector2Utilities
     {
         Vector128<float> result = VectorUtilities.CompareEqual(left.AsVector128(), right.AsVector128());
         return result.AsVector2();
-    }
-
-    /// <summary>Compares two vectors to determine equality.</summary>
-    /// <param name="left">The vector to compare with <paramref name="right" />.</param>
-    /// <param name="right">The vector to compare with <paramref name="left" />.</param>
-    /// <returns><c>true</c> if <paramref name="left" /> and <paramref name="right" /> are equal; otherwise, <c>false</c>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool CompareEqualAll(in Vector2 left, in Vector2 right)
-    {
-        return VectorUtilities.CompareEqualAll(left.AsVector128(), right.AsVector128());
-    }
-
-    /// <returns><c>true</c> if <paramref name="left" /> and <paramref name="right" /> are equal; otherwise, <c>false</c>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool CompareEqualAll(in Vector2 left, in Vector2 right, in Vector2 epsilon)
-    {
-        return VectorUtilities.CompareEqualAll(left.AsVector128(), right.AsVector128(), epsilon.AsVector128());
     }
 
     /// <returns></returns>

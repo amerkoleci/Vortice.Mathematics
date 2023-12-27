@@ -12,25 +12,34 @@ public partial class Color4Tests
     public void DefaultChecks()
     {
         Color4 color = new();
-        Assert.AreEqual(color.R, 0.0f);
-        Assert.AreEqual(color.G, 0.0f);
-        Assert.AreEqual(color.B, 0.0f);
-        Assert.AreEqual(color.A, 0.0f);
+        Assert.That(color.R, Is.EqualTo(0.0f));
+        Assert.That(color.G, Is.EqualTo(0.0f));
+        Assert.That(color.B, Is.EqualTo(0.0f));
+        Assert.That(color.A, Is.EqualTo(0.0f));
     }
 
     [TestCase]
     public void CreationTests()
     {
         Color4 color = new(0.5f);
-        Assert.AreEqual(color.R, 0.5f);
-        Assert.AreEqual(color.G, 0.5f);
-        Assert.AreEqual(color.B, 0.5f);
-        Assert.AreEqual(color.A, 0.5f);
+        Assert.That(color.R, Is.EqualTo(0.5f));
+        Assert.That(color.G, Is.EqualTo(0.5f));
+        Assert.That(color.B, Is.EqualTo(0.5f));
+        Assert.That(color.A, Is.EqualTo(0.5f));
 
         color = new(1.0f, 0.0f, 1.0f, 1.0f);
-        Assert.AreEqual(color.R, 1.0f);
-        Assert.AreEqual(color.G, 0.0f);
-        Assert.AreEqual(color.B, 1.0f);
-        Assert.AreEqual(color.A, 1.0f);
+        Assert.That(color.R, Is.EqualTo(1.0f));
+        Assert.That(color.G, Is.EqualTo(0.0f));
+        Assert.That(color.B, Is.EqualTo(1.0f));
+        Assert.That(color.A, Is.EqualTo(1.0f));
+    }
+
+    [TestCase]
+    public void EqualTests()
+    {
+        Color4 first = new(0.5f);
+        Color4 second = new(0.5f);
+        Assert.That(first, Is.EqualTo(second));
+        Assert.That(first == second, Is.True);
     }
 }

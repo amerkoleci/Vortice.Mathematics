@@ -14,27 +14,27 @@ public partial class Short2NormalizedTests
     public void DefaultChecks()
     {
         Short2Normalized vector = new();
-        Assert.AreEqual(vector.X, 0);
-        Assert.AreEqual(vector.Y, 0);
-        Assert.AreEqual(vector.PackedValue, 0u);
+        Assert.That(vector.X, Is.EqualTo(0));
+        Assert.That(vector.Y, Is.EqualTo(0));
+        Assert.That(vector.PackedValue, Is.EqualTo(0u));
     }
 
     [TestCase]
     public void CreationTests()
     {
         Short2Normalized vector = new(250, 450);
-        Assert.AreEqual(vector.X, 250);
-        Assert.AreEqual(vector.Y, 450);
-        Assert.AreEqual(vector.PackedValue, 29491450u);
+        Assert.That(vector.X, Is.EqualTo(250));
+        Assert.That(vector.Y, Is.EqualTo(450));
+        Assert.That(vector.PackedValue, Is.EqualTo(29491450u));
 
         vector = new(0.5f, 0.3f);
-        Assert.AreEqual(vector.X, 16384);
-        Assert.AreEqual(vector.Y, 9830);
-        Assert.AreEqual(vector.PackedValue, 644235264u);
+        Assert.That(vector.X, Is.EqualTo(16384));
+        Assert.That(vector.Y, Is.EqualTo(9830));
+        Assert.That(vector.PackedValue, Is.EqualTo(644235264u));
 
         Vector2 vector2 = vector.ToVector2();
-        Assert.IsTrue(MathHelper.CompareEqual(MathF.Round(vector2.X, 1), 0.5f));
-        Assert.IsTrue(MathHelper.CompareEqual(MathF.Round(vector2.Y, 1), 0.3f));
+        Assert.That(MathHelper.CompareEqual(MathF.Round(vector2.X, 1), 0.5f), Is.True);
+        Assert.That(MathHelper.CompareEqual(MathF.Round(vector2.Y, 1), 0.3f), Is.True);
         //Assert.IsTrue(Vector2Utilities.NearEqual(vector2, new Vector2(0.5f, 0.3f), MathHelper.NearZeroEpsilon));
     }
 }

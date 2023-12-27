@@ -11,6 +11,6 @@ public partial class MathHelperTests
     [TestCase]
     public void IsSupported()
     {
-        Assert.AreEqual(MathHelper.Max(3, 5), 5);
+        Assert.That(MathHelper.Max(3, 5), Is.EqualTo(5));
     }
 }

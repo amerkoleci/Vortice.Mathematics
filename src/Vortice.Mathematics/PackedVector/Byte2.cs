@@ -1,14 +1,12 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-// This file includes code based on code from https://github.com/microsoft/DirectXMath
-// The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
-
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static Vortice.Mathematics.Vector2Utilities;
+using System.Runtime.Intrinsics;
+using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics.PackedVector;
 
@@ -40,8 +38,6 @@ public readonly struct Byte2 : IPackedVector<ushort>, IEquatable<Byte2>
     /// <param name="packedValue">The packed value to assign.</param>
     public Byte2(ushort packedValue)
     {
-        Unsafe.SkipInit(out this);
-
         _packedValue = packedValue;
     }
 
@@ -52,8 +48,6 @@ public readonly struct Byte2 : IPackedVector<ushort>, IEquatable<Byte2>
     /// <param name="y">The y value.</param>
     public Byte2(sbyte x, sbyte y)
     {
-        Unsafe.SkipInit(out this);
-
         X = x;
         Y = y;
     }
@@ -65,13 +59,11 @@ public readonly struct Byte2 : IPackedVector<ushort>, IEquatable<Byte2>
     /// <param name="y">The y value.</param>
     public Byte2(float x, float y)
     {
-        Unsafe.SkipInit(out this);
-
-        Vector2 vector = Vector2.Clamp(new Vector2(x, y), ByteMin, ByteMax);
+        Vector128<float> vector = Clamp(Vector128.Create(x, y, 0.0f, 0.0f), ByteMin, ByteMax);
         vector = Round(vector);
 
-        X = (sbyte)vector.X;
-        Y = (sbyte)vector.Y;
+        X = (sbyte)vector.GetX();
+        Y = (sbyte)vector.GetY();
     }
 
     /// <summary>

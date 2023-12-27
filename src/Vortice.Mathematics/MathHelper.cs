@@ -206,11 +206,11 @@ public static class MathHelper
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
 
-            var vLeft = Vector128.CreateScalarUnsafe(left);
-            var vRight = Vector128.CreateScalarUnsafe(right);
+            Vector128<double> vLeft = Vector128.CreateScalarUnsafe(left);
+            Vector128<double> vRight = Vector128.CreateScalarUnsafe(right);
 
-            var tmp = Sse2.Max(vLeft, vRight);
-            var msk = Sse2.CompareUnordered(vLeft, vLeft);
+            Vector128<double> tmp = Sse2.Max(vLeft, vRight);
+            Vector128<double> msk = Sse2.CompareUnordered(vLeft, vLeft);
 
             return Sse41.BlendVariable(tmp, vLeft, msk).ToScalar();
         }
@@ -316,11 +316,11 @@ public static class MathHelper
         {
             // TODO: This isn't correctly taking +0.0 vs -0.0 into account
 
-            var vLeft = Vector128.CreateScalarUnsafe(left);
-            var vRight = Vector128.CreateScalarUnsafe(right);
+            Vector128<double> vLeft = Vector128.CreateScalarUnsafe(left);
+            Vector128<double> vRight = Vector128.CreateScalarUnsafe(right);
 
-            var tmp = Sse2.Min(vLeft, vRight);
-            var msk = Sse2.CompareUnordered(vLeft, vLeft);
+            Vector128<double> tmp = Sse2.Min(vLeft, vRight);
+            Vector128<double> msk = Sse2.CompareUnordered(vLeft, vLeft);
 
             return Sse41.BlendVariable(tmp, vLeft, msk).ToScalar();
         }
@@ -529,7 +529,7 @@ public static class MathHelper
         // The compare order here is important.
         // It ensures we match HLSL behavior for the scenario where min is larger than max.
 
-        var result = value;
+        int result = value;
 
         result = Max(result, min);
         result = Min(result, max);
@@ -683,34 +683,27 @@ public static class MathHelper
     }
 
     /// <summary>
-    /// Converts a float value from gamma to linear space.
+    /// Converts a float value from sRGB to linear.
     /// </summary>
-    /// <param name="value">The gamma value.</param>
+    /// <param name="sRgbValue">The sRGB value.</param>
     /// <returns>A linear value.</returns>
-    public static float GammaToLinear(float value)
+    public static float SRgbToLinear(float sRgbValue)
     {
-        if (value <= 0.04045f)
-            return value / 12.92f;
-        else if (value < 1.0f)
-            return MathF.Pow((value + 0.055f) / 1.055f, 2.4f);
-        else
-            return MathF.Pow(value, 2.2f);
+        if (sRgbValue <= 0.04045f)
+            return sRgbValue / 12.92f;
+        return MathF.Pow((sRgbValue + 0.055f) / 1.055f, 2.4f);
     }
 
     /// <summary>
-    /// Converts a float value from linear to gamma.
+    /// Converts a float value from linear to sRGB.
     /// </summary>
-    /// <param name="value">The linear value.</param>
-    /// <returns>The encoded gamma value.</returns>
-    public static float LinearToGamma(float value)
+    /// <param name="linearValue">The linear value.</param>
+    /// <returns>The encoded sRGB value.</returns>
+    public static float LinearToSRgb(float linearValue)
     {
-        if (value <= 0.0f)
-            return 0.0f;
-        else if (value <= 0.0031308f)
-            return 12.92f * value;
-        else if (value < 1.0f)
-            return 1.055f * MathF.Pow(value, 0.4166667f) - 0.055f;
-        else
-            return MathF.Pow(value, 0.45454545f);
+        if (linearValue <= 0.0031308f)
+            return 12.92f * linearValue;
+
+        return 1.055f * MathF.Pow(linearValue, 0.4166667f) - 0.055f;
     }
 }

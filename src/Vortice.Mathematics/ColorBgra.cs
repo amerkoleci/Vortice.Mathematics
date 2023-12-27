@@ -4,7 +4,9 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
 using Vortice.Mathematics.PackedVector;
+using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics;
 
@@ -84,8 +86,6 @@ public readonly struct ColorBgra : IPackedVector<uint>, IEquatable<ColorBgra>
     /// <param name="a">The alpha component of the color.</param>
     public ColorBgra(byte r, byte g, byte b, byte a = 255) 
     {
-        Unsafe.SkipInit(out this);
-
         R = r;
         G = g;
         B = b;
@@ -101,42 +101,12 @@ public readonly struct ColorBgra : IPackedVector<uint>, IEquatable<ColorBgra>
     /// <param name="alpha">Alpha component.</param>
     public ColorBgra(float red, float green, float blue, float alpha = 1.0f) 
     {
-        Unsafe.SkipInit(out this);
+        Vector128<float> vector = Vector128.Create(red, green, blue, alpha);
+        Vector128<float> N = Saturate(vector);
+        N = Vector128.Multiply(N, UByteMax);
+        N = Round(N);
 
-#if TODO
-        unsafe
-        {
-            if (Sse2.IsSupported)
-            {
-                // Set <0 to 0
-                Vector128<float> result = Sse.Max(Vector128.Create(red, green, blue, alpha), Vector128<float>.Zero);
-                // Set>1 to 1
-                result = Sse.Min(result, One);
-                // Convert to 0-255
-                result = Sse.Multiply(result, UByteMax);
-                // Shuffle RGBA to ARGB
-                result = Sse.Shuffle(result, result, Shuffle(3, 0, 1, 2));
-
-                // Convert to int
-                Vector128<int> vInt = Sse2.ConvertToVector128Int32(result);
-                // Mash to shorts
-                Vector128<short> vShort = Sse2.PackSignedSaturate(vInt, vInt);
-                // Mash to bytes
-                Vector128<byte> vByte = Sse2.PackUnsignedSaturate(vShort, vShort);
-
-                vInt = Vector128.Create(vByte.ToScalar(), vByte.GetElement(1), vByte.GetElement(2), vByte.GetElement(3));
-
-                uint packedValue = default;
-                Sse.StoreScalar((float*)&packedValue, Sse2.ConvertToVector128Single(vInt));
-                _packedValue = packedValue;
-            }
-        }
-#endif
-
-        Vector4 N = Vector4Utilities.Saturate(new Vector4(red, green, blue, alpha));
-        N = Vector4.Multiply(N, Vector4Utilities.UByteMax);
-        N = Vector4Utilities.Round(N);
-        _packedValue = ((uint)N.W << 24) | ((uint)N.X << 16) | ((uint)N.Y << 8) | (uint)N.Z;
+        _packedValue = ((uint)N.GetW() << 24) | ((uint)N.GetX() << 16) | ((uint)N.GetY() << 8) | (uint)N.GetZ();
     }
 
     /// <summary>

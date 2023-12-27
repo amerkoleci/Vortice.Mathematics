@@ -35,19 +35,8 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <param name="red">The red component of the color.</param>
     /// <param name="green">The green component of the color.</param>
     /// <param name="blue">The blue component of the color.</param>
-    public Color4(float red, float green, float blue)
-    {
-        _value = Vector128.Create(red, green, blue, 1.0f);
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Color4"/> struct.
-    /// </summary>
-    /// <param name="red">The red component of the color.</param>
-    /// <param name="green">The green component of the color.</param>
-    /// <param name="blue">The blue component of the color.</param>
     /// <param name="alpha">The alpha component of the color.</param>
-    public Color4(float red, float green, float blue, float alpha)
+    public Color4(float red, float green, float blue, float alpha = 1.0f)
     {
         _value = Vector128.Create(red, green, blue, alpha);
     }
@@ -76,7 +65,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// </summary>
     /// <param name="value">The red, green, and blue components of the color.</param>
     /// <param name="alpha">The alpha component of the color.</param>
-    public Color4(in Color3 value, float alpha)
+    public Color4(in Color3 value, float alpha = 1.0f)
     {
         _value = Vector128.Create(value.R, value.G, value.B, alpha);
     }
@@ -84,13 +73,19 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <summary>
     /// Initializes a new instance of the <see cref="Color4"/> struct.
     /// </summary>
-    /// <param name="r">Red component.</param>
-    /// <param name="g">Green component.</param>
-    /// <param name="b">Blue component.</param>
-    /// <param name="a">Alpha component.</param>
-    public Color4(byte r, byte g, byte b, byte a = 255)
+    /// <param name="rgba">A packed integer containing all four color components in RGBA order.</param>
+    public Color4(uint rgba)
     {
-        _value = Vector128.Create(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+        _value = Vector128.Create((rgba & 255) / 255.0f, ((rgba >> 8) & 255) / 255.0f, ((rgba >> 16) & 255) / 255.0f, ((rgba >> 24) & 255) / 255.0f);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Color4"/> struct.
+    /// </summary>
+    /// <param name="rgba">A packed integer containing all four color components in RGBA order.</param>
+    public Color4(int rgba)
+    {
+        _value = Vector128.Create((rgba & 255) / 255.0f, ((rgba >> 8) & 255) / 255.0f, ((rgba >> 16) & 255) / 255.0f, ((rgba >> 24) & 255) / 255.0f);
     }
 
     /// <summary>
@@ -98,6 +93,15 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// </summary>
     /// <param name="color"><see cref="Color"/> used to initialize the color.</param>
     public Color4(in Color color)
+    {
+        _value = Vector128.Create(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f, color.A / 255.0f);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Color4"/> struct.
+    /// </summary>
+    /// <param name="color"><see cref="ColorBgra"/> used to initialize the color.</param>
+    public Color4(in ColorBgra color)
     {
         _value = Vector128.Create(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f, color.A / 255.0f);
     }
@@ -117,7 +121,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Color" /> struct.
+    /// Initializes a new instance of the <see cref="Color4" /> struct.
     /// </summary>
     /// <param name="value">The value of the vector.</param>
     public Color4(Vector128<float> value)
@@ -385,14 +389,20 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
         return Hue(min, max);
     }
 
+    /// <summary>
     /// Return saturation as defined for HSL.
+    /// </summary>
+    /// <returns></returns>
     public float SaturationHSL()
     {
         Bounds(out float min, out float max, true);
         return SaturationHSL(min, max);
     }
 
+    /// <summary>
     /// Return saturation as defined for HSV.
+    /// </summary>
+    /// <returns></returns>
     public float SaturationHSV()
     {
         Bounds(out float min, out float max, true);
@@ -400,15 +410,15 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     }
 
     /// <summary>
-    /// Converts this color from gamma space to linear space.
+    /// Converts this color from sRGB space to linear space.
     /// </summary>
-    /// <returns>A Color in linear space.</returns>
-    public Color4 GammaToLinear()
+    /// <returns>A <see cref="Color4"/> in linear space.</returns>
+    public Color4 ToLinear()
     {
         return new(
-            MathHelper.GammaToLinear(R),
-            MathHelper.GammaToLinear(G),
-            MathHelper.GammaToLinear(B),
+            MathHelper.SRgbToLinear(R),
+            MathHelper.SRgbToLinear(G),
+            MathHelper.SRgbToLinear(B),
             A);
     }
 
@@ -416,12 +426,12 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// Converts this color from linear space to sRGB space.
     /// </summary>
     /// <returns>A <see cref="Color4"/> in sRGB space.</returns>
-    public Color4 LinearToGamma()
+    public Color4 ToSRgb()
     {
         return new(
-            MathHelper.LinearToGamma(R),
-            MathHelper.LinearToGamma(G),
-            MathHelper.LinearToGamma(B),
+            MathHelper.LinearToSRgb(R),
+            MathHelper.LinearToSRgb(G),
+            MathHelper.LinearToSRgb(B),
             A);
     }
 
@@ -618,7 +628,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color4 Multiply(Color4 left, Color4 right)
     {
-        Vector128<float> result = VectorUtilities.Multiply(left._value, right._value);
+        Vector128<float> result = Vector128.Multiply(left._value, right._value);
         return new Color4(result);
     }
 
@@ -629,7 +639,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color4 Multiply(Color4 left, float right)
     {
-        Vector128<float> result = VectorUtilities.Multiply(left._value, right);
+        Vector128<float> result = Vector128.Multiply(left._value, right);
         return new Color4(result);
     }
 
@@ -640,7 +650,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color4 Multiply(float left, Color4 right)
     {
-        Vector128<float> result = VectorUtilities.Multiply(right._value, left);
+        Vector128<float> result = Vector128.Multiply(right._value, left);
         return new Color4(result);
     }
 
@@ -661,34 +671,34 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
-    public static explicit operator Vector3(Color4 value) => new(value.R, value.G, value.B);
+    public static explicit operator Vector3(in Color4 value) => new(value.R, value.G, value.B);
 
     /// <summary>
     /// Performs an implicit conversion from <see cref="Color4"/> to <see cref="Vector4"/>.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
-    public static implicit operator Vector4(Color4 value) => new(value.R, value.G, value.B, value.A);
+    public static implicit operator Vector4(in Color4 value) => new(value.R, value.G, value.B, value.A);
 
     /// <summary>
     /// Performs an explicit conversion from <see cref="Vector3"/> to <see cref="Color4"/>.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
-    public static explicit operator Color4(Vector3 value) => new(value.X, value.Y, value.Z, 1.0f);
+    public static explicit operator Color4(in Vector3 value) => new(value.X, value.Y, value.Z, 1.0f);
 
     /// <summary>
     /// Performs an explicit conversion from <see cref="Vector4"/> to <see cref="Color4"/>.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
-    public static explicit operator Color4(Vector4 value) => new(value.X, value.Y, value.Z, value.W);
+    public static explicit operator Color4(in Vector4 value) => new(value.X, value.Y, value.Z, value.W);
 
     /// <inheritdoc />
     public override bool Equals(object? obj) => obj is Color4 other && Equals(other);
 
     /// <inheritdoc />
-    public bool Equals(Color4 other) => this == other;
+    public bool Equals(Color4 other) => Vector128.EqualsAll(_value, other._value);
 
     /// <summary>
     /// Adds two colors.
@@ -746,7 +756,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color4 operator *(Color4 left, float right)
     {
-        Vector128<float> result = VectorUtilities.Multiply(left._value, right);
+        Vector128<float> result = Vector128.Multiply(left._value, right);
         return new Color4(result);
     }
 
@@ -757,7 +767,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color4 operator *(Color4 left, Color4 right)
     {
-        Vector128<float> result = VectorUtilities.Multiply(left._value, right._value);
+        Vector128<float> result = Vector128.Multiply(left._value, right._value);
         return new Color4(result);
     }
 
@@ -770,10 +780,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator ==(Color4 left, Color4 right)
-    {
-        return CompareEqualAll(left._value, right._value);
-    }
+    public static bool operator ==(Color4 left, Color4 right) => Vector128.EqualsAll(left._value, right._value);
 
     /// <summary>
     /// Compares two <see cref="Color4"/> objects for inequality.
@@ -784,10 +791,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(Color4 left, Color4 right)
-    {
-        return CompareNotEqualAny(left._value, right._value);
-    }
+    public static bool operator !=(Color4 left, Color4 right) => CompareNotEqualAny(left._value, right._value);
 
     /// <inheritdoc/>
     public override int GetHashCode() => HashCode.Combine(R, G, B, A);

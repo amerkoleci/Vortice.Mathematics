@@ -14,33 +14,33 @@ public partial class Short4Tests
     public void DefaultChecks()
     {
         Short4 vector = new();
-        Assert.AreEqual(vector.X, 0);
-        Assert.AreEqual(vector.Y, 0);
-        Assert.AreEqual(vector.Z, 0);
-        Assert.AreEqual(vector.W, 0);
-        Assert.AreEqual(vector.PackedValue, 0u);
+        Assert.That(vector.X, Is.EqualTo(0));
+        Assert.That(vector.Y, Is.EqualTo(0));
+        Assert.That(vector.Z, Is.EqualTo(0));
+        Assert.That(vector.W, Is.EqualTo(0));
+        Assert.That(vector.PackedValue, Is.EqualTo(0u));
     }
 
     [TestCase]
     public void CreationTests()
     {
         Short4 vector = new(250, 450, 320, 240);
-        Assert.AreEqual(vector.X, 250);
-        Assert.AreEqual(vector.Y, 450);
-        Assert.AreEqual(vector.Z, 320);
-        Assert.AreEqual(vector.W, 240);
-        Assert.AreEqual(vector.PackedValue, 67555368829583610u);
+        Assert.That(vector.X, Is.EqualTo(250));
+        Assert.That(vector.Y, Is.EqualTo(450));
+        Assert.That(vector.Z, Is.EqualTo(320));
+        Assert.That(vector.W, Is.EqualTo(240));
+        Assert.That(vector.PackedValue, Is.EqualTo(67555368829583610u));
 
         vector = new(125.0f, 255.5f, 325.7f, 645.2f);
-        Assert.AreEqual(vector.X, 125);
-        Assert.AreEqual(vector.Y, 256);
-        Assert.AreEqual(vector.Z, 326);
-        Assert.AreEqual(vector.W, 645);
+        Assert.That(vector.X, Is.EqualTo(125));
+        Assert.That(vector.Y, Is.EqualTo(256));
+        Assert.That(vector.Z, Is.EqualTo(326));
+        Assert.That(vector.W, Is.EqualTo(645));
 
         Vector4 vector4 = vector.ToVector4();
-        Assert.AreEqual(vector4.X, 125.0f);
-        Assert.AreEqual(vector4.Y, 256.0f);
-        Assert.AreEqual(vector4.Z, 326.0f);
-        Assert.AreEqual(vector4.W, 645.0f);
+        Assert.That(vector4.X, Is.EqualTo(125.0f));
+        Assert.That(vector4.Y, Is.EqualTo(256.0f));
+        Assert.That(vector4.Z, Is.EqualTo(326.0f));
+        Assert.That(vector4.W, Is.EqualTo(645.0f));
     }
 }

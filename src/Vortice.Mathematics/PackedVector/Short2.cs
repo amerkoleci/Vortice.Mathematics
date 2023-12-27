@@ -1,16 +1,11 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-// This file includes code based on code from https://github.com/microsoft/DirectXMath
-// The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
-
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
-using System.Runtime.Intrinsics.Arm;
-using System.Runtime.Intrinsics.X86;
 using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics.PackedVector;
@@ -43,8 +38,6 @@ public readonly struct Short2 : IPackedVector<uint>, IEquatable<Short2>
     /// <param name="packedValue">The packed value to assign.</param>
     public Short2(uint packedValue)
     {
-        Unsafe.SkipInit(out this);
-
         _packedValue = packedValue;
     }
 
@@ -55,8 +48,6 @@ public readonly struct Short2 : IPackedVector<uint>, IEquatable<Short2>
     /// <param name="y">The y value.</param>
     public Short2(short x, short y)
     {
-        Unsafe.SkipInit(out this);
-
         X = x;
         Y = y;
     }
@@ -68,40 +59,11 @@ public readonly struct Short2 : IPackedVector<uint>, IEquatable<Short2>
     /// <param name="y">The y value.</param>
     public Short2(float x, float y)
     {
-        Unsafe.SkipInit(out this);
+        Vector128<float> vector = Clamp(Vector128.Create(x, y, 0.0f, 0.0f), ShortMin, ShortMax);
+        vector = Round(vector);
 
-        Vector128<float> vector = Vector128.Create(x, y, 0.0f, 0.0f);
-        if (Sse41.IsSupported)
-        {
-            // Bounds check
-            Vector128<float> result = Clamp(vector, ShortMin, ShortMax);
-            // Convert to int with rounding
-            Vector128<int> vInt = Sse2.ConvertToVector128Int32(result);
-            // Pack the ints into shorts
-            Vector128<short> vShort = Sse2.PackSignedSaturate(vInt, vInt);
-
-            X = vShort.GetElement(0);
-            Y = vShort.GetElement(1);
-        }
-        else if (AdvSimd.IsSupported)
-        {
-            Vector128<float> result = AdvSimd.Max(vector, ShortMin);
-            result = AdvSimd.Min(result, AdvSimd.DuplicateToVector128(32767.0f));
-            Vector128<int> vInt32 = AdvSimd.ConvertToInt32RoundToZero(result);
-            Vector64<short> vInt16 = AdvSimd.ExtractNarrowingSaturateLower(vInt32);
-
-            X = vInt16.GetElement(0);
-            Y = vInt16.GetElement(1);
-            //vst1_lane_u32(&pDestination->v, vreinterpret_u32_s16(vInt16), 0);
-        }
-        else
-        {
-            Vector128<float> result = Clamp(vector, ShortMin, ShortMax);
-            vector = Round(vector);
-
-            X = (short)vector.GetX();
-            Y = (short)vector.GetY();
-        }
+        X = (short)vector.GetX();
+        Y = (short)vector.GetY();
     }
 
     /// <summary>
