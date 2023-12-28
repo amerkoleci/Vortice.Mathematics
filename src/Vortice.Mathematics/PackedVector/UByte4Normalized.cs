@@ -35,13 +35,13 @@ public readonly struct UByte4Normalized : IPackedVector<uint>, IEquatable<UByte4
     /// <summary>
     /// The Z component of the vector.
     /// </summary>
-    [FieldOffset(1)]
+    [FieldOffset(2)]
     public readonly byte Z;
 
     /// <summary>
     /// The W component of the vector.
     /// </summary>
-    [FieldOffset(1)]
+    [FieldOffset(3)]
     public readonly byte W;
 
     /// <summary>

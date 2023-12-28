@@ -1,14 +1,13 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-// This file includes code based on code from https://github.com/microsoft/DirectXMath
-// The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
-
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static Vortice.Mathematics.Vector2Utilities;
+using System.Runtime.Intrinsics;
+using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics.PackedVector;
 
@@ -40,8 +39,6 @@ public readonly struct UShort2 : IPackedVector<uint>, IEquatable<UShort2>
     /// <param name="packedValue">The packed value to assign.</param>
     public UShort2(uint packedValue)
     {
-        Unsafe.SkipInit(out this);
-
         _packedValue = packedValue;
     }
 
@@ -52,8 +49,6 @@ public readonly struct UShort2 : IPackedVector<uint>, IEquatable<UShort2>
     /// <param name="y">The y value.</param>
     public UShort2(ushort x, ushort y)
     {
-        Unsafe.SkipInit(out this);
-
         X = x;
         Y = y;
     }
@@ -65,20 +60,18 @@ public readonly struct UShort2 : IPackedVector<uint>, IEquatable<UShort2>
     /// <param name="y">The y value.</param>
     public UShort2(float x, float y)
     {
-        Unsafe.SkipInit(out this);
-
-        Vector2 vector = Vector2.Clamp(new Vector2(x, y), Vector2.Zero, UShortMax);
+        Vector128<float> vector = Clamp(Vector128.Create(x, y, 0.0f, 0.0f), Vector128<float>.Zero, UShortMax);
         vector = Round(vector);
 
-        X = (ushort)vector.X;
-        Y = (ushort)vector.Y;
+        X = (ushort)vector.GetX();
+        Y = (ushort)vector.GetY();
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UShort2"/> struct.
     /// </summary>
     /// <param name="vector">The <see cref="Vector2"/> containing X and Y value.</param>
-    public UShort2(Vector2 vector)
+    public UShort2(in Vector2 vector)
         : this(vector.X, vector.Y)
     {
     }
@@ -109,7 +102,7 @@ public readonly struct UShort2 : IPackedVector<uint>, IEquatable<UShort2>
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is UShort2 other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is UShort2 other && Equals(other);
 
     /// <inheritdoc/>
     public bool Equals(UShort2 other) => PackedValue.Equals(other.PackedValue);

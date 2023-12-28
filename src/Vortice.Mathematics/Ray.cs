@@ -76,7 +76,7 @@ public struct Ray : IEquatable<Ray>, IFormattable
         //Same thing as RayIntersectsSphere except that the radius of the sphere (point)
         //is the epsilon for zero.
         float b = Vector3.Dot(m, Direction);
-        float c = Vector3.Dot(m, m) - MathHelper.NearZeroEpsilon;
+        float c = Vector3.Dot(m, m) - MathHelper.ZeroTolerance;
 
         if (c > 0f && b > 0f)
             return false;
@@ -130,7 +130,7 @@ public struct Ray : IEquatable<Ray>, IFormattable
 
         float direction = Vector3.Dot(plane.Normal, Direction);
 
-        if (Math.Abs(direction) < MathHelper.NearZeroEpsilon)
+        if (Math.Abs(direction) < MathHelper.ZeroTolerance)
         {
             return null;
         }
@@ -140,7 +140,7 @@ public struct Ray : IEquatable<Ray>, IFormattable
 
         if (distance < 0f)
         {
-            if (distance < -MathHelper.NearZeroEpsilon)
+            if (distance < -MathHelper.ZeroTolerance)
             {
                 return null;
             }
@@ -176,8 +176,7 @@ public struct Ray : IEquatable<Ray>, IFormattable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly bool Equals(Ray other)
     {
-        return Position.Equals(other.Position)
-            && Direction.Equals(other.Direction);
+        return Position.Equals(other.Position) && Direction.Equals(other.Direction);
     }
 
     /// <summary>
@@ -217,7 +216,7 @@ public struct Ray : IEquatable<Ray>, IFormattable
         float det = Vector3.Dot(edgeA, normal);
 
         // if perpendicular, exit
-        if (det < MathHelper.NearZeroEpsilon)
+        if (det < MathHelper.ZeroTolerance)
         {
             return false;
         }
@@ -227,14 +226,14 @@ public struct Ray : IEquatable<Ray>, IFormattable
         Vector3 s = Position - v0;
         float u = det * Vector3.Dot(s, normal);
 
-        if (u < -MathHelper.NearZeroEpsilon || u > 1.0f + MathHelper.NearZeroEpsilon)
+        if (u < -MathHelper.ZeroTolerance || u > 1.0f + MathHelper.ZeroTolerance)
         {
             return false;
         }
 
         Vector3 r = Vector3.Cross(s, edgeA);
         float v = det * Vector3.Dot(Direction, r);
-        if (v < -MathHelper.NearZeroEpsilon || u + v > 1.0f + MathHelper.NearZeroEpsilon)
+        if (v < -MathHelper.ZeroTolerance || u + v > 1.0f + MathHelper.ZeroTolerance)
         {
             return false;
         }

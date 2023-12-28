@@ -1,14 +1,13 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-// This file includes code based on code from https://github.com/microsoft/DirectXMath
-// The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
-
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static Vortice.Mathematics.Vector2Utilities;
+using System.Runtime.Intrinsics;
+using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics.PackedVector;
 
@@ -40,8 +39,6 @@ public readonly struct UByte2Normalized : IPackedVector<ushort>, IEquatable<UByt
     /// <param name="packedValue">The packed value to assign.</param>
     public UByte2Normalized(ushort packedValue)
     {
-        Unsafe.SkipInit(out this);
-
         _packedValue = packedValue;
     }
 
@@ -52,8 +49,6 @@ public readonly struct UByte2Normalized : IPackedVector<ushort>, IEquatable<UByt
     /// <param name="y">The y value.</param>
     public UByte2Normalized(byte x, byte y)
     {
-        Unsafe.SkipInit(out this);
-
         X = x;
         Y = y;
     }
@@ -65,21 +60,19 @@ public readonly struct UByte2Normalized : IPackedVector<ushort>, IEquatable<UByt
     /// <param name="y">The y value.</param>
     public UByte2Normalized(float x, float y)
     {
-        Unsafe.SkipInit(out this);
-
-        Vector2 vector = Saturate(new Vector2(x, y));
+        Vector128<float> vector = Saturate(Vector128.Create(x, y, 0.0f, 0.0f));
         vector = MultiplyAdd(vector, UByteMax, OneHalf);
         vector = Truncate(vector);
 
-        X = (byte)vector.X;
-        Y = (byte)vector.Y;
+        X = (byte)vector.GetX();
+        Y = (byte)vector.GetY();
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UByte2Normalized"/> struct.
     /// </summary>
     /// <param name="vector">The <see cref="Vector2"/> containing X and Y value.</param>
-    public UByte2Normalized(Vector2 vector)
+    public UByte2Normalized(in Vector2 vector)
         : this(vector.X, vector.Y)
     {
     }
@@ -101,10 +94,7 @@ public readonly struct UByte2Normalized : IPackedVector<ushort>, IEquatable<UByt
     /// <summary>
     /// Expands the packed representation to a <see cref="Vector2"/>.
     /// </summary>
-    public Vector2 ToVector2() => new(
-        X * (1.0f / 255.0f),
-        Y * (1.0f / 255.0f)
-        );
+    public Vector2 ToVector2() => new(X * (1.0f / 255.0f), Y * (1.0f / 255.0f));
 
     Vector4 IPackedVector.ToVector4()
     {
@@ -113,7 +103,7 @@ public readonly struct UByte2Normalized : IPackedVector<ushort>, IEquatable<UByt
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is UByte2Normalized other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is UByte2Normalized other && Equals(other);
 
     /// <inheritdoc/>
     public bool Equals(UByte2Normalized other) => PackedValue.Equals(other.PackedValue);

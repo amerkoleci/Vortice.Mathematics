@@ -5,7 +5,8 @@ using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static Vortice.Mathematics.Vector4Utilities;
+using System.Runtime.Intrinsics;
+using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics.PackedVector;
 
@@ -49,8 +50,6 @@ public readonly struct Short4Normalized : IPackedVector<ulong>, IEquatable<Short
     /// <param name="packedValue">The packed value to assign.</param>
     public Short4Normalized(ulong packedValue)
     {
-        Unsafe.SkipInit(out this);
-
         _packedValue = packedValue;
     }
 
@@ -63,8 +62,6 @@ public readonly struct Short4Normalized : IPackedVector<ulong>, IEquatable<Short
     /// <param name="w">The w value.</param>
     public Short4Normalized(short x, short y, short z, short w)
     {
-        Unsafe.SkipInit(out this);
-
         X = x;
         Y = y;
         Z = z;
@@ -80,16 +77,14 @@ public readonly struct Short4Normalized : IPackedVector<ulong>, IEquatable<Short
     /// <param name="w">The w value.</param>
     public Short4Normalized(float x, float y, float z, float w)
     {
-        Unsafe.SkipInit(out this);
-
-        Vector4 vector = Vector4.Clamp(new Vector4(x, y, z, w), NegativeOne, Vector4.One);
-        vector = Vector4.Multiply(vector, ShortMax);
+        Vector128<float> vector = Clamp(Vector128.Create(x, y, z, w), NegativeOne, One);
+        vector = Vector128.Multiply(vector, ShortMax);
         vector = Round(vector);
 
-        X = (short)vector.X;
-        Y = (short)vector.Y;
-        Z = (short)vector.Z;
-        W = (short)vector.W;
+        X = (short)vector.GetX();
+        Y = (short)vector.GetY();
+        Z = (short)vector.GetZ();
+        W = (short)vector.GetW();
     }
 
     /// <summary>
@@ -99,6 +94,22 @@ public readonly struct Short4Normalized : IPackedVector<ulong>, IEquatable<Short
     public Short4Normalized(in Vector4 vector)
         : this(vector.X, vector.Y, vector.Z, vector.W)
     {
+    }
+
+    /// <summary>
+    /// Constructs a vector from the given <see cref="ReadOnlySpan{Single}" />. The span must contain at least 3 elements.
+    /// </summary>
+    /// <param name="values">The span of elements to assign to the vector.</param>
+    public Short4Normalized(ReadOnlySpan<float> values)
+    {
+        Vector128<float> vector = Clamp(Vector128.Create(values), NegativeOne, One);
+        vector = Vector128.Multiply(vector, ShortMax);
+        vector = Round(vector);
+
+        X = (short)vector.GetX();
+        Y = (short)vector.GetY();
+        Z = (short)vector.GetZ();
+        W = (short)vector.GetW();
     }
 
     /// <summary>

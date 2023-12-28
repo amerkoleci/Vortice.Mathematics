@@ -1,9 +1,7 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-// This file includes code based on code from https://github.com/microsoft/DirectXMath
-// The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
-
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -38,8 +36,6 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// <param name="packedValue">The packed value to assign.</param>
     public Half2(uint packedValue)
     {
-        Unsafe.SkipInit(out this);
-
         _packedValue = packedValue;
     }
 
@@ -50,8 +46,6 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// <param name="y">The Y component.</param>
     public Half2(Half x, Half y)
     {
-        Unsafe.SkipInit(out this);
-
         X = x;
         Y = y;
     }
@@ -63,8 +57,6 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// <param name="y">The Y component.</param>
     public Half2(float x, float y)
     {
-        Unsafe.SkipInit(out this);
-
         X = (Half)x;
         Y = (Half)y;
     }
@@ -76,8 +68,6 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// <param name="y">The Y component.</param>
     public Half2(ushort x, ushort y)
     {
-        Unsafe.SkipInit(out this);
-
         X = (Half)x;
         Y = (Half)y;
     }
@@ -88,8 +78,6 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// <param name="value">The value to set for both the X and Y components.</param>
     public Half2(Half value)
     {
-        Unsafe.SkipInit(out this);
-
         X = value;
         Y = value;
     }
@@ -100,8 +88,6 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// <param name="value">Value to initialize X and Y components with.</param>
     public Half2(float value)
     {
-        Unsafe.SkipInit(out this);
-
         X = (Half)value;
         Y = (Half)value;
     }
@@ -110,10 +96,17 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// Initializes a new instance of the <see cref="Half2"/> structure.
     /// </summary>
     /// <param name="vector">The <see cref="Vector4"/> to pack from.</param>
-    public Half2(Vector4 vector)
+    public Half2(in Vector2 vector)
+        : this(vector.X, vector.Y)
     {
-        Unsafe.SkipInit(out this);
+    }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Half2"/> structure.
+    /// </summary>
+    /// <param name="vector">The <see cref="Vector4"/> to pack from.</param>
+    public Half2(in Vector4 vector)
+    {
         X = (Half)vector.X;
         Y = (Half)vector.Y;
     }
@@ -128,14 +121,14 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
-    public static implicit operator Half2(Vector2 value) => new(value.X, value.Y);
+    public static implicit operator Half2(in Vector2 value) => new(value.X, value.Y);
 
     /// <summary>
     /// Performs an explicit conversion from <see cref="Half2"/> to <see cref="Vector2"/>.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
-    public static implicit operator Vector2(Half2 value) => value.ToVector2();
+    public static implicit operator Vector2(in Half2 value) => value.ToVector2();
 
     /// <summary>
     /// Expands this <see cref="Half2"/> structure to a <see cref="Vector2"/>.
@@ -156,7 +149,7 @@ public readonly struct Half2 : IPackedVector<uint>, IEquatable<Half2>, IFormatta
     #endregion IPackedVector Implementation
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Half2 value && Equals(value);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Half2 value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Half2"/> is equal to this instance.

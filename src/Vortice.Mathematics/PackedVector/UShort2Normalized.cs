@@ -1,11 +1,13 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static Vortice.Mathematics.Vector2Utilities;
+using System.Runtime.Intrinsics;
+using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics.PackedVector;
 
@@ -37,8 +39,6 @@ public readonly struct UShort2Normalized : IPackedVector<uint>, IEquatable<UShor
     /// <param name="packedValue">The packed value to assign.</param>
     public UShort2Normalized(uint packedValue)
     {
-        Unsafe.SkipInit(out this);
-
         _packedValue = packedValue;
     }
 
@@ -49,8 +49,6 @@ public readonly struct UShort2Normalized : IPackedVector<uint>, IEquatable<UShor
     /// <param name="y">The y value.</param>
     public UShort2Normalized(ushort x, ushort y)
     {
-        Unsafe.SkipInit(out this);
-
         X = x;
         Y = y;
     }
@@ -62,14 +60,12 @@ public readonly struct UShort2Normalized : IPackedVector<uint>, IEquatable<UShor
     /// <param name="y">The y value.</param>
     public UShort2Normalized(float x, float y)
     {
-        Unsafe.SkipInit(out this);
-
-        Vector2 vector = Saturate(new Vector2(x, y));
+        Vector128<float> vector = Saturate(Vector128.Create(x, y, 0.0f, 0.0f));
         vector = MultiplyAdd(vector, UShortMax, OneHalf);
         vector = Truncate(vector);
 
-        X = (ushort)vector.X;
-        Y = (ushort)vector.Y;
+        X = (ushort)vector.GetX();
+        Y = (ushort)vector.GetY();
     }
 
     /// <summary>
@@ -107,7 +103,7 @@ public readonly struct UShort2Normalized : IPackedVector<uint>, IEquatable<UShor
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is UShort2Normalized other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is UShort2Normalized other && Equals(other);
 
     /// <inheritdoc/>
     public bool Equals(UShort2Normalized other) => PackedValue.Equals(other.PackedValue);

@@ -2,6 +2,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -197,7 +198,7 @@ public struct Int2 : IEquatable<Int2>, IFormattable
     public static explicit operator Int2(Double2 value) { return new Int2(value); }
 
     /// <inheritdoc/>
-    public override readonly bool Equals(object? obj) => obj is Int2 value && Equals(value);
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Int2 value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Int2"/> is equal to this instance.

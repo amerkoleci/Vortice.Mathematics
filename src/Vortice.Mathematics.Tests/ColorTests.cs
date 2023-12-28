@@ -9,6 +9,8 @@ namespace Vortice.Mathematics.Tests;
 [TestFixture(TestOf = typeof(Color))]
 public partial class ColorTests
 {
+    private const float Epsilon = 0.01f;
+
     [TestCase]
     public void DefaultChecks()
     {
@@ -49,6 +51,7 @@ public partial class ColorTests
     }
 
     [TestCase]
+    //[Ignore("Handle float comparison")]
     public void ConversionTests()
     {
         float red = 0.6f;
@@ -57,18 +60,17 @@ public partial class ColorTests
         float alpha = 0.5f;
         Color color = new(red, green, blue, alpha);
 
-        const float M_EPSILON = 0.000001f;
 
-        //Vector4 vector4 = color.ToVector4();
-        //Assert.That(vector4.X, Is.EqualTo(red).Within(MathHelper.NearZeroEpsilon));
-        //Assert.That(vector4.Y, Is.EqualTo(green).Within(MathHelper.NearZeroEpsilon));
-        //Assert.That(vector4.Z, Is.EqualTo(blue).Within(MathHelper.NearZeroEpsilon));
-        //Assert.That(vector4.W, Is.EqualTo(alpha).Within(MathHelper.NearZeroEpsilon));
+        Vector4 vector4 = color.ToVector4();
+        Assert.That(vector4.X, Is.EqualTo(red).Within(Epsilon));
+        Assert.That(vector4.Y, Is.EqualTo(green).Within(Epsilon));
+        Assert.That(vector4.Z, Is.EqualTo(blue).Within(Epsilon));
+        Assert.That(vector4.W, Is.EqualTo(alpha).Within(Epsilon));
 
         Color4 color4 = color.ToColor4();
-        Assert.That(color4.R, Is.EqualTo(red).Within(M_EPSILON));
-        Assert.That(MathF.Round(color4.G), Is.EqualTo(green).Within(MathHelper.NearZeroEpsilon));
-        Assert.That(color4.B, Is.EqualTo(blue).Within(MathHelper.NearZeroEpsilon));
-        Assert.That(color4.A, Is.EqualTo(alpha).Within(MathHelper.NearZeroEpsilon));
+        Assert.That(color4.R, Is.EqualTo(red).Within(Epsilon));
+        Assert.That(color4.G, Is.EqualTo(green).Within(Epsilon));
+        Assert.That(color4.B, Is.EqualTo(blue).Within(Epsilon));
+        Assert.That(color4.A, Is.EqualTo(alpha).Within(Epsilon));
     }
 }

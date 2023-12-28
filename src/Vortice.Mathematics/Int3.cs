@@ -2,6 +2,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -132,10 +133,12 @@ public struct Int3 : IEquatable<Int3>, IFormattable
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         readonly get
         {
+#if NET8_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Count);
+#else
             if (index >= Count)
-            {
                 throw new ArgumentOutOfRangeException(nameof(index));
-            }
+#endif
 
             ref int address = ref Unsafe.AsRef(in X);
             return Unsafe.Add(ref address, index);
@@ -226,7 +229,7 @@ public struct Int3 : IEquatable<Int3>, IFormattable
     public static implicit operator Vector3(Int3 xyz) => new(xyz.X, xyz.Y, xyz.Z);
 
     /// <inheritdoc/>
-    public override readonly bool Equals(object? obj) => obj is Int3 value && Equals(value);
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Int3 value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Int3"/> is equal to this instance.
@@ -266,7 +269,7 @@ public struct Int3 : IEquatable<Int3>, IFormattable
     public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z);
 
     /// <inheritdoc />
-    public override string ToString() => ToString(format: null, formatProvider: null);
+    public override readonly string ToString() => ToString(format: null, formatProvider: null);
 
     /// <inheritdoc />
     public readonly string ToString(string? format, IFormatProvider? formatProvider)

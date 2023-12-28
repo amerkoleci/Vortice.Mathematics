@@ -2,7 +2,9 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
@@ -11,7 +13,7 @@ namespace Vortice.Mathematics;
 [Serializable]
 [DataContract]
 [StructLayout(LayoutKind.Sequential)]
-public record struct Rect
+public struct Rect : IEquatable<Rect>
 {
     /// <summary>
     /// A <see cref="Rect"/> with all of its components set to zero.
@@ -303,7 +305,6 @@ public record struct Rect
         }
     }
 
-
     /// <summary>
     /// Gets a value indicating whether this <see cref="Rect"/> is empty.
     /// </summary>
@@ -311,9 +312,141 @@ public record struct Rect
     public readonly bool IsEmpty => (Width <= 0) || (Height <= 0);
 
     /// <summary>
+    /// Adjusts the location of this rectangle by the specified amount.
+    /// </summary>
+    public void Offset(in Vector2 pos) => Offset(pos.X, pos.Y);
+
+    /// <summary>
+    /// Adjusts the location of this rectangle by the specified amount.
+    /// </summary>
+    public void Offset(float x, float y)
+    {
+        X += x;
+        Y += y;
+    }
+
+    /// <summary>
+    /// Inflates this <see cref='Rect'/> by the specified amount.
+    /// </summary>
+    public void Inflate(float x, float y)
+    {
+        X -= x;
+        Y -= y;
+        Width += 2 * x;
+        Height += 2 * y;
+    }
+
+    /// <summary>
+    /// Inflates this <see cref='Rect'/> by the specified amount.
+    /// </summary>
+    public void Inflate(in Size size) => Inflate(size.Width, size.Height);
+
+    /// <summary>
+    /// Determines if the specified point is contained within the rectangular region defined by this
+    /// <see cref='Rect'/> .
+    /// </summary>
+    public readonly bool Contains(float x, float y) => X <= x && x < X + Width && Y <= y && y < Y + Height;
+
+    /// <summary>
+    /// Determines if the specified point is contained within the rectangular region defined by this
+    /// <see cref='Rect'/> .
+    /// </summary>
+    public readonly bool Contains(in Vector2 pt) => Contains(pt.X, pt.Y);
+
+    /// <summary>
+    /// Determines if the rectangular region represented by <paramref name="rect"/> is entirely contained within
+    /// the rectangular region represented by this <see cref='Rect'/> .
+    /// </summary>
+    public readonly bool Contains(in Rect rect) => (X <= rect.X) && (rect.X + rect.Width <= X + Width) && (Y <= rect.Y) && (rect.Y + rect.Height <= Y + Height);
+
+    /// <summary>
+    /// Determines if the rectangular region represented by <paramref name="rect"/> is entirely contained within
+    /// the rectangular region represented by this <see cref='Rect'/> .
+    /// </summary>
+    public readonly bool Contains(in System.Drawing.RectangleF rect) => (X <= rect.X) && (rect.X + rect.Width <= X + Width) && (Y <= rect.Y) && (rect.Y + rect.Height <= Y + Height);
+
+    /// <summary>
+    /// Creates a Rectangle that represents the intersection between this Rectangle and rect.
+    /// </summary>
+    public void Intersect(in Rect rect)
+    {
+        Rect result = Intersect(rect, this);
+
+        X = result.X;
+        Y = result.Y;
+        Width = result.Width;
+        Height = result.Height;
+    }
+
+    /// <summary>
+    /// Creates a rectangle that represents the intersection between a and b. If there is no intersection, an
+    /// empty rectangle is returned.
+    /// </summary>
+    public static Rect Intersect(in Rect a, in Rect b)
+    {
+        float x1 = MathF.Max(a.X, b.X);
+        float x2 = MathF.Min(a.X + a.Width, b.X + b.Width);
+        float y1 = MathF.Max(a.Y, b.Y);
+        float y2 = MathF.Min(a.Y + a.Height, b.Y + b.Height);
+
+        if (x2 >= x1 && y2 >= y1)
+        {
+            return new(x1, y1, x2 - x1, y2 - y1);
+        }
+
+        return Empty;
+    }
+
+    /// <summary>
+    /// Determines if this rectangle intersects with rect.
+    /// </summary>
+    public readonly bool IntersectsWith(in Rect rect) => (rect.X < X + Width) && (X < rect.X + rect.Width) && (rect.Y < Y + Height) && (Y < rect.Y + rect.Height);
+
+    /// <summary>
+    /// Determines if this rectangle intersects with rect.
+    /// </summary>
+    public readonly bool IntersectsWith(in System.Drawing.RectangleF rect) => (rect.X < X + Width) && (X < rect.X + rect.Width) && (rect.Y < Y + Height) && (Y < rect.Y + rect.Height);
+
+    /// <summary>
+    /// Creates a rectangle that represents the union between a and b.
+    /// </summary>
+    public static Rect Union(in Rect a, in Rect b)
+    {
+        float x1 = MathF.Min(a.X, b.X);
+        float x2 = MathF.Max(a.X + a.Width, b.X + b.Width);
+        float y1 = MathF.Min(a.Y, b.Y);
+        float y2 = MathF.Max(a.Y + a.Height, b.Y + b.Height);
+
+        return new (x1, y1, x2 - x1, y2 - y1);
+    }
+
+    /// <summary>
+    /// Compares two <see cref="Rect"/> objects for equality.
+    /// </summary>
+    /// <param name="left">The <see cref="Rect"/> on the left hand of the operand.</param>
+    /// <param name="right">The <see cref="Rect"/> on the right hand of the operand.</param>
+    /// <returns>
+    /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator ==(Rect left, Rect right) =>
+        left.X == right.X && left.Y == right.Y && left.Width == right.Width && left.Height == right.Height;
+
+    /// <summary>
+    /// Compares two <see cref="Rect"/> objects for inequality.
+    /// </summary>
+    /// <param name="left">The <see cref="Rect"/> on the left hand of the operand.</param>
+    /// <param name="right">The <see cref="Rect"/> on the right hand of the operand.</param>
+    /// <returns>
+    /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator !=(Rect left, Rect right) => !(left == right);
+
+    /// <summary>
     /// Converts the specified <see cref='RectI'/> to a <see cref='Rect'/>.
     /// </summary>
-    public static implicit operator Rect(in RectI rect) => new Rect(rect.X, rect.Y, rect.Width, rect.Height);
+    public static implicit operator Rect(in RectI rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
 
     /// <summary>
     /// Performs an explicit conversion from <see cref="System.Drawing.RectangleF"/> to <see cref="Rect"/>.
@@ -328,4 +461,17 @@ public record struct Rect
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
     public static explicit operator System.Drawing.RectangleF(in Rect value) => new(value.X, value.Y, value.Width, value.Height);
+
+    /// <inheritdoc/>
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Rect value && Equals(value);
+
+    public readonly bool Equals(Rect other) => this == other;
+
+    /// <summary>
+    /// Gets the hash code for this <see cref='Rect'/>.
+    /// </summary>
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y, Width, Height);
+
+    //// <inheritdoc />
+    public override readonly string ToString() => $"{{X={X},Y={Y},Width={Width},Height={Height}}}";
 }

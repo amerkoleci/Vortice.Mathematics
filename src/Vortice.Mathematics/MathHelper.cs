@@ -29,8 +29,15 @@ public static class MathHelper
         }
     }
 
-    /// <summary>Gets a value used to determine if a value is near zero.</summary>
-    public const float NearZeroEpsilon = 4.7683716E-07f; // 2^-21: 0x35000000
+    /// <summary>
+    /// The value for which all absolute numbers smaller than are considered equal to zero.
+    /// </summary>
+    public const float ZeroTolerance = 1e-6f; // Value a 8x higher than 1.19209290E-07F
+
+    /// <summary>
+    /// The value for which all absolute numbers smaller than are considered equal to zero.
+    /// </summary>
+    public const double ZeroToleranceDouble = double.Epsilon * 8;
 
     /// <summary>
     /// Represents the mathematical constant e.
@@ -67,25 +74,12 @@ public static class MathHelper
     /// </summary>
     public const float PiOver4 = (float)(Math.PI / 4);
 
-    /// <summary>
-    /// Checks if a - b are almost equals within a float epsilon.
-    /// </summary>
-    /// <param name="a">The left value to compare.</param>
-    /// <param name="b">The right value to compare.</param>
-    /// <param name="epsilon">Epsilon value</param>
-    /// <returns><c>true</c> if a almost equal to b within a float epsilon, <c>false</c> otherwise</returns>
-    public static bool WithinEpsilon(float a, float b, float epsilon)
-    {
-        float diff = a - b;
-        return (-epsilon <= diff) && (diff <= epsilon);
-    }
-
     /// <summary>Compares two 32-bit floats to determine approximate equality.</summary>
     /// <param name="left">The float to compare with <paramref name="right" />.</param>
     /// <param name="right">The float to compare with <paramref name="left" />.</param>
-    /// <returns><c>true</c> if <paramref name="left" /> and <paramref name="right" /> differ by no more than <see cref="NearZeroEpsilon"/>; otherwise, <c>false</c>.</returns>
+    /// <returns><c>true</c> if <paramref name="left" /> and <paramref name="right" /> differ by no more than <see cref="ZeroTolerance"/>; otherwise, <c>false</c>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool CompareEqual(float left, float right) => MathF.Abs(left - right) <= NearZeroEpsilon;
+    public static bool CompareEqual(float left, float right) => MathF.Abs(left - right) <= ZeroTolerance;
 
     /// <summary>Compares two 64-bit floats to determine approximate equality.</summary>
     /// <param name="left">The float to compare with <paramref name="right" />.</param>
@@ -108,7 +102,14 @@ public static class MathHelper
     /// </summary>
     /// <param name="a">The floating value.</param>
     /// <returns><c>true</c> if the specified value is close to zero (0.0f); otherwise, <c>false</c>.</returns>
-    public static bool IsZero(float a) => MathF.Abs(a) < NearZeroEpsilon;
+    public static bool IsZero(float a) => MathF.Abs(a) < ZeroTolerance;
+
+    /// <summary>
+    /// Determines whether the specified value is close to zero (0.0f).
+    /// </summary>
+    /// <param name="a">The floating value.</param>
+    /// <returns><c>true</c> if the specified value is close to zero (0.0f); otherwise, <c>false</c>.</returns>
+    public static bool IsZero(double a) => Math.Abs(a) < ZeroToleranceDouble;
 
     /// <summary>
     /// Determines whether the specified value is close to one (1.0f).
@@ -116,6 +117,19 @@ public static class MathHelper
     /// <param name="a">The floating value.</param>
     /// <returns><c>true</c> if the specified value is close to one (1.0f); otherwise, <c>false</c>.</returns>
     public static bool IsOne(float a) => IsZero(a - 1.0f);
+
+    /// <summary>
+    /// Checks if a - b are almost equals within a float epsilon.
+    /// </summary>
+    /// <param name="a">The left value to compare.</param>
+    /// <param name="b">The right value to compare.</param>
+    /// <param name="epsilon">Epsilon value</param>
+    /// <returns><c>true</c> if a almost equal to b within a float epsilon, <c>false</c> otherwise</returns>
+    public static bool WithinEpsilon(float a, float b, float epsilon)
+    {
+        float diff = a - b;
+        return (-epsilon <= diff) && (diff <= epsilon);
+    }
 
     /// <summary>
     /// Converts radians to degrees.

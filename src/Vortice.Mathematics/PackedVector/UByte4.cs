@@ -1,14 +1,13 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-// This file includes code based on code from https://github.com/microsoft/DirectXMath
-// The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
-
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static Vortice.Mathematics.Vector4Utilities;
+using System.Runtime.Intrinsics;
+using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics.PackedVector;
 
@@ -37,13 +36,13 @@ public readonly struct UByte4 : IPackedVector<uint>, IEquatable<UByte4>
     /// <summary>
     /// The Z component of the vector.
     /// </summary>
-    [FieldOffset(1)]
+    [FieldOffset(2)]
     public readonly byte Z;
 
     /// <summary>
     /// The W component of the vector.
     /// </summary>
-    [FieldOffset(1)]
+    [FieldOffset(3)]
     public readonly byte W;
 
     /// <summary>
@@ -52,8 +51,6 @@ public readonly struct UByte4 : IPackedVector<uint>, IEquatable<UByte4>
     /// <param name="packedValue">The packed value to assign.</param>
     public UByte4(uint packedValue)
     {
-        Unsafe.SkipInit(out this);
-
         _packedValue = packedValue;
     }
 
@@ -66,8 +63,6 @@ public readonly struct UByte4 : IPackedVector<uint>, IEquatable<UByte4>
     /// <param name="w">The w value.</param>
     public UByte4(byte x, byte y, byte z, byte w)
     {
-        Unsafe.SkipInit(out this);
-
         X = x;
         Y = y;
         Z = z;
@@ -82,8 +77,14 @@ public readonly struct UByte4 : IPackedVector<uint>, IEquatable<UByte4>
     /// <param name="z">The z value.</param>
     /// <param name="w">The w value.</param>
     public UByte4(float x, float y, float z, float w)
-        : this(new Vector4(x, y, z, w))
     {
+        Vector128<float> result = Clamp(Vector128.Create(x, y, z, w), Vector128<float>.Zero, UByteMax);
+        result = Round(result);
+
+        X = (byte)result.GetX();
+        Y = (byte)result.GetY();
+        Z = (byte)result.GetZ();
+        W = (byte)result.GetW();
     }
 
     /// <summary>
@@ -91,16 +92,9 @@ public readonly struct UByte4 : IPackedVector<uint>, IEquatable<UByte4>
     /// </summary>
     /// <param name="vector">The <see cref="Vector4"/> containing X and Y value.</param>
     public UByte4(in Vector4 vector)
+        : this(vector.X, vector.Y, vector.Z, vector.W)
     {
-        Unsafe.SkipInit(out this);
-
-        Vector4 result = Vector4.Clamp(vector, Vector4.Zero, UByteMax);
-        result = Round(result);
-
-        X = (byte)result.X;
-        Y = (byte)result.Y;
-        Z = (byte)result.Z;
-        W = (byte)result.W;
+        
     }
 
     /// <summary>
@@ -109,21 +103,13 @@ public readonly struct UByte4 : IPackedVector<uint>, IEquatable<UByte4>
     /// <param name="values">The span of elements to assign to the vector.</param>
     public UByte4(ReadOnlySpan<float> values)
     {
-        if (values.Length < 4)
-        {
-            throw new ArgumentOutOfRangeException(nameof(values));
-        }
-
-        Unsafe.SkipInit(out this);
-
-        Vector4 vector = new(values);
-        Vector4 result = Vector4.Clamp(vector, Vector4.Zero, UByteMax);
+        Vector128<float> result = Clamp(Vector128.Create(values), Vector128<float>.Zero, UByteMax);
         result = Round(result);
 
-        X = (byte)result.X;
-        Y = (byte)result.Y;
-        Z = (byte)result.Z;
-        W = (byte)result.W;
+        X = (byte)result.GetX();
+        Y = (byte)result.GetY();
+        Z = (byte)result.GetZ();
+        W = (byte)result.GetW();
     }
 
     /// <summary>
@@ -140,7 +126,7 @@ public readonly struct UByte4 : IPackedVector<uint>, IEquatable<UByte4>
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is UByte4 other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is UByte4 other && Equals(other);
 
     /// <inheritdoc/>
     public bool Equals(UByte4 other) => PackedValue.Equals(other.PackedValue);

@@ -550,7 +550,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
         float chroma = max - min;
 
         // If chroma equals zero, hue is undefined
-        if (chroma <= MathHelper.NearZeroEpsilon)
+        if (chroma <= MathHelper.ZeroTolerance)
             return 0.0f;
 
         // Calculate and return hue
@@ -574,7 +574,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     private static float SaturationHSV(float min, float max)
     {
         // Avoid div-by-zero: result undefined
-        if (max <= MathHelper.NearZeroEpsilon)
+        if (max <= MathHelper.ZeroTolerance)
             return 0.0f;
 
         // Saturation equals chroma:value ratio
@@ -590,7 +590,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     private static float SaturationHSL(float min, float max)
     {
         // Avoid div-by-zero: result undefined
-        if (max <= MathHelper.NearZeroEpsilon || min >= 1.0f - MathHelper.NearZeroEpsilon)
+        if (max <= MathHelper.ZeroTolerance || min >= 1.0f - MathHelper.ZeroTolerance)
             return 0.0f;
 
         // Chroma = max - min, lightness = (max + min) * 0.5

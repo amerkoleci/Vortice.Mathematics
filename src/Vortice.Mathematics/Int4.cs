@@ -2,6 +2,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -50,7 +51,7 @@ public struct Int4 : IEquatable<Int4>, IFormattable
     /// <param name="value">A <see cref="Int2"/> containing the values with which to initialize the X and Y components.</param>
     /// <param name="z">Initial value for the Z component of the vector.</param>
     /// <param name="w">Initial value for the W component of the vector.</param>
-    public Int4(Int2 value, int z, int w)
+    public Int4(in Int2 value, int z, int w)
     {
         X = value.X;
         Y = value.Y;
@@ -248,31 +249,31 @@ public struct Int4 : IEquatable<Int4>, IFormattable
     /// </summary>
     /// <param name = "value">The value to convert.</param>
     /// <returns>The result of the conversion.</returns>
-    public static implicit operator Vector4(Int4 value) => new(value.X, value.Y, value.Z, value.W);
+    public static implicit operator Vector4(in Int4 value) => new(value.X, value.Y, value.Z, value.W);
 
     /// <summary>
     /// Performs an explicit conversion from <see cref="Int4" /> to <see cref="Int3" />.
     /// </summary>
     /// <param name="value">The value to convert.</param>
     /// <returns>The result of the conversion.</returns>
-    public static explicit operator Int3(Int4 value) => new(value.X, value.Y, value.Z);
+    public static explicit operator Int3(in Int4 value) => new(value.X, value.Y, value.Z);
 
     /// <summary>
     /// Performs an explicit conversion from <see cref="Int4" /> to <see cref="Vector2"/>.
     /// </summary>
     /// <param name = "value">The value to convert.</param>
     /// <returns>The result of the conversion.</returns>
-    public static explicit operator Vector2(Int4 value) => new(value.X, value.Y);
+    public static explicit operator Vector2(in Int4 value) => new(value.X, value.Y);
 
     /// <summary>
     /// Performs an explicit conversion from <see cref="Int4" /> to <see cref="Vector3"/>.
     /// </summary>
     /// <param name = "value">The value to convert.</param>
     /// <returns>The result of the conversion.</returns>
-    public static explicit operator Vector3(Int4 value) => new(value.X, value.Y, value.Z);
+    public static explicit operator Vector3(in Int4 value) => new(value.X, value.Y, value.Z);
 
     /// <inheritdoc/>
-    public override readonly bool Equals(object? obj) => obj is Int4 value && Equals(value);
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Int4 value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Int4"/> is equal to this instance.
@@ -313,7 +314,7 @@ public struct Int4 : IEquatable<Int4>, IFormattable
     public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z, W);
 
     /// <inheritdoc />
-    public override string ToString() => ToString(format: null, formatProvider: null);
+    public override readonly string ToString() => ToString(format: null, formatProvider: null);
 
     /// <inheritdoc />
     public readonly string ToString(string? format, IFormatProvider? formatProvider)

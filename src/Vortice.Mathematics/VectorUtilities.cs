@@ -74,6 +74,15 @@ public static unsafe class VectorUtilities
         }
     }
 
+    public static Vector128<float> OneHalf
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return Vector128.Create(0.5f, 0.5f, 0.5f, 0.5f);
+        }
+    }
+
     public static Vector128<float> ByteMin
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -134,6 +143,16 @@ public static unsafe class VectorUtilities
         get
         {
             return Vector128.Create(32767.0f, 32767.0f, 32767.0f, 32767.0f);
+        }
+    }
+
+
+    public static Vector128<float> UShortMax
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            return Vector128.Create(65535.0f, 65535.0f, 65535.0f, 65535.0f);
         }
     }
 

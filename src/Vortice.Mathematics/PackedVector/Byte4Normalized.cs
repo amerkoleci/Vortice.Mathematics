@@ -1,14 +1,13 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-// This file includes code based on code from https://github.com/microsoft/DirectXMath
-// The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
-
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static Vortice.Mathematics.Vector4Utilities;
+using System.Runtime.Intrinsics;
+using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics.PackedVector;
 
@@ -37,13 +36,13 @@ public readonly struct Byte4Normalized : IPackedVector<uint>, IEquatable<Byte4No
     /// <summary>
     /// The Z component of the vector.
     /// </summary>
-    [FieldOffset(1)]
+    [FieldOffset(2)]
     public readonly sbyte Z;
 
     /// <summary>
     /// The W component of the vector.
     /// </summary>
-    [FieldOffset(1)]
+    [FieldOffset(3)]
     public readonly sbyte W;
 
     /// <summary>
@@ -52,8 +51,6 @@ public readonly struct Byte4Normalized : IPackedVector<uint>, IEquatable<Byte4No
     /// <param name="packedValue">The packed value to assign.</param>
     public Byte4Normalized(uint packedValue)
     {
-        Unsafe.SkipInit(out this);
-
         _packedValue = packedValue;
     }
 
@@ -66,8 +63,6 @@ public readonly struct Byte4Normalized : IPackedVector<uint>, IEquatable<Byte4No
     /// <param name="w">The w value.</param>
     public Byte4Normalized(sbyte x, sbyte y, sbyte z, sbyte w)
     {
-        Unsafe.SkipInit(out this);
-
         X = x;
         Y = y;
         Z = z;
@@ -82,8 +77,15 @@ public readonly struct Byte4Normalized : IPackedVector<uint>, IEquatable<Byte4No
     /// <param name="z">The z value.</param>
     /// <param name="w">The w value.</param>
     public Byte4Normalized(float x, float y, float z, float w)
-        : this(new Vector4(x, y, z, w))
     {
+        Vector128<float> result = Clamp(Vector128.Create(x, y, z, w), NegativeOne, One);
+        result = Vector128.Multiply(result, ByteMax);
+        result = Truncate(result);
+
+        X = (sbyte)result.GetX();
+        Y = (sbyte)result.GetY();
+        Z = (sbyte)result.GetZ();
+        W = (sbyte)result.GetW();
     }
 
     /// <summary>
@@ -91,17 +93,8 @@ public readonly struct Byte4Normalized : IPackedVector<uint>, IEquatable<Byte4No
     /// </summary>
     /// <param name="vector">The <see cref="Vector4"/> containing X and Y value.</param>
     public Byte4Normalized(in Vector4 vector)
+        : this(vector.X, vector.Y, vector.Z, vector.W)
     {
-        Unsafe.SkipInit(out this);
-
-        Vector4 result = Vector4.Clamp(vector, NegativeOne, Vector4.One);
-        result = Vector4.Multiply(result, ByteMax);
-        result = Truncate(result);
-
-        X = (sbyte)result.X;
-        Y = (sbyte)result.Y;
-        Z = (sbyte)result.Z;
-        W = (sbyte)result.W;
     }
 
     /// <summary>Constructs a vector from the given <see cref="ReadOnlySpan{Single}" />. The span must contain at least 3 elements.</summary>
@@ -113,17 +106,14 @@ public readonly struct Byte4Normalized : IPackedVector<uint>, IEquatable<Byte4No
             throw new ArgumentOutOfRangeException(nameof(values));
         }
 
-        Unsafe.SkipInit(out this);
-
-        Vector4 vector = new(values);
-        Vector4 result = Vector4.Clamp(vector, NegativeOne, Vector4.One);
-        result = Vector4.Multiply(result, ByteMax);
+        Vector128<float> result = Clamp(Vector128.Create(values), NegativeOne, One);
+        result = Vector128.Multiply(result, ByteMax);
         result = Truncate(result);
 
-        X = (sbyte)result.X;
-        Y = (sbyte)result.Y;
-        Z = (sbyte)result.Z;
-        W = (sbyte)result.W;
+        X = (sbyte)result.GetX();
+        Y = (sbyte)result.GetY();
+        Z = (sbyte)result.GetZ();
+        W = (sbyte)result.GetW();
     }
 
     /// <summary>
@@ -145,7 +135,7 @@ public readonly struct Byte4Normalized : IPackedVector<uint>, IEquatable<Byte4No
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Byte4Normalized other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Byte4Normalized other && Equals(other);
 
     /// <inheritdoc/>
     public bool Equals(Byte4Normalized other) => PackedValue.Equals(other.PackedValue);

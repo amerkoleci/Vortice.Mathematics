@@ -5,7 +5,8 @@ using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static Vortice.Mathematics.Vector4Utilities;
+using System.Runtime.Intrinsics;
+using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics.PackedVector;
 
@@ -49,8 +50,6 @@ public readonly struct UShort4Normalized : IPackedVector<ulong>, IEquatable<USho
     /// <param name="packedValue">The packed value to assign.</param>
     public UShort4Normalized(ulong packedValue)
     {
-        Unsafe.SkipInit(out this);
-
         _packedValue = packedValue;
     }
 
@@ -63,8 +62,6 @@ public readonly struct UShort4Normalized : IPackedVector<ulong>, IEquatable<USho
     /// <param name="w">The w value.</param>
     public UShort4Normalized(ushort x, ushort y, ushort z, ushort w)
     {
-        Unsafe.SkipInit(out this);
-
         X = x;
         Y = y;
         Z = z;
@@ -80,16 +77,14 @@ public readonly struct UShort4Normalized : IPackedVector<ulong>, IEquatable<USho
     /// <param name="w">The w value.</param>
     public UShort4Normalized(float x, float y, float z, float w)
     {
-        Unsafe.SkipInit(out this);
-
-        Vector4 vector = Saturate(new Vector4(x, y, z, w));
+        Vector128<float> vector = Saturate(Vector128.Create(x, y, z, w));
         vector = MultiplyAdd(vector, UShortMax, OneHalf);
         vector = Truncate(vector);
 
-        X = (ushort)vector.X;
-        Y = (ushort)vector.Y;
-        Z = (ushort)vector.Z;
-        W = (ushort)vector.W;
+        X = (ushort)vector.GetX();
+        Y = (ushort)vector.GetY();
+        Z = (ushort)vector.GetZ();
+        W = (ushort)vector.GetW();
     }
 
     /// <summary>
@@ -99,6 +94,22 @@ public readonly struct UShort4Normalized : IPackedVector<ulong>, IEquatable<USho
     public UShort4Normalized(in Vector4 vector)
         : this(vector.X, vector.Y, vector.Z, vector.W)
     {
+    }
+
+    /// <summary>
+    /// Constructs a vector from the given <see cref="ReadOnlySpan{Single}" />. The span must contain at least 3 elements.
+    /// </summary>
+    /// <param name="values">The span of elements to assign to the vector.</param>
+    public UShort4Normalized(ReadOnlySpan<float> values)
+    {
+        Vector128<float> vector = Saturate(Vector128.Create(values));
+        vector = MultiplyAdd(vector, UShortMax, OneHalf);
+        vector = Truncate(vector);
+
+        X = (ushort)vector.GetX();
+        Y = (ushort)vector.GetY();
+        Z = (ushort)vector.GetZ();
+        W = (ushort)vector.GetW();
     }
 
     /// <summary>

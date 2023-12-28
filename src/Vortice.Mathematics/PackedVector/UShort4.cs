@@ -5,7 +5,8 @@ using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static Vortice.Mathematics.Vector4Utilities;
+using System.Runtime.Intrinsics;
+using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics.PackedVector;
 
@@ -49,8 +50,6 @@ public readonly struct UShort4 : IPackedVector<ulong>, IEquatable<UShort4>
     /// <param name="packedValue">The packed value to assign.</param>
     public UShort4(ulong packedValue)
     {
-        Unsafe.SkipInit(out this);
-
         _packedValue = packedValue;
     }
 
@@ -63,8 +62,6 @@ public readonly struct UShort4 : IPackedVector<ulong>, IEquatable<UShort4>
     /// <param name="w">The w value.</param>
     public UShort4(ushort x, ushort y, ushort z, ushort w)
     {
-        Unsafe.SkipInit(out this);
-
         X = x;
         Y = y;
         Z = z;
@@ -80,15 +77,13 @@ public readonly struct UShort4 : IPackedVector<ulong>, IEquatable<UShort4>
     /// <param name="w">The w value.</param>
     public UShort4(float x, float y, float z, float w)
     {
-        Unsafe.SkipInit(out this);
-
-        Vector4 vector = Vector4.Clamp(new Vector4(x, y, z, w), Vector4.Zero, UShortMax);
+        Vector128<float> vector = Clamp(Vector128.Create(x, y, z, w), Vector128<float>.Zero, UShortMax);
         vector = Round(vector);
 
-        X = (ushort)vector.X;
-        Y = (ushort)vector.Y;
-        Z = (ushort)vector.Z;
-        W = (ushort)vector.W;
+        X = (ushort)vector.GetX();
+        Y = (ushort)vector.GetY();
+        Z = (ushort)vector.GetZ();
+        W = (ushort)vector.GetW();
     }
 
     /// <summary>
@@ -98,6 +93,21 @@ public readonly struct UShort4 : IPackedVector<ulong>, IEquatable<UShort4>
     public UShort4(in Vector4 vector)
         : this(vector.X, vector.Y, vector.Z, vector.W)
     {
+    }
+
+    /// <summary>
+    /// Constructs a vector from the given <see cref="ReadOnlySpan{Single}" />. The span must contain at least 3 elements.
+    /// </summary>
+    /// <param name="values">The span of elements to assign to the vector.</param>
+    public UShort4(ReadOnlySpan<float> values)
+    {
+        Vector128<float> vector = Clamp(Vector128.Create(values), Vector128<float>.Zero, UShortMax);
+        vector = Round(vector);
+
+        X = (byte)vector.GetX();
+        Y = (byte)vector.GetY();
+        Z = (byte)vector.GetZ();
+        W = (byte)vector.GetW();
     }
 
     /// <summary>

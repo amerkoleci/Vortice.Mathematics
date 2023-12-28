@@ -304,12 +304,12 @@ public struct Viewport : IEquatable<Viewport>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly bool Equals(Viewport other)
     {
-        return CompareEqual(X, other.X, NearZeroEpsilon)
-            && CompareEqual(Y, other.Y, NearZeroEpsilon)
-            && CompareEqual(Width, other.Width, NearZeroEpsilon)
-            && CompareEqual(Height, other.Height, NearZeroEpsilon)
-            && CompareEqual(MinDepth, other.MinDepth, NearZeroEpsilon)
-            && CompareEqual(MaxDepth, other.MaxDepth, NearZeroEpsilon);
+        return CompareEqual(X, other.X, ZeroTolerance)
+            && CompareEqual(Y, other.Y, ZeroTolerance)
+            && CompareEqual(Width, other.Width, ZeroTolerance   )
+            && CompareEqual(Height, other.Height, ZeroTolerance)
+            && CompareEqual(MinDepth, other.MinDepth, ZeroTolerance)
+            && CompareEqual(MaxDepth, other.MaxDepth, ZeroTolerance);
     }
 
     /// <summary>

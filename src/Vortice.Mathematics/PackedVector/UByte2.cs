@@ -1,14 +1,13 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-// This file includes code based on code from https://github.com/microsoft/DirectXMath
-// The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
-
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static Vortice.Mathematics.Vector2Utilities;
+using System.Runtime.Intrinsics;
+using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics.PackedVector;
 
@@ -40,8 +39,6 @@ public readonly struct UByte2 : IPackedVector<ushort>, IEquatable<UByte2>
     /// <param name="packedValue">The packed value to assign.</param>
     public UByte2(ushort packedValue)
     {
-        Unsafe.SkipInit(out this);
-
         _packedValue = packedValue;
     }
 
@@ -52,8 +49,6 @@ public readonly struct UByte2 : IPackedVector<ushort>, IEquatable<UByte2>
     /// <param name="y">The y value.</param>
     public UByte2(byte x, byte y)
     {
-        Unsafe.SkipInit(out this);
-
         X = x;
         Y = y;
     }
@@ -65,13 +60,11 @@ public readonly struct UByte2 : IPackedVector<ushort>, IEquatable<UByte2>
     /// <param name="y">The y value.</param>
     public UByte2(float x, float y)
     {
-        Unsafe.SkipInit(out this);
-
-        Vector2 vector = Vector2.Clamp(new Vector2(x, y), Vector2.Zero, UByteMax);
+        Vector128<float> vector = Clamp(Vector128.Create(x, y, 0.0f, 0.0f), Vector128<float>.Zero, UByteMax);
         vector = Round(vector);
 
-        X = (byte)vector.X;
-        Y = (byte)vector.Y;
+        X = (byte)vector.GetX();
+        Y = (byte)vector.GetY();
     }
 
     /// <summary>
@@ -109,7 +102,7 @@ public readonly struct UByte2 : IPackedVector<ushort>, IEquatable<UByte2>
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is UByte2 other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is UByte2 other && Equals(other);
 
     /// <inheritdoc/>
     public bool Equals(UByte2 other) => PackedValue.Equals(other.PackedValue);

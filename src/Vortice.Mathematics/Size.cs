@@ -2,14 +2,16 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Vortice.Mathematics;
 
 /// <summary>
 /// Stores an ordered pair of floating-point numbers describing the width, height and depth of a rectangle.
 /// </summary>
-public record struct Size
+public struct Size : IEquatable<Size>
 {
     /// <summary>
     /// A <see cref="Size"/> with all of its components set to zero.
@@ -79,6 +81,12 @@ public record struct Size
     public readonly Vector2 ToVector2() => new(Width, Height);
 
     /// <summary>
+    /// Creates a new <see cref="SizeI"/> from this <see cref="Size"/>.
+    /// </summary>
+    /// <returns></returns>
+    public readonly SizeI ToSizeI() => SizeI.Truncate(this);
+
+    /// <summary>
     /// Adds two sizes.
     /// </summary>
     /// <param name="size1">First size.</param>
@@ -129,6 +137,28 @@ public record struct Size
         float invRhs = 1f / divider;
         return new(size.Width * invRhs, size.Height * invRhs);
     }
+
+    /// <summary>
+    /// Compares two <see cref="Size"/> objects for equality.
+    /// </summary>
+    /// <param name="left">The <see cref="Size"/> on the left hand of the operand.</param>
+    /// <param name="right">The <see cref="Size"/> on the right hand of the operand.</param>
+    /// <returns>
+    /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator ==(Size left, Size right) => left.Width == right.Width && left.Height == right.Height;
+
+    /// <summary>
+    /// Compares two <see cref="Size"/> objects for inequality.
+    /// </summary>
+    /// <param name="left">The <see cref="Size"/> on the left hand of the operand.</param>
+    /// <param name="right">The <see cref="Size"/> on the right hand of the operand.</param>
+    /// <returns>
+    /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator !=(Size left, Size right) => !(left == right);
 
     /// <summary>
     /// Performs vector addition of two <see cref='Size'/>.
@@ -203,4 +233,15 @@ public record struct Size
     /// Converts the specified <see cref="Vector2"/> to a <see cref="Size"/>.
     /// </summary>
     public static explicit operator Size(in Vector2 vector) => new(vector);
+
+    /// <inheritdoc/>
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Size value && Equals(value);
+
+    public readonly bool Equals(Size other) => this == other;
+
+    /// <inheritdoc/>
+    public override readonly int GetHashCode() => HashCode.Combine(Width, Height);
+
+    /// <inheritdoc />
+    public override readonly string ToString() => $"{{Width={Width}, Height={Height}}}";
 }
