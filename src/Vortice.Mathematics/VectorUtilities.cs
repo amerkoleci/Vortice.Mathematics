@@ -553,60 +553,6 @@ public static unsafe class VectorUtilities
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector128<float> Floor(Vector128<float> vector)
-    {
-        if (Sse41.IsSupported)
-        {
-            return Sse41.Floor(vector);
-        }
-        else if (AdvSimd.IsSupported)
-        {
-            return AdvSimd.Floor(vector);
-        }
-        else
-        {
-            return SoftwareFallback(vector);
-        }
-
-        static Vector128<float> SoftwareFallback(Vector128<float> vector)
-        {
-            return Vector128.Create(
-                MathF.Floor(vector.GetX()),
-                MathF.Floor(vector.GetY()),
-                MathF.Floor(vector.GetZ()),
-                MathF.Floor(vector.GetW())
-            );
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector128<float> Ceiling(Vector128<float> vector)
-    {
-        if (Sse41.IsSupported)
-        {
-            return Sse41.Ceiling(vector);
-        }
-        else if (AdvSimd.IsSupported)
-        {
-            return AdvSimd.Ceiling(vector);
-        }
-        else
-        {
-            return SoftwareFallback(vector);
-        }
-
-        static Vector128<float> SoftwareFallback(Vector128<float> vector)
-        {
-            return Vector128.Create(
-                MathF.Ceiling(vector.GetX()),
-                MathF.Ceiling(vector.GetY()),
-                MathF.Ceiling(vector.GetZ()),
-                MathF.Ceiling(vector.GetW())
-            );
-        }
-    }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector128<float> Clamp(Vector128<float> vector, Vector128<float> min, Vector128<float> max)

@@ -8,9 +8,9 @@ namespace Vortice.Mathematics.Tests;
 [TestFixture(TestOf = typeof(MathHelper))]
 public partial class MathHelperTests
 {
-    [TestCase]
-    public void IsSupported()
-    {
-        Assert.That(MathHelper.Max(3, 5), Is.EqualTo(5));
-    }
+    //[TestCase]
+    //public void IsSupported()
+    //{
+    //    Assert.That(MathHelper.Lerp(3, 5), Is.EqualTo(5));
+    //}
 }

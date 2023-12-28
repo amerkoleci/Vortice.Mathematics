@@ -62,7 +62,7 @@ public record struct SizeI
     public readonly bool IsEmpty => this == Empty;
 
     /// <summary>
-    /// Deconstructs this size into three integers.
+    /// Deconstructs this size into two integers.
     /// </summary>
     /// <param name="width">The out value for the width.</param>
     /// <param name="height">The out value for the height.</param>

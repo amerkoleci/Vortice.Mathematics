@@ -267,17 +267,17 @@ public struct Viewport : IEquatable<Viewport>
 
                     // Clip to display window
                     return new RectI(
-                        (int)Max(0, offsetX),
-                        (int)Max(0, offsetY),
-                        (int)Min(outputWidth, scaledWidth),
-                        (int)Min(outputHeight, scaledHeight)
+                        (int)MathF.Max(0, offsetX),
+                        (int)MathF.Max(0, offsetY),
+                        (int)MathF.Min(outputWidth, scaledWidth),
+                        (int)MathF.Min(outputHeight, scaledHeight)
                         );
                 }
 
             case ViewportScaling.None:
             default:
                 // Output is displayed in the upper left corner of the window area
-                return new RectI(0, 0, Min(backBufferWidth, outputWidth), Min(backBufferHeight, outputHeight));
+                return new RectI(0, 0, Math.Min(backBufferWidth, outputWidth), Math.Min(backBufferHeight, outputHeight));
         }
     }
 

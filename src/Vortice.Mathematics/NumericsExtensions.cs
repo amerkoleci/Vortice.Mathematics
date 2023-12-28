@@ -44,12 +44,12 @@ public static class NumericsExtensions
 
         Vector3 halfAngles = value * 0.5f;
 
-        float fSinX = MathHelper.Sin(halfAngles.X);
-        float fCosX = MathHelper.Cos(halfAngles.X);
-        float fSinY = MathHelper.Sin(halfAngles.Y);
-        float fCosY = MathHelper.Cos(halfAngles.Y);
-        float fSinZ = MathHelper.Sin(halfAngles.Z);
-        float fCosZ = MathHelper.Cos(halfAngles.Z);
+        float fSinX = MathF.Sin(halfAngles.X);
+        float fCosX = MathF.Cos(halfAngles.X);
+        float fSinY = MathF.Sin(halfAngles.Y);
+        float fCosY = MathF.Cos(halfAngles.Y);
+        float fSinZ = MathF.Sin(halfAngles.Z);
+        float fCosZ = MathF.Cos(halfAngles.Z);
 
         float fCosXY = fCosX * fCosY;
         float fSinXY = fSinX * fSinY;

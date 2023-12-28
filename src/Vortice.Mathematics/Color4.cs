@@ -18,6 +18,8 @@ namespace Vortice.Mathematics;
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
 public readonly struct Color4 : IEquatable<Color4>, IFormattable
 {
+    private const float EPSILON = 0.001f;
+
     private readonly Vector128<float> _value;
 
     /// <summary>
@@ -478,6 +480,50 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     }
 
     /// <summary>
+    /// Return HSL color-space representation as a Vector3; the RGB values are clipped before conversion but not changed in the process.
+    /// </summary>
+    /// <returns></returns>
+    public Vector3 ToHSL()
+    {
+        Bounds(out float min, out float max, true);
+
+        float h = Hue(min, max);
+        float s = SaturationHSL(min, max);
+        float l = (max + min) * 0.5f;
+
+        return new Vector3(h, s, l);
+    }
+
+    /// <summary>
+    /// Create new <see cref="Color4"/> from specified HSL values and alpha.
+    /// </summary>
+    public static Color FromHSL(float h, float s, float l, float a = 1.0f)
+    {
+        float c;
+        if (l < 0.5f)
+            c = (1.0f + (2.0f * l - 1.0f)) * s;
+        else
+            c = (1.0f - (2.0f * l - 1.0f)) * s;
+
+        float m = l - 0.5f * c;
+
+        FromHCM(h, c, m, out float r, out float g, out float b);
+        return new(r, g, b, a);
+    }
+
+    /// <summary>
+    /// Create new <see cref="Color4"/> from specified HSV values and alpha.
+    /// </summary>
+    public static Color FromHSV(float h, float s, float v, float a = 1.0f)
+    {
+        float c = v * s;
+        float m = v - c;
+
+        FromHCM(h, c, m, out float r, out float g, out float b);
+        return new(r, g, b, a);
+    }
+
+    /// <summary>
     /// Return HSV color-space representation as a Vector3;
     /// the RGB values are clipped before conversion but not changed in the process.
     /// </summary>
@@ -553,6 +599,69 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
             return (max - min) / hl;
         else
             return (min - max) / (hl - 2.0f);
+    }
+
+    /// <summary>
+    /// Calculate and set RGB values. Convenience function used by FromHSV and FromHSL to avoid code duplication.
+    /// </summary>
+    private static void FromHCM(float h, float c, float m, out float r, out float g, out float b)
+    {
+        if (h < 0.0f || h >= 1.0f)
+            h -= MathF.Floor(h);
+
+        float hs = h * 6.0f;
+        float x = c * (1.0f - MathF.Abs(MathF.IEEERemainder(hs, 2.0f) - 1.0f));
+
+        // Reconstruct r', g', b' from hue
+        r = 0.0f;
+        g = 0.0f;
+        b = 0.0f;
+        if (hs < 2.0f)
+        {
+            b = 0.0f;
+            if (hs < 1.0f)
+            {
+                g = x;
+                r = c;
+            }
+            else
+            {
+                g = c;
+                r = x;
+            }
+        }
+        else if (hs < 4.0f)
+        {
+            r = 0.0f;
+            if (hs < 3.0f)
+            {
+                g = c;
+                b = x;
+            }
+            else
+            {
+                g = x;
+                b = c;
+            }
+        }
+        else
+        {
+            g = 0.0f;
+            if (hs < 5.0f)
+            {
+                r = x;
+                b = c;
+            }
+            else
+            {
+                r = c;
+                b = x;
+            }
+        }
+
+        r += m;
+        g += m;
+        b += m;
     }
 
     public void Deconstruct(out float red, out float green, out float blue, out float alpha)

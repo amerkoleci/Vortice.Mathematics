@@ -1,16 +1,19 @@
-﻿// Copyright (c) Amer Koleci and contributors.
+// Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
 using Vortice.Mathematics.PackedVector;
+using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics;
 
 /// <summary>
 /// Represents a 32-bit RGBA color (4 bytes).
 /// </summary>
+/// <remarks>Equivalent of XMUBYTEN4.</remarks>
 [StructLayout(LayoutKind.Explicit)]
 public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
 {
@@ -52,8 +55,6 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// <param name="packedValue">The packed value to assign.</param>
     public Color(uint packedValue)
     {
-        Unsafe.SkipInit(out this);
-
         _packedValue = packedValue;
     }
 
@@ -61,7 +62,7 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// Initializes a new instance of the <see cref="Color"/> struct.
     /// </summary>
     /// <param name="value">The value that will be assigned to all components.</param>
-    public Color(byte value)
+    public Color(float value)
         : this(value, value, value, value)
     {
     }
@@ -69,36 +70,29 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// <summary>
     /// Initializes a new instance of the <see cref="Color"/> struct.
     /// </summary>
-    /// <param name="value">The value that will be assigned to all components.</param>
-    public Color(float value) : this()
+    /// <param name="r">Red component.</param>
+    /// <param name="g">Green component.</param>
+    /// <param name="b">Blue component.</param>
+    /// <param name="a">Alpha component.</param>
+    public Color(float r, float g, float b, float a = 1.0f)
     {
-        _packedValue = PackHelpers.PackRGBA(value, value, value, value);
+        Vector128<float> result = Saturate(Vector128.Create(r, g, b, a));
+        result = Vector128.Multiply(result, UByteMax);
+        result = Truncate(result);
+
+        R = (byte)result.GetX();
+        G = (byte)result.GetY();
+        B = (byte)result.GetZ();
+        A = (byte)result.GetW();
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Color"/> struct.
-    /// </summary>
-    /// <param name="r">The red component of the color.</param>
-    /// <param name="g">The green component of the color.</param>
-    /// <param name="b">The blue component of the color.</param>
-    /// <param name="a">The alpha component of the color.</param>
-    public Color(byte r, byte g, byte b, byte a)
-    {
-        Unsafe.SkipInit(out this);
-
-        R = r;
-        G = g;
-        B = b;
-        A = a;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Color"/> struct.  Alpha is set to 255.
+    /// Initializes a new instance of the <see cref="Color"/> struct.  Passed values are clamped within byte range.
     /// </summary>
     /// <param name="red">The red component of the color.</param>
     /// <param name="green">The green component of the color.</param>
     /// <param name="blue">The blue component of the color.</param>
-    public Color(byte red, byte green, byte blue) : this()
+    public Color(byte red, byte green, byte blue)
     {
         R = red;
         G = green;
@@ -113,21 +107,21 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// <param name="green">The green component of the color.</param>
     /// <param name="blue">The blue component of the color.</param>
     /// <param name="alpha">The alpha component of the color</param>
-    public Color(int red, int green, int blue, int alpha) : this()
+    public Color(byte red, byte green, byte blue, byte alpha)
     {
-        R = PackHelpers.ToByte(red);
-        G = PackHelpers.ToByte(green);
-        B = PackHelpers.ToByte(blue);
-        A = PackHelpers.ToByte(alpha);
+        R = red;
+        G = green;
+        B = blue;
+        A = alpha;
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Color"/> struct.  Alpha is set to 255.  Passed values are clamped within byte range.
+    /// Initializes a new instance of the <see cref="Color"/> struct.  Passed values are clamped within byte range.
     /// </summary>
     /// <param name="red">The red component of the color.</param>
     /// <param name="green">The green component of the color.</param>
     /// <param name="blue">The blue component of the color.</param>
-    public Color(int red, int green, int blue) : this()
+    public Color(int red, int green, int blue)
     {
         R = PackHelpers.ToByte(red);
         G = PackHelpers.ToByte(green);
@@ -136,26 +130,18 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Color"/> struct.
+    /// Initializes a new instance of the <see cref="Color"/> struct.  Passed values are clamped within byte range.
     /// </summary>
-    /// <param name="r">Red component.</param>
-    /// <param name="g">Green component.</param>
-    /// <param name="b">Blue component.</param>
-    public Color(float r, float g, float b) : this()
+    /// <param name="red">The red component of the color.</param>
+    /// <param name="green">The green component of the color.</param>
+    /// <param name="blue">The blue component of the color.</param>
+    /// <param name="alpha">The alpha component of the color</param>
+    public Color(int red, int green, int blue, int alpha) 
     {
-        _packedValue = PackHelpers.PackRGBA(r, g, b, 1.0f);
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Color"/> struct.
-    /// </summary>
-    /// <param name="r">Red component.</param>
-    /// <param name="g">Green component.</param>
-    /// <param name="b">Blue component.</param>
-    /// <param name="a">Alpha component.</param>
-    public Color(float r, float g, float b, float a) : this()
-    {
-        _packedValue = PackHelpers.PackRGBA(r, g, b, a);
+        R = PackHelpers.ToByte(red);
+        G = PackHelpers.ToByte(green);
+        B = PackHelpers.ToByte(blue);
+        A = PackHelpers.ToByte(alpha);
     }
 
     /// <summary>
@@ -163,27 +149,18 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// </summary>
     /// <param name="vector">The red, green, and blue components of the color.</param>
     /// <param name="alpha">The alpha component of the color.</param>
-    public Color(in Vector3 vector, float alpha) : this()
+    public Color(in Vector3 vector, float alpha = 1.0f)
+        : this(vector.X, vector.Y, vector.Z, alpha)
     {
-        _packedValue = PackHelpers.PackRGBA(vector.X, vector.Y, vector.Z, alpha);
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Color"/> struct.
-    /// </summary>
-    /// <param name="vector">A three-component color.</param>
-    public Color(in Vector3 vector) : this()
-    {
-        _packedValue = PackHelpers.PackRGBA(vector.X, vector.Y, vector.Z, 1.0f);
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Color"/> struct.
     /// </summary>
     /// <param name="vector">A four-component color.</param>
-    public Color(Vector4 vector) : this()
+    public Color(Vector4 vector)
+        : this(vector.X, vector.Y, vector.Z, vector.W)
     {
-        _packedValue = PackHelpers.PackRGBA(vector.X, vector.Y, vector.Z, vector.W);
     }
 
     public readonly void Deconstruct(out byte red, out byte green, out byte blue, out byte alpha)
@@ -192,24 +169,6 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
         green = G;
         blue = B;
         alpha = A;
-    }
-
-    /// <summary>
-    /// Gets a four-component vector representation for this object.
-    /// </summary>
-    public Vector4 ToVector4()
-    {
-        PackHelpers.UnpackRGBA(_packedValue, out float x, out float y, out float z, out float w);
-        return new Vector4(x, y, z, w);
-    }
-
-    /// <summary>
-    /// Convert this instance to a <see cref="Color4"/>
-    /// </summary>
-    public Color4 ToColor4()
-    {
-        PackHelpers.UnpackRGBA(_packedValue, out float x, out float y, out float z, out float w);
-        return new Color4(x, y, z, w);
     }
 
     /// <summary>
@@ -237,6 +196,73 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
         value |= B << 16;
         value |= A << 24;
         return value;
+    }
+
+    /// <summary>
+    /// Converts the color into a packed integer.
+    /// </summary>
+    /// <returns>A packed integer containing all four color components.</returns>
+    public int ToArgb()
+    {
+        int value = A;
+        value |= R << 8;
+        value |= G << 16;
+        value |= B << 24;
+
+        return value;
+    }
+
+    /// <summary>
+    /// Converts the color into a packed integer.
+    /// </summary>
+    /// <returns>A packed integer containing all four color components.</returns>
+    public int ToAbgr()
+    {
+        int value = A;
+        value |= B << 8;
+        value |= G << 16;
+        value |= R << 24;
+
+        return value;
+    }
+
+    /// <summary>
+    /// Converts the color into a three component vector.
+    /// </summary>
+    /// <returns>A three component vector containing the red, green, and blue components of the color.</returns>
+    public Vector3 ToVector3()
+    {
+        return new Vector3(R / 255.0f, G / 255.0f, B / 255.0f);
+    }
+
+    /// <summary>
+    /// Converts the color into a three component color.
+    /// </summary>
+    /// <returns>A three component color containing the red, green, and blue components of the color.</returns>
+    public Color3 ToColor3()
+    {
+        return new Color3(R / 255.0f, G / 255.0f, B / 255.0f);
+    }
+
+    /// <summary>Reinterprets the current instance as a new <see cref="Vector128{Single}" />.</summary>
+    /// <returns>The current instance reinterpreted as a new <see cref="Vector128{Single}" />.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Vector128<float> AsVector128() => Vector128.Create(R / 255.0f, G / 255.0f, B / 255.0f, A / 255.0f);
+
+    /// <summary>
+    /// Gets a four-component vector representation for this object.
+    /// </summary>
+    public Vector4 ToVector4()
+    {
+        return new(R / 255.0f, G / 255.0f, B / 255.0f, A / 255.0f);
+    }
+
+    /// <summary>
+    /// Convert this instance to a <see cref="Color4"/>
+    /// </summary>
+    public Color4 ToColor4()
+    {
+        return new(R / 255.0f, G / 255.0f, B / 255.0f, A / 255.0f);
     }
 
     /// <summary>

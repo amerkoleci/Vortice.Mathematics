@@ -1,4 +1,4 @@
-﻿// Copyright (c) Amer Koleci and Contributors.
+// Copyright (c) Amer Koleci and Contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
 using System.Numerics;
@@ -321,8 +321,8 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
                 (t2, t1) = (t1, t2);
             }
 
-            distance = MathHelper.Max(t1, distance);
-            tmax = MathHelper.Min(t2, tmax);
+            distance = MathF.Max(t1, distance);
+            tmax = MathF.Min(t2, tmax);
 
             if (distance > tmax)
             {
@@ -375,8 +375,8 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
                 (t2, t1) = (t1, t2);
             }
 
-            distance = MathHelper.Max(t1, distance);
-            tmax = MathHelper.Min(t2, tmax);
+            distance = MathF.Max(t1, distance);
+            tmax = MathF.Min(t2, tmax);
 
             if (distance > tmax)
             {

@@ -74,12 +74,12 @@ public record struct Rect
     /// <summary>
     /// Initializes a new instance of the <see cref='Rect'/> struct with the specified location and size.
     /// </summary>
-    public Rect(in Vector2 location, in Vector2 size)
+    public Rect(in Vector2 location, in Size size)
     {
         X = location.X;
         Y = location.Y;
-        Width = size.X;
-        Height = size.Y;
+        Width = size.Width;
+        Height = size.Height;
     }
 
     /// <summary>
@@ -136,13 +136,13 @@ public record struct Rect
     }
 
     [IgnoreDataMember]
-    public Vector2 Size
+    public Size Size
     {
         readonly get => new(Width, Height);
         set
         {
-            Width = value.X;
-            Height = value.Y;
+            Width = value.Width;
+            Height = value.Height;
         }
     }
 
@@ -313,7 +313,7 @@ public record struct Rect
     /// <summary>
     /// Converts the specified <see cref='RectI'/> to a <see cref='Rect'/>.
     /// </summary>
-    public static implicit operator Rect(in RectI rect) => new Rect(rect.X, rect.Y, rect.Width, rect.Height); 
+    public static implicit operator Rect(in RectI rect) => new Rect(rect.X, rect.Y, rect.Width, rect.Height);
 
     /// <summary>
     /// Performs an explicit conversion from <see cref="System.Drawing.RectangleF"/> to <see cref="Rect"/>.

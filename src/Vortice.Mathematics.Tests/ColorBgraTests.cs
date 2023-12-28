@@ -22,7 +22,7 @@ public partial class ColorBgraTests
     [TestCase]
     public void CreationTests()
     {
-        ColorBgra color = new(127);
+        ColorBgra color = new(127, 127, 127, 127);
         Assert.That(color.R, Is.EqualTo(127));
         Assert.That(color.G, Is.EqualTo(127));
         Assert.That(color.B, Is.EqualTo(127));

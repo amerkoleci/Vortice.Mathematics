@@ -1,14 +1,12 @@
 // Copyright (c) Amer Koleci and contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
-// This file includes code based on code from https://github.com/microsoft/DirectXMath
-// The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
-
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static Vortice.Mathematics.Vector4Utilities;
+using System.Runtime.Intrinsics;
+using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics.PackedVector;
 
@@ -52,8 +50,6 @@ public readonly struct UByte4Normalized : IPackedVector<uint>, IEquatable<UByte4
     /// <param name="packedValue">The packed value to assign.</param>
     public UByte4Normalized(uint packedValue)
     {
-        Unsafe.SkipInit(out this);
-
         _packedValue = packedValue;
     }
 
@@ -66,8 +62,6 @@ public readonly struct UByte4Normalized : IPackedVector<uint>, IEquatable<UByte4
     /// <param name="w">The w value.</param>
     public UByte4Normalized(byte x, byte y, byte z, byte w)
     {
-        Unsafe.SkipInit(out this);
-
         X = x;
         Y = y;
         Z = z;
@@ -82,8 +76,15 @@ public readonly struct UByte4Normalized : IPackedVector<uint>, IEquatable<UByte4
     /// <param name="z">The z value.</param>
     /// <param name="w">The w value.</param>
     public UByte4Normalized(float x, float y, float z, float w)
-        : this(new Vector4(x, y, z, w))
     {
+        Vector128<float> result = Saturate(Vector128.Create(x, y, z, w));
+        result = Vector128.Multiply(result, UByteMax);
+        result = Truncate(result);
+
+        X = (byte)result.GetX();
+        Y = (byte)result.GetY();
+        Z = (byte)result.GetZ();
+        W = (byte)result.GetW();
     }
 
     /// <summary>
@@ -91,17 +92,9 @@ public readonly struct UByte4Normalized : IPackedVector<uint>, IEquatable<UByte4
     /// </summary>
     /// <param name="vector">The <see cref="Vector4"/> containing X and Y value.</param>
     public UByte4Normalized(in Vector4 vector)
+        : this(vector.X, vector.Y, vector.Z, vector.W)
     {
-        Unsafe.SkipInit(out this);
-
-        Vector4 result = Saturate(vector);
-        result = Vector4.Multiply(result, UByteMax);
-        result = Truncate(result);
-
-        X = (byte)result.X;
-        Y = (byte)result.Y;
-        Z = (byte)result.Z;
-        W = (byte)result.W;
+        
     }
 
     /// <summary>Constructs a vector from the given <see cref="ReadOnlySpan{Single}" />. The span must contain at least 3 elements.</summary>
@@ -113,17 +106,15 @@ public readonly struct UByte4Normalized : IPackedVector<uint>, IEquatable<UByte4
             throw new ArgumentOutOfRangeException(nameof(values));
         }
 
-        Unsafe.SkipInit(out this);
 
-        Vector4 vector = new(values);
-        Vector4 result = Saturate(vector);
-        result = Vector4.Multiply(result, UByteMax);
+        Vector128<float> result = Saturate(Vector128.Create(values));
+        result = Vector128.Multiply(result, UByteMax);
         result = Truncate(result);
 
-        X = (byte)result.X;
-        Y = (byte)result.Y;
-        Z = (byte)result.Z;
-        W = (byte)result.W;
+        X = (byte)result.GetX();
+        Y = (byte)result.GetY();
+        Z = (byte)result.GetZ();
+        W = (byte)result.GetW();
     }
 
     /// <summary>
