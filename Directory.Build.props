@@ -45,7 +45,7 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
     <PackageOutputPath>$(MSBuildThisFileDirectory)artifacts/</PackageOutputPath>
-    <PackageTags>3D Engine Graphics gamedev vortice Direct3D DirectX Vulkan OpenGL Metal Core Standard Game</PackageTags>
+    <PackageTags>math numerics 3D engine graphics gamedev vortice Direct3D DirectX Vulkan OpenGL Metal Core Standard Game</PackageTags>
     <ContinuousIntegrationBuild Condition="'$(GITHUB_RUN_ID)' != ''">true</ContinuousIntegrationBuild>
     <IsAotCompatible>true</IsAotCompatible>
     <OverwriteReadOnlyFiles>true</OverwriteReadOnlyFiles>

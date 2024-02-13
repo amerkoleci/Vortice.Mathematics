@@ -4,12 +4,18 @@
     <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
     <TargetFrameworks Condition=" $([MSBuild]::IsOSPlatform('windows')) ">$(TargetFrameworks);net8.0-windows10.0.19041;</TargetFrameworks>
     <Description>High performance cross platform .NET math library</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <!-- Version -->
   <PropertyGroup>
-    <VersionPrefix>1.7.6</VersionPrefix>
+    <VersionPrefix>1.7.7</VersionPrefix>
     <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(RepoRootPath)README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
 </Project>

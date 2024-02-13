@@ -6,7 +6,8 @@ using System.Runtime.CompilerServices;
 
 namespace Vortice.Mathematics;
 
-public readonly struct BoundingFrustum : IEquatable<BoundingFrustum>
+public readonly struct BoundingFrustum
+    : IEquatable<BoundingFrustum>
 {
     public const int CornerCount = 8;
 

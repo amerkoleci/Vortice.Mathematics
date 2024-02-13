@@ -13,7 +13,13 @@ namespace Vortice.Mathematics;
 /// </summary>
 [DataContract]
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
-public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
+public struct BoundingBox
+    : IEquatable<BoundingBox>
+    , IFormattable
+    , ISpanFormattable
+#if NET8_0_OR_GREATER
+    , IUtf8SpanFormattable
+#endif
 {
     /// <summary>
     /// Specifies the total number of corners (8) in the BoundingBox.
@@ -535,8 +541,118 @@ public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
     public override readonly string ToString() => ToString(format: null, formatProvider: null);
 
     /// <inheritdoc />
-    public readonly string ToString(string? format, IFormatProvider? formatProvider)
+    public readonly string ToString(string? format = null, IFormatProvider? formatProvider = null)
     {
-        return $"{{ {nameof(Min)} = {Min.ToString(format, formatProvider)}, {nameof(Max)} = {Max.ToString(format, formatProvider)} }}";
+        return $"BoundingBox {{ {nameof(Min)} = {Min.ToString(format, formatProvider)}, {nameof(Max)} = {Max.ToString(format, formatProvider)} }}";
     }
+
+    /// <inheritdoc />
+    public readonly bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+    {
+        int numWritten = 0;
+
+        if (!"BoundingBox { Min = ".TryCopyTo(destination))
+        {
+            charsWritten = 0;
+            return false;
+        }
+        int partLength = "BoundingBox { Min = ".Length;
+
+        numWritten += partLength;
+        destination = destination.Slice(numWritten);
+
+        if (!Min.TryFormat(destination, out partLength, format, provider))
+        {
+            charsWritten = 0;
+            return false;
+        }
+
+        numWritten += partLength;
+        destination = destination.Slice(partLength);
+
+        if (!", Max = ".TryCopyTo(destination))
+        {
+            charsWritten = 0;
+            return false;
+        }
+        partLength = ", Max = ".Length;
+
+        numWritten += partLength;
+        destination = destination.Slice(partLength);
+
+        if (!Max.TryFormat(destination, out partLength, format, provider))
+        {
+            charsWritten = 0;
+            return false;
+        }
+
+        numWritten += partLength;
+        destination = destination.Slice(partLength);
+
+        if (!" }".TryCopyTo(destination))
+        {
+            charsWritten = 0;
+            return false;
+        }
+        partLength = " }".Length;
+
+        charsWritten = numWritten + partLength;
+        return true;
+    }
+
+#if NET8_0_OR_GREATER
+    /// <inheritdoc />
+    public readonly bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+    {
+        int numWritten = 0;
+
+        if (!"BoundingBox { Center = "u8.TryCopyTo(utf8Destination))
+        {
+            bytesWritten = 0;
+            return false;
+        }
+        int partLength = "BoundingBox { Min = "u8.Length;
+
+        numWritten += partLength;
+        utf8Destination = utf8Destination.Slice(numWritten);
+
+        if (!Min.TryFormat(utf8Destination, out partLength, format, provider))
+        {
+            bytesWritten = 0;
+            return false;
+        }
+
+        numWritten += partLength;
+        utf8Destination = utf8Destination.Slice(partLength);
+
+        if (!", Max = "u8.TryCopyTo(utf8Destination))
+        {
+            bytesWritten = 0;
+            return false;
+        }
+        partLength = ", Max = "u8.Length;
+
+        numWritten += partLength;
+        utf8Destination = utf8Destination.Slice(partLength);
+
+        if (!Max.TryFormat(utf8Destination, out partLength, format, provider))
+        {
+            bytesWritten = 0;
+            return false;
+        }
+
+        numWritten += partLength;
+        utf8Destination = utf8Destination.Slice(partLength);
+
+        if (!" }"u8.TryCopyTo(utf8Destination))
+        {
+            bytesWritten = 0;
+            return false;
+        }
+        partLength = " }"u8.Length;
+
+        bytesWritten = numWritten + partLength;
+        return true;
+    }
+#endif
 }
