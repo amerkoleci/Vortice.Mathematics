@@ -1,33 +1,9 @@
-// Copyright (c) Amer Koleci and contributors.
+// Copyright (c) Amer Koleci and Contributors.
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
+// This file includes code based on code from https://github.com/microsoft/DirectXMath
+// The original code is Copyright © Microsoft. All rights reserved. Licensed under the MIT License (MIT).
 
-//
-// -----------------------------------------------------------------------------
-// Original code from SlimMath project. http://code.google.com/p/slimmath/
-// Greetings to SlimDX Group. Original code published with the following license:
-// -----------------------------------------------------------------------------
-/*
-* Copyright (c) 2007-2011 SlimDX Group
-* 
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-* 
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE.
-*/
-
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -40,6 +16,8 @@ namespace Vortice.Mathematics;
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
 public struct Ray : IEquatable<Ray>, IFormattable
 {
+    private const float RayEpsilon = 1e-20f;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Ray"/> struct.
     /// </summary>
@@ -94,7 +72,7 @@ public struct Ray : IEquatable<Ray>, IFormattable
     /// </summary>
     /// <param name="sphere">The <see cref="BoundingSphere"/> to check for intersection with the current <see cref="Ray"/>.</param>
     /// <returns>Distance value if intersects, null otherwise.</returns>
-    public readonly float? Intersects(in BoundingSphere sphere) => sphere.Intersects(this);
+    public readonly float? Intersects(in BoundingSphere sphere) => sphere.Intersects(in this);
 
     /// <summary>
     /// Checks whether the current <see cref="Ray"/> intersects with a specified <see cref="BoundingBox"/>.
@@ -106,7 +84,7 @@ public struct Ray : IEquatable<Ray>, IFormattable
     {
         float? rs = box.Intersects(this);
 
-        result = rs == null ? -1 : (float) rs;
+        result = rs == null ? -1 : (float)rs;
 
         return result >= 0;
     }
@@ -116,7 +94,7 @@ public struct Ray : IEquatable<Ray>, IFormattable
     /// </summary>
     /// <param name="box">The <see cref="BoundingBox"/> to check for intersection with the current <see cref="Ray"/>.</param>
     /// <returns>Distance value if intersects, null otherwise.</returns>
-    public readonly float? Intersects(in BoundingBox box) => box.Intersects(this);
+    public readonly float? Intersects(in BoundingBox box) => box.Intersects(in this);
 
     /// <summary>
     /// Checks whether the current <see cref="Ray"/> intersects with a specified <see cref="Plane"/>.
@@ -160,14 +138,13 @@ public struct Ray : IEquatable<Ray>, IFormattable
     public readonly bool Intersects(in Plane plane, out float result)
     {
         float? rs = Intersects(plane);
-
         result = rs == null ? -1 : (float)rs;
 
         return result >= 0;
     }
 
     /// <inheritdoc/>
-    public override readonly bool Equals(object? obj) => obj is Ray value && Equals(value);
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Ray value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Ray"/> is equal to this instance.
@@ -191,67 +168,112 @@ public struct Ray : IEquatable<Ray>, IFormattable
     public static bool operator ==(Ray left, Ray right) => left.Equals(right);
 
     /// <summary>
-    /// This does a ray cast on a triangle to see if there is an intersection.
-    /// This ONLY works on CW wound triangles.
+    /// Determines if there is an intersection between the current object and a triangle.
     /// </summary>
-    /// <param name="v0">Triangle Corner 1</param>
-    /// <param name="v1">Triangle Corner 2</param>
-    /// <param name="v2">Triangle Corner 3</param>
-    /// <param name="pointInTriangle">Intersection point if boolean returns true</param>
-    /// <returns></returns>
-    public readonly bool Intersects( in Vector3 v0, in Vector3 v1, in Vector3 v2, out Vector3 pointInTriangle)
+    /// <param name="vertex1">Triangle Corner 1</param>
+    /// <param name="vertex2">Triangle Corner 2</param>
+    /// <param name="vertex3">Triangle Corner 3</param>
+    /// <param name="distance">
+    /// When the method completes, contains the distance of the intersection, or 0 if there was no intersection.</param>
+    /// <returns>Whether the two objects intersected.</returns>
+    public readonly bool Intersects(in Vector3 vertex1, in Vector3 vertex2, in Vector3 vertex3, out float distance)
     {
-        // Code origin can no longer be determined.
-        // was adapted from C++ code.
+        //-----------------------------------------------------------------------------
+        // Compute the intersection of a ray (Origin, Direction) with a triangle
+        // (V0, V1, V2).  Return true if there is an intersection and also set *pDist
+        // to the distance along the ray to the intersection.
+        //
+        // The algorithm is based on Moller, Tomas and Trumbore, "Fast, Minimum Storage
+        // Ray-Triangle Intersection", Journal of Graphics Tools, vol. 2, no. 1,
+        // pp 21-28, 1997.
+        //-----------------------------------------------------------------------------
 
-        pointInTriangle = Vector3.Zero;
+        Vector3 edge1 = Vector3.Subtract(vertex2, vertex1);
+        Vector3 edge2 = Vector3.Subtract(vertex3, vertex1);
 
-        // compute normal
-        Vector3 edgeA = v1 - v0;
-        Vector3 edgeB = v2 - v0;
+        // p = Direction ^ e2;
+        Vector3 directionCrossEdge2 = Vector3.Cross(Direction, edge2);
 
-        Vector3 normal = Vector3.Cross(Direction, edgeB);
+        // det = e1 * p;
+        float determinant = Vector3.Dot(edge1, directionCrossEdge2);
 
-        // find determinant
-        float det = Vector3.Dot(edgeA, normal);
-
-        // if perpendicular, exit
-        if (det < MathHelper.ZeroTolerance)
+        //If the ray is parallel to the triangle plane, there is no collision.
+        //This also means that we are not culling, the ray may hit both the
+        //back and the front of the triangle.
+        if (determinant > -RayEpsilon && determinant < RayEpsilon)
         {
-            return false;
-        }
-        det = 1.0f / det;
-
-        // calculate distance from vertex0 to ray origin
-        Vector3 s = Position - v0;
-        float u = det * Vector3.Dot(s, normal);
-
-        if (u < -MathHelper.ZeroTolerance || u > 1.0f + MathHelper.ZeroTolerance)
-        {
-            return false;
-        }
-
-        Vector3 r = Vector3.Cross(s, edgeA);
-        float v = det * Vector3.Dot(Direction, r);
-        if (v < -MathHelper.ZeroTolerance || u + v > 1.0f + MathHelper.ZeroTolerance)
-        {
+            distance = 0f;
             return false;
         }
 
-        // distance from ray to triangle
-        det *= Vector3.Dot(edgeB, r);
+        float inverseDeterminant = 1.0f / determinant;
 
-        // Vector3 endPosition;
-        // we dont want the point that is behind the ray cast.
-        if (det < 0.0f)
+        // Calculate the U parameter of the intersection point.
+        Vector3 distanceVector;
+        distanceVector.X = Position.X - vertex1.X;
+        distanceVector.Y = Position.Y - vertex1.Y;
+        distanceVector.Z = Position.Z - vertex1.Z;
+
+        float triangleU;
+        triangleU = (distanceVector.X * directionCrossEdge2.X) + (distanceVector.Y * directionCrossEdge2.Y) + (distanceVector.Z * directionCrossEdge2.Z);
+        triangleU *= inverseDeterminant;
+
+        // Make sure it is inside the triangle.
+        if (triangleU < 0.0f || triangleU > 1.0f)
         {
+            distance = 0.0f;
             return false;
         }
 
-        pointInTriangle.X = Position.X + (Direction.X * det);
-        pointInTriangle.Y = Position.Y + (Direction.Y * det);
-        pointInTriangle.Z = Position.Z + (Direction.Z * det);
+        // Calculate the V parameter of the intersection point.
+        Vector3 distanceCrossEdge1;
+        distanceCrossEdge1.X = (distanceVector.Y * edge1.Z) - (distanceVector.Z * edge1.Y);
+        distanceCrossEdge1.Y = (distanceVector.Z * edge1.X) - (distanceVector.X * edge1.Z);
+        distanceCrossEdge1.Z = (distanceVector.X * edge1.Y) - (distanceVector.Y * edge1.X);
 
+        float triangleV;
+        triangleV = ((Direction.X * distanceCrossEdge1.X) + (Direction.Y * distanceCrossEdge1.Y)) + (Direction.Z * distanceCrossEdge1.Z);
+        triangleV *= inverseDeterminant;
+
+        // Make sure it is inside the triangle.
+        if (triangleV < 0.0f || triangleU + triangleV > 1.0f)
+        {
+            distance = 0.0f;
+            return false;
+        }
+
+        // Compute the distance along the ray to the triangle.
+        float rayDistance = (edge2.X * distanceCrossEdge1.X) + (edge2.Y * distanceCrossEdge1.Y) + (edge2.Z * distanceCrossEdge1.Z);
+        rayDistance *= inverseDeterminant;
+
+        //Is the triangle behind the ray origin?
+        if (rayDistance < 0.0f)
+        {
+            distance = 0.0f;
+            return false;
+        }
+
+        distance = rayDistance;
+        return true;
+    }
+
+    /// <summary>
+    /// Determines if there is an intersection between the current object and a triangle.
+    /// </summary>
+    /// <param name="vertex1">Triangle Corner 1</param>
+    /// <param name="vertex2">Triangle Corner 2</param>
+    /// <param name="vertex3">Triangle Corner 3</param>
+    /// <param name="point">Intersection point if boolean returns true, of Vector3.Zero if false.</param>
+    /// <returns></returns>
+    public readonly bool Intersects(in Vector3 vertex1, in Vector3 vertex2, in Vector3 vertex3, out Vector3 point)
+    {
+        if (!Intersects(in vertex1, in vertex2, in vertex3, out float distance))
+        {
+            point = Vector3.Zero;
+            return false;
+        }
+
+        point = Position + (Direction * distance);
         return true;
     }
 
