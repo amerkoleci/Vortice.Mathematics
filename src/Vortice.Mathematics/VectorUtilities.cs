@@ -568,8 +568,16 @@ public static unsafe class VectorUtilities
         }
         else
         {
-            return Clamp(vector, Vector128<float>.Zero, One);
+            return SoftwareFallback(vector);
         }
+
+        static Vector128<float> SoftwareFallback(Vector128<float> vector)
+            => Vector128.Create(
+                MathF.Truncate(vector.GetX()),
+                MathF.Truncate(vector.GetY()),
+                MathF.Truncate(vector.GetZ()),
+                MathF.Truncate(vector.GetW())
+            );
     }
 
 
