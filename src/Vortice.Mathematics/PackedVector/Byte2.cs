@@ -101,7 +101,7 @@ public readonly struct Byte2 : IPackedVector<ushort>, IEquatable<Byte2>
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Byte2 other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Byte2 other && Equals(other);
 
     /// <inheritdoc/>
     public bool Equals(Byte2 other) => PackedValue.Equals(other.PackedValue);

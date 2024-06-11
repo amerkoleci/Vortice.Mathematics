@@ -42,4 +42,13 @@ public partial class Color4Tests
         Assert.That(first, Is.EqualTo(second));
         Assert.That(first == second, Is.True);
     }
+
+    [TestCase]
+    public void NotEqualTests()
+    {
+        Color4 first = new(0.5f);
+        Color4 second = new(0.9f);
+        Assert.That(first, Is.Not.EqualTo(second));
+        Assert.That(first != second, Is.True);
+    }
 }

@@ -66,11 +66,7 @@ public static unsafe class VectorUtilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-#if NET8_0_OR_GREATER
             return Vector128<float>.One;
-#else
-            return Vector128.Create(1.0f, 1.0f, 1.0f, 1.0f);
-#endif
         }
     }
 
@@ -316,68 +312,6 @@ public static unsafe class VectorUtilities
                 || (left.GetY() != right.GetY())
                 || (left.GetZ() != right.GetZ())
                 || (left.GetW() != right.GetW());
-        }
-    }
-
-    /// <summary>Computes the sum of two vectors.</summary>
-    /// <param name="left">The vector to which to add <paramref name="right" />.</param>
-    /// <param name="right">The vector which is added to <paramref name="left" />.</param>
-    /// <returns>The sum of <paramref name="right" /> added to <paramref name="left" />.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector128<float> Add(Vector128<float> left, Vector128<float> right)
-    {
-        if (Sse41.IsSupported)
-        {
-            return Sse.Add(left, right);
-        }
-        else if (AdvSimd.Arm64.IsSupported)
-        {
-            return AdvSimd.Add(left, right);
-        }
-        else
-        {
-            return SoftwareFallback(left, right);
-        }
-
-        static Vector128<float> SoftwareFallback(Vector128<float> left, Vector128<float> right)
-        {
-            return Vector128.Create(
-                left.GetX() + right.GetX(),
-                left.GetY() + right.GetY(),
-                left.GetZ() + right.GetZ(),
-                left.GetW() + right.GetW()
-            );
-        }
-    }
-
-    /// <summary>Computes the difference of two vectors.</summary>
-    /// <param name="left">The vector from which to subtract <paramref name="right" />.</param>
-    /// <param name="right">The vector which is subtracted from <paramref name="left" />.</param>
-    /// <returns>The difference of <paramref name="right" /> subtracted from <paramref name="left" />.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector128<float> Subtract(Vector128<float> left, Vector128<float> right)
-    {
-        if (Sse41.IsSupported)
-        {
-            return Sse.Subtract(left, right);
-        }
-        else if (AdvSimd.Arm64.IsSupported)
-        {
-            return AdvSimd.Subtract(left, right);
-        }
-        else
-        {
-            return SoftwareFallback(left, right);
-        }
-
-        static Vector128<float> SoftwareFallback(Vector128<float> left, Vector128<float> right)
-        {
-            return Vector128.Create(
-                left.GetX() - right.GetX(),
-                left.GetY() - right.GetY(),
-                left.GetZ() - right.GetZ(),
-                left.GetW() - right.GetW()
-            );
         }
     }
 

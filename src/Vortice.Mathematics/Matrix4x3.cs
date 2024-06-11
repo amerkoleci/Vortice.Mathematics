@@ -145,7 +145,7 @@ public readonly struct Matrix4x3 : IEquatable<Matrix4x3>, IFormattable
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => (obj is Matrix4x3 other) && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => (obj is Matrix4x3 other) && Equals(other);
 
     /// <inheritdoc/>
     public bool Equals(Matrix4x3 other) => this == other;

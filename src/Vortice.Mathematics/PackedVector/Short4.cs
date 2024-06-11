@@ -105,7 +105,7 @@ public readonly struct Short4 : IPackedVector<ulong>, IEquatable<Short4>
     /// </summary>
     public Vector4 ToVector4() => new(X, Y, Z, W);
     /// <inheritdoc/>
-    public override readonly bool Equals(object? obj) => obj is Short4 other && Equals(other);
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Short4 other && Equals(other);
 
     /// <inheritdoc/>
     public readonly bool Equals(Short4 other) => PackedValue.Equals(other.PackedValue);

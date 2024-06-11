@@ -129,7 +129,7 @@ public readonly struct UShort4Normalized : IPackedVector<ulong>, IEquatable<USho
 
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is UShort4Normalized other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is UShort4Normalized other && Equals(other);
 
     /// <inheritdoc/>
     public bool Equals(UShort4Normalized other) => PackedValue.Equals(other.PackedValue);

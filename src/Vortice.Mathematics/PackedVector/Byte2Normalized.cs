@@ -105,7 +105,7 @@ public readonly struct Byte2Normalized : IPackedVector<ushort>, IEquatable<Byte2
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Byte2Normalized other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Byte2Normalized other && Equals(other);
 
     /// <inheritdoc/>
     public bool Equals(Byte2Normalized other) => PackedValue.Equals(other.PackedValue);

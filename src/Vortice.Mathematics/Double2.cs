@@ -589,7 +589,7 @@ public struct Double2 : IEquatable<Double2>, IFormattable
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Double2 value && Equals(value);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Double2 value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Double2"/> is equal to this instance.

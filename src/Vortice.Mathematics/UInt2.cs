@@ -2,6 +2,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repository root for more information.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -107,7 +108,7 @@ public struct UInt2 : IEquatable<UInt2>, IFormattable
         set => this = this.WithElement(index, value);
     }
 
-    public void Deconstruct(out uint x, out uint y)
+    public readonly void Deconstruct(out uint x, out uint y)
     {
         x = X;
         y = Y;
@@ -169,14 +170,14 @@ public struct UInt2 : IEquatable<UInt2>, IFormattable
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is UInt2 value && Equals(value);
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is UInt2 value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="UInt2"/> is equal to this instance.
     /// </summary>
     /// <param name="other">The <see cref="UInt2"/> to compare with this instance.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(UInt2 other)
+    public readonly bool Equals(UInt2 other)
     {
         return X == other.X
             && Y == other.Y;
@@ -211,6 +212,6 @@ public struct UInt2 : IEquatable<UInt2>, IFormattable
     public override string ToString() => ToString(format: null, formatProvider: null);
 
     /// <inheritdoc />
-    public string ToString(string? format, IFormatProvider? formatProvider)
+    public readonly string ToString(string? format, IFormatProvider? formatProvider)
         => $"{nameof(UInt2)} {{ {nameof(X)} = {X.ToString(format, formatProvider)}, {nameof(Y)} = {Y.ToString(format, formatProvider)} }}";
 }

@@ -251,14 +251,14 @@ public struct Double4 : IEquatable<Double4>, IFormattable
     public static implicit operator Vector4(Double4 value) => new((float)value.X, (float)value.Y, (float)value.Z, (float)value.W);
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Double4 value && Equals(value);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Double4 value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Double4"/> is equal to this instance.
     /// </summary>
     /// <param name="other">The <see cref="Double4"/> to compare with this instance.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(Double4 other)
+    public readonly bool Equals(Double4 other)
     {
         return X == other.X
             && Y == other.Y
@@ -289,13 +289,13 @@ public struct Double4 : IEquatable<Double4>, IFormattable
     public static bool operator !=(Double4 left, Double4 right) => !left.Equals(right);
 
     /// <inheritdoc/>
-    public override int GetHashCode() => HashCode.Combine(X, Y, Z, W);
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z, W);
 
     /// <inheritdoc />
-    public override string ToString() => ToString(format: null, formatProvider: null);
+    public override readonly string ToString() => ToString(format: null, formatProvider: null);
 
     /// <inheritdoc />
-    public string ToString(string? format, IFormatProvider? formatProvider)
+    public readonly string ToString(string? format, IFormatProvider? formatProvider)
         => $"{nameof(Double4)} {{ {nameof(X)} = {X.ToString(format, formatProvider)}, {nameof(Y)} = {Y.ToString(format, formatProvider)}, {nameof(Z)} = {Z.ToString(format, formatProvider)}, {nameof(W)} = {W.ToString(format, formatProvider)} }}";
 
 

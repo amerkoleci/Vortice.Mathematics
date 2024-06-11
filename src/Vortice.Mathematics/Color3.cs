@@ -253,7 +253,7 @@ public readonly struct Color3 : IEquatable<Color3>, IFormattable
     public static explicit operator Color3(in Vector3 value) => new(value);
 
     /// <inheritdoc/>
-    public override readonly bool Equals(object? obj) => obj is Color3 value && Equals(value);
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Color3 value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Color3"/> is equal to this instance.

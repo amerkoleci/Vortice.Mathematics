@@ -131,7 +131,7 @@ public readonly struct UByte4Normalized : IPackedVector<uint>, IEquatable<UByte4
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is UByte4Normalized other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is UByte4Normalized other && Equals(other);
 
     /// <inheritdoc/>
     public bool Equals(UByte4Normalized other) => PackedValue.Equals(other.PackedValue);

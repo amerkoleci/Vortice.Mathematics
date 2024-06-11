@@ -165,7 +165,7 @@ public readonly struct Half4 : IPackedVector<ulong>, IEquatable<Half4>, IFormatt
     #endregion IPackedVector Implementation
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Half4 value && Equals(value);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Half4 value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Half4"/> is equal to this instance.

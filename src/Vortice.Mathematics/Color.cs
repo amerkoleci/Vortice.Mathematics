@@ -136,7 +136,7 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// <param name="green">The green component of the color.</param>
     /// <param name="blue">The blue component of the color.</param>
     /// <param name="alpha">The alpha component of the color</param>
-    public Color(int red, int green, int blue, int alpha) 
+    public Color(int red, int green, int blue, int alpha)
     {
         R = PackHelpers.ToByte(red);
         G = PackHelpers.ToByte(green);
@@ -315,21 +315,14 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     public static implicit operator Color(uint value) => new(value);
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Color color && Equals(ref color);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Color color && Equals(color);
 
     /// <summary>
     /// Determines whether the specified <see cref="Color"/> is equal to this instance.
     /// </summary>
     /// <param name="other">The <see cref="Color"/> to compare with this instance.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(Color other) => Equals(ref other);
-
-    /// <summary>
-    /// Determines whether the specified <see cref="Color"/> is equal to this instance.
-    /// </summary>
-    /// <param name="other">The <see cref="Color"/> to compare with this instance.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(ref Color other)
+    public bool Equals(Color other)
     {
         return R == other.R
             && G == other.G
@@ -346,7 +339,7 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// True if the current left is equal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator ==(Color left, Color right) => left.Equals(ref right);
+    public static bool operator ==(Color left, Color right) => left.Equals(right);
 
     /// <summary>
     /// Compares two <see cref="Color"/> objects for inequality.
@@ -357,7 +350,7 @@ public readonly struct Color : IPackedVector<uint>, IEquatable<Color>
     /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(Color left, Color right) => !left.Equals(ref right);
+    public static bool operator !=(Color left, Color right) => !left.Equals(right);
 
     /// <inheritdoc/>
     public override int GetHashCode() => PackedValue.GetHashCode();

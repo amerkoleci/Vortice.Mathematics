@@ -103,7 +103,7 @@ public struct Box : IEquatable<Box>, IFormattable
     public readonly int Depth => Back - Front;
 
     /// <inheritdoc/>
-    public override readonly bool Equals(object? obj) => obj is Box value && Equals(value);
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Box value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Box"/> is equal to this instance.

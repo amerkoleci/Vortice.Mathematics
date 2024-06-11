@@ -295,7 +295,7 @@ public struct Viewport : IEquatable<Viewport>
     }
 
     /// <inheritdoc/>
-    public override readonly bool Equals(object? obj) => obj is Viewport value && Equals(value);
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Viewport value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Viewport"/> is equal to this instance.
@@ -306,7 +306,7 @@ public struct Viewport : IEquatable<Viewport>
     {
         return CompareEqual(X, other.X, ZeroTolerance)
             && CompareEqual(Y, other.Y, ZeroTolerance)
-            && CompareEqual(Width, other.Width, ZeroTolerance   )
+            && CompareEqual(Width, other.Width, ZeroTolerance)
             && CompareEqual(Height, other.Height, ZeroTolerance)
             && CompareEqual(MinDepth, other.MinDepth, ZeroTolerance)
             && CompareEqual(MaxDepth, other.MaxDepth, ZeroTolerance);

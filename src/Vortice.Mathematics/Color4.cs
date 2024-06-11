@@ -804,7 +804,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     public static explicit operator Color4(in Vector4 value) => new(value.X, value.Y, value.Z, value.W);
 
     /// <inheritdoc />
-    public override bool Equals(object? obj) => obj is Color4 other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Color4 other && Equals(other);
 
     /// <inheritdoc />
     public bool Equals(Color4 other) => Vector128.EqualsAll(_value, other._value);

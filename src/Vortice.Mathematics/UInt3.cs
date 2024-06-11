@@ -218,7 +218,7 @@ public struct UInt3 : IEquatable<UInt3>, IFormattable
     public static implicit operator Vector3(UInt3 xyz) => new(xyz.X, xyz.Y, xyz.Z);
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is UInt3 value && Equals(value);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is UInt3 value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="UInt3"/> is equal to this instance.

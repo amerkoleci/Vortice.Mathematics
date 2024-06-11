@@ -249,7 +249,7 @@ public struct UInt4 : IEquatable<UInt4>, IFormattable
     public static implicit operator Vector4(UInt4 xyzw) => new(xyzw.X, xyzw.Y, xyzw.Z, xyzw.W);
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is UInt4 value && Equals(value);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is UInt4 value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="UInt4"/> is equal to this instance.

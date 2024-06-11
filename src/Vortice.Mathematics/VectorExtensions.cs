@@ -20,7 +20,7 @@ public static class VectorExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static int GetElement(this Int2 vector, int index)
     {
-        if ((uint)(index) >= (uint)(Int2.Count))
+        if ((uint)(index) >= Int2.Count)
         {
             throw new ArgumentOutOfRangeException(nameof(index));
         }

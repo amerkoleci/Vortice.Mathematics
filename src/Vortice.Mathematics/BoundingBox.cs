@@ -17,9 +17,7 @@ public struct BoundingBox
     : IEquatable<BoundingBox>
     , IFormattable
     , ISpanFormattable
-#if NET8_0_OR_GREATER
     , IUtf8SpanFormattable
-#endif
 {
     /// <summary>
     /// Specifies the total number of corners (8) in the BoundingBox.
@@ -492,7 +490,7 @@ public struct BoundingBox
 
 
     /// <inheritdoc/>
-    public override readonly bool Equals(object? obj) => (obj is BoundingBox other) && Equals(other);
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => (obj is BoundingBox other) && Equals(other);
 
     /// <summary>
     /// Determines whether the specified <see cref="BoundingBox"/> is equal to this instance.
@@ -600,7 +598,6 @@ public struct BoundingBox
         return true;
     }
 
-#if NET8_0_OR_GREATER
     /// <inheritdoc />
     public readonly bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
     {
@@ -654,5 +651,4 @@ public struct BoundingBox
         bytesWritten = numWritten + partLength;
         return true;
     }
-#endif
 }

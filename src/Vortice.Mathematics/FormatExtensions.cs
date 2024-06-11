@@ -135,7 +135,6 @@ public static class FormatExtensions
         return true;
     }
 
-#if NET8_0_OR_GREATER
     public static bool TryFormat(this Vector2 vector, Span<byte> utf8Destination, out int bytesWritten, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
     {
         int numWritten = 0;
@@ -260,5 +259,4 @@ public static class FormatExtensions
         bytesWritten = numWritten + partLength;
         return true;
     }
-#endif
 }

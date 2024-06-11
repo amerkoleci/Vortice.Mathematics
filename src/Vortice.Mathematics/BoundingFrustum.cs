@@ -159,7 +159,7 @@ public readonly struct BoundingFrustum
     }
 
     /// <inheritdoc/>
-    public override readonly bool Equals(object? obj) => obj is BoundingFrustum value && Equals(value);
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is BoundingFrustum value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="BoundingFrustum"/> is equal to this instance.

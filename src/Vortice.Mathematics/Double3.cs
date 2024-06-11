@@ -136,7 +136,7 @@ public struct Double3 : IEquatable<Double3>, IFormattable
         set => this = this.WithElement(index, value);
     }
 
-    public void Deconstruct(out double x, out double y, out double z)
+    public readonly void Deconstruct(out double x, out double y, out double z)
     {
         x = X;
         y = Y;
@@ -217,14 +217,14 @@ public struct Double3 : IEquatable<Double3>, IFormattable
     public static implicit operator Vector3(Double3 xyz) => new((float)xyz.X, (float)xyz.Y, (float)xyz.Z);
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is Double3 value && Equals(value);
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Double3 value && Equals(value);
 
     /// <summary>
     /// Determines whether the specified <see cref="Double3"/> is equal to this instance.
     /// </summary>
     /// <param name="other">The <see cref="Double3"/> to compare with this instance.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(Double3 other)
+    public readonly bool Equals(Double3 other)
     {
         return X == other.X
             && Y == other.Y
@@ -254,12 +254,12 @@ public struct Double3 : IEquatable<Double3>, IFormattable
     public static bool operator !=(Double3 left, Double3 right) => !left.Equals(right);
 
     /// <inheritdoc/>
-    public override int GetHashCode() => HashCode.Combine(X, Y, Z);
+    public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z);
 
     /// <inheritdoc />
-    public override string ToString() => ToString(format: null, formatProvider: null);
+    public override readonly string ToString() => ToString(format: null, formatProvider: null);
 
     /// <inheritdoc />
-    public string ToString(string? format, IFormatProvider? formatProvider)
+    public readonly string ToString(string? format, IFormatProvider? formatProvider)
         => $"{nameof(Double3)} {{ {nameof(X)} = {X.ToString(format, formatProvider)}, {nameof(Y)} = {Y.ToString(format, formatProvider)}, {nameof(Z)} = {Z.ToString(format, formatProvider)} }}";
 }

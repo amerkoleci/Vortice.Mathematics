@@ -206,7 +206,7 @@ public readonly struct ColorBgra : IPackedVector<uint>, IEquatable<ColorBgra>
     /// </summary>
     /// <param name="color">A packed integer containing all four color components in BGRA order</param>
     /// <returns>A color.</returns>
-    public static ColorBgra FromBgra(uint color) => new ColorBgra(color);
+    public static ColorBgra FromBgra(uint color) => new(color);
 
     /// <summary>
     /// Converts the color from a packed RGBA integer.
@@ -257,7 +257,7 @@ public readonly struct ColorBgra : IPackedVector<uint>, IEquatable<ColorBgra>
     public static explicit operator ColorBgra(Color4 value) => new(value.R, value.G, value.B, value.A);
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => obj is ColorBgra color && Equals(color);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is ColorBgra color && Equals(color);
 
     /// <summary>
     /// Determines whether the specified <see cref="ColorBgra"/> is equal to this instance.

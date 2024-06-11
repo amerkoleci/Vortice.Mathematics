@@ -13,9 +13,7 @@ public struct BoundingSphere
     : IEquatable<BoundingSphere>
     , IFormattable
     , ISpanFormattable
-#if NET8_0_OR_GREATER
     , IUtf8SpanFormattable
-#endif
 {
     /// <summary>
     /// Gets a bounding sphere with zero radius.
@@ -320,7 +318,7 @@ public struct BoundingSphere
     }
 
     /// <inheritdoc/>
-    public override readonly bool Equals(object? obj) => (obj is BoundingSphere other) && Equals(other);
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => (obj is BoundingSphere other) && Equals(other);
 
     /// <summary>
     /// Determines whether the specified <see cref="BoundingSphere"/> is equal to this instance.
@@ -429,7 +427,6 @@ public struct BoundingSphere
         return true;
     }
 
-#if NET8_0_OR_GREATER
     /// <inheritdoc />
     public readonly bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
     {
@@ -483,5 +480,4 @@ public struct BoundingSphere
         bytesWritten = numWritten + partLength;
         return true;
     }
-#endif
 }
