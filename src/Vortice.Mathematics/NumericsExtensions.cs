@@ -101,15 +101,26 @@ public static class NumericsExtensions
         result.D = planeD * magnitude;
     }
 
-    public static Vector4 GetRow1(this in Matrix4x4 matrix) => new(matrix.M11, matrix.M12, matrix.M13, matrix.M14);
-    public static Vector4 GetRow2(this in Matrix4x4 matrix) => new(matrix.M21, matrix.M22, matrix.M23, matrix.M24);
-    public static Vector4 GetRow3(this in Matrix4x4 matrix) => new(matrix.M31, matrix.M32, matrix.M33, matrix.M34);
-    public static Vector4 GetRow4(this in Matrix4x4 matrix) => new(matrix.M41, matrix.M42, matrix.M43, matrix.M44);
+    public static Vector4 GetRow(in this Matrix4x4 matrix, int row) => new(matrix[row, 0], matrix[row, 1], matrix[row, 2], matrix[row, 3]);
 
-    public static Vector4 GetColumn1(this in Matrix4x4 matrix) => new(matrix.M11, matrix.M21, matrix.M31, matrix.M41);
-    public static Vector4 GetColumn2(this in Matrix4x4 matrix) => new(matrix.M12, matrix.M22, matrix.M32, matrix.M42);
-    public static Vector4 GetColumn3(this in Matrix4x4 matrix) => new(matrix.M13, matrix.M23, matrix.M33, matrix.M43);
-    public static Vector4 GetColumn4(this in Matrix4x4 matrix) => new(matrix.M14, matrix.M24, matrix.M34, matrix.M44);
+    public static Vector4 GetColumn(in this Matrix4x4 matrix, int column) => new(matrix[0, column], matrix[1, column], matrix[2, column], matrix[3, column]);
+
+    public static void SetRow(ref this Matrix4x4 matrix, int row, Vector4 value)
+    {
+        matrix[row, 0] = value.X;
+        matrix[row, 1] = value.Y;
+        matrix[row, 2] = value.Z;
+        matrix[row, 3] = value.W;
+    }
+
+    public static void SetColumn(ref this Matrix4x4 matrix, int column, Vector4 value)
+    {
+        matrix[0, column] = value.X;
+        matrix[1, column] = value.Y;
+        matrix[2, column] = value.Z;
+        matrix[3, column] = value.W;
+    }
+
 
     public static void Deconstruct(this in Matrix4x4 matrix, out Vector3 scale, out Quaternion rotation, out Vector3 translation)
     {
