@@ -139,8 +139,6 @@ public readonly struct Matrix3x3
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than nine elements.</exception>
     public Matrix3x3(ReadOnlySpan<float> values)
     {
-        if (values == null)
-            throw new ArgumentNullException(nameof(values));
         if (values.Length != 9)
             throw new ArgumentOutOfRangeException(nameof(values),
                 "There must be only nine input values for Matrix3x3.");
