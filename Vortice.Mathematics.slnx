@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/build/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="LICENSE" />
+    <File Path="NuGet.config" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="src/Vortice.Mathematics.Tests/Vortice.Mathematics.Tests.csproj" />
+  <Project Path="src/Vortice.Mathematics/Vortice.Mathematics.csproj" />
+</Solution>

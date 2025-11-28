@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 using System.Text;
-using static Vortice.Mathematics.VectorUtilities;
 
 namespace Vortice.Mathematics;
 
@@ -900,7 +899,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// True if the current left is unequal to the <paramref name="right"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator !=(Color4 left, Color4 right) => CompareNotEqualAny(left._value, right._value);
+    public static bool operator !=(Color4 left, Color4 right) => !Vector128.EqualsAll(left._value, right._value);
 
     /// <inheritdoc/>
     public override int GetHashCode() => HashCode.Combine(R, G, B, A);
