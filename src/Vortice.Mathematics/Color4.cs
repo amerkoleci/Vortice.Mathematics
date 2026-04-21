@@ -496,7 +496,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <summary>
     /// Create new <see cref="Color4"/> from specified HSL values and alpha.
     /// </summary>
-    public static Color FromHSL(float h, float s, float l, float a = 1.0f)
+    public static Color4 FromHSL(float h, float s, float l, float a = 1.0f)
     {
         float c;
         if (l < 0.5f)
@@ -513,7 +513,7 @@ public readonly struct Color4 : IEquatable<Color4>, IFormattable
     /// <summary>
     /// Create new <see cref="Color4"/> from specified HSV values and alpha.
     /// </summary>
-    public static Color FromHSV(float h, float s, float v, float a = 1.0f)
+    public static Color4 FromHSV(float h, float s, float v, float a = 1.0f)
     {
         float c = v * s;
         float m = v - c;
